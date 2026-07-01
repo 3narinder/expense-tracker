@@ -6,6 +6,8 @@ import Transactions from "./pages/Transactions";
 import Categories from "./pages/Categories";
 import Budgets from "./pages/Budgets";
 import Insight from "./pages/Insight";
+import ProtectedRoute from "./components/ProtectiveRoutes";
+import Layout from "./components/Layout";
 
 const App = () => {
   return (
@@ -13,12 +15,19 @@ const App = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      <Route path="/" element={<Dashboard />} />
-
-      <Route path="/transactions" element={<Transactions />} />
-      <Route path="/categories" element={<Categories />} />
-      <Route path="/budgets" element={<Budgets />} />
-      <Route path="/insights" element={<Insight />} />
+      <Route
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/transactions" element={<Transactions />} />
+        <Route path="/categories" element={<Categories />} />
+        <Route path="/budgets" element={<Budgets />} />
+        <Route path="/insights" element={<Insight />} />
+      </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
