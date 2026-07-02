@@ -9,7 +9,14 @@ const budgetSchema = new mongoose.Schema(
       index: true,
     },
 
-    //*A Multi-Category Budget needs an array so one budget (e.g. "Food & Fun") can track several categories at once.
+    name: {
+      type: String,
+      required: [true, "Budget name is required"],
+      trim: true,
+      minLength: [3, "Budget name must be at least 3 characters"],
+      maxLength: [100, "Budget name cannot exceed 100 characters"],
+    },
+
     categoryIds: {
       type: [
         {
@@ -38,7 +45,6 @@ const budgetSchema = new mongoose.Schema(
       set: (value) => Math.round(value * 100) / 100,
     },
 
-    //* when the cached `spent` value was last reconciled against a fresh aggregation. Lets you spot budgets that have drifted or that the reconciliation job hasn't reached yet.
     lastReconciledAt: {
       type: Date,
       default: null,
@@ -50,6 +56,7 @@ const budgetSchema = new mongoose.Schema(
       default: "monthly",
       required: true,
     },
+
     startDate: {
       type: Date,
       required: true,
