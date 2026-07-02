@@ -35,6 +35,21 @@ const categorySchema = new mongoose.Schema(
       default: false,
     },
 
+    //* Hierarchical categories (parent/child)
+    parentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      default: null,
+      index: true,
+    },
+
+    ancestors: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+      },
+    ],
+
     autoCategorizationRules: {
       merchantKeywords: [
         {
@@ -50,20 +65,40 @@ const categorySchema = new mongoose.Schema(
   },
 );
 
-//* Prevent duplicate category names of the same type for a user
 categorySchema.index({ userId: 1, name: 1, type: 1 }, { unique: true });
 
-//* NEW INDEX: Performance for auto-categorization ----- Allows searching for a category based on a merchant name during transaction creation
 categorySchema.index({ "autoCategorizationRules.merchantKeywords": 1 });
 
-categorySchema.pre("save", function (next) {
+//* Supports "all descendants of category X" queries via the materialized ancestors path.
+categorySchema.index({ ancestors: 1 });
+
+categorySchema.pre("save", async function (next) {
   if (this.autoCategorizationRules?.merchantKeywords) {
     this.autoCategorizationRules.merchantKeywords =
       this.autoCategorizationRules.merchantKeywords.map((kw) =>
         kw.toLowerCase().trim(),
       );
   }
-  next();
+
+  if (this.isModified("parentId")) {
+    if (!this.parentId) {
+      this.ancestors = [];
+    } else {
+      const parent = await this.constructor
+        .findById(this.parentId)
+        .select("ancestors _id");
+      if (!parent) {
+        return next(new Error("Parent category not found"));
+      }
+      if (
+        parent._id.equals(this._id) ||
+        parent.ancestors.some((a) => a.equals(this._id))
+      ) {
+        return next(new Error("Circular category hierarchy is not allowed"));
+      }
+      this.ancestors = [...parent.ancestors, parent._id];
+    }
+  }
 });
 
 const Category = mongoose.model("Category", categorySchema);

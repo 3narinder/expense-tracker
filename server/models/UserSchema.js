@@ -41,10 +41,9 @@ const userSchema = new mongoose.Schema(
 );
 
 //** Hash password before saving
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("passwordHash")) {
-    return next();
-  }
+
+userSchema.pre("save", async function () {
+  if (!this.isModified("passwordHash")) return;
   this.passwordHash = await bcrypt.hash(this.passwordHash, 10);
 });
 
@@ -54,7 +53,6 @@ userSchema.methods.comparePassword = async function (password) {
 };
 
 //** Remove passwordHash when converting to JSON
-
 userSchema.methods.toJSON = function () {
   const user = this.toObject();
   delete user.passwordHash;

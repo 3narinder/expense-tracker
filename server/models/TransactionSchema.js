@@ -43,7 +43,7 @@ const transactionSchema = new mongoose.Schema(
       maxLength: 150,
       default: "",
     },
-    // NEW: Tags & Notes
+
     tags: [
       {
         type: String,

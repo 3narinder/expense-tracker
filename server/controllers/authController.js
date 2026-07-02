@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import User from "../models/UserSchema.js";
 import Account from "../models/AccountSchema.js";
 
@@ -21,62 +22,67 @@ const sendToken = (res, token) => {
 
 //** @route POST /api/auth/register
 export const register = async (req, res) => {
-  try {
-    const { username, email, password, currency } = req.body;
+  const { username, email, password, currency } = req.body;
 
-    if (!username || !email || !password) {
-      return res.status(400).json({
-        message: "Username, email and password are required.",
-      });
-    }
-
-    const emailExists = await User.findOne({ email });
-
-    if (emailExists) {
-      return res.status(400).json({
-        message: "Email already registered.",
-      });
-    }
-
-    const usernameExists = await User.findOne({ username });
-
-    if (usernameExists) {
-      return res.status(400).json({
-        message: "Username already taken.",
-      });
-    }
-
-    //* 1. Create the user profile
-    const user = await User.create({
-      username,
-      email,
-      passwordHash: password,
-      currency,
+  if (!username || !email || !password) {
+    return res.status(400).json({
+      message: "Username, email and password are required.",
     });
+  }
 
-    //* 2. Automatically spin up their default "Personal Wallet" account
-    await Account.create({
-      userId: user._id,
-      name: "Personal Wallet",
-      type: "cash",
-      balance: 0,
-      currency: user.currency || "INR",
+  const emailExists = await User.findOne({ email });
+  if (emailExists) {
+    return res.status(400).json({ message: "Email already registered." });
+  }
+
+  const usernameExists = await User.findOne({ username });
+  if (usernameExists) {
+    return res.status(400).json({ message: "Username already taken." });
+  }
+
+  const session = await mongoose.startSession();
+  try {
+    let user;
+
+    await session.withTransaction(async () => {
+      //* 1. Create the user profile
+      user = await User.create(
+        [{ username, email, passwordHash: password, currency }],
+        { session },
+      );
+      user = user[0]; // create() with an array + session returns an array
+
+      //* 2. Automatically spin up their default "Personal Wallet" account
+      await Account.create(
+        [
+          {
+            userId: user._id,
+            name: "Personal Wallet",
+            type: "cash",
+            balance: 0,
+            currency: user.currency || "INR",
+          },
+        ],
+        { session },
+      );
     });
 
     const token = generateToken(user._id);
-
     sendToken(res, token);
 
-    return res.status(201).json({
-      success: true,
-      user,
-    });
+    return res.status(201).json({ success: true, user });
   } catch (error) {
-    console.error(error);
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern || {})[0] || "field";
+      return res.status(400).json({
+        message: `That ${field} is already registered.`,
+      });
+    }
 
-    return res.status(500).json({
-      message: "Something went wrong.",
-    });
+    console.error(error);
+    return res.status(500).json({ message: "Something went wrong." });
+  } finally {
+    await session.endSession();
   }
 };
 

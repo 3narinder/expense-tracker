@@ -1,7 +1,13 @@
 import mongoose from "mongoose";
 import Transaction from "../models/TransactionSchema.js";
 import Category from "../models/CategorySchema.js";
-import Account from "../models/AccountSchema.js"; // NEW: Required for balance updates
+import Account from "../models/AccountSchema.js";
+
+import {
+  syncBudgetsOnCreate,
+  syncBudgetsOnUpdate,
+  syncBudgetsOnDelete,
+} from "../utils/budgetSync.js";
 
 // Helper: Calculate how a transaction affects an account balance
 const getBalanceImpact = (type, amount) =>
@@ -60,33 +66,69 @@ export const getTransactions = async (req, res) => {
       ];
     }
 
-    const stats = await Transaction.aggregate([
+    const [result] = await Transaction.aggregate([
       { $match: filter },
       {
-        $group: {
-          _id: null,
-          totalIncome: {
-            $sum: { $cond: [{ $eq: ["$type", "income"] }, "$amount", 0] },
-          },
-          totalExpense: {
-            $sum: { $cond: [{ $eq: ["$type", "expense"] }, "$amount", 0] },
-          },
-          count: { $sum: 1 },
+        $facet: {
+          stats: [
+            {
+              $group: {
+                _id: null,
+                totalIncome: {
+                  $sum: { $cond: [{ $eq: ["$type", "income"] }, "$amount", 0] },
+                },
+                totalExpense: {
+                  $sum: {
+                    $cond: [{ $eq: ["$type", "expense"] }, "$amount", 0],
+                  },
+                },
+                count: { $sum: 1 },
+              },
+            },
+          ],
+          paginated: [
+            { $sort: { transactionDate: -1 } },
+            { $skip: skip },
+            { $limit: limit },
+            {
+              $lookup: {
+                from: "categories",
+                localField: "categoryId",
+                foreignField: "_id",
+                as: "categoryId",
+                pipeline: [
+                  { $project: { name: 1, icon: 1, color: 1, isDefault: 1 } },
+                ],
+              },
+            },
+            {
+              $unwind: {
+                path: "$categoryId",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            {
+              $lookup: {
+                from: "accounts",
+                localField: "accountId",
+                foreignField: "_id",
+                as: "accountId",
+                pipeline: [{ $project: { name: 1, type: 1, currency: 1 } }],
+              },
+            },
+            {
+              $unwind: { path: "$accountId", preserveNullAndEmptyArrays: true },
+            },
+          ],
         },
       },
     ]);
 
-    const totalTransactions = stats[0]?.count || 0;
-    const totalIncome = stats[0]?.totalIncome || 0;
-    const totalExpense = stats[0]?.totalExpense || 0;
+    const stats = result.stats[0] || {};
+    const totalTransactions = stats.count || 0;
+    const totalIncome = stats.totalIncome || 0;
+    const totalExpense = stats.totalExpense || 0;
     const netBalance = totalIncome - totalExpense;
-
-    const transactions = await Transaction.find(filter)
-      .populate("categoryId", "name icon color isDefault")
-      .populate("accountId", "name type currency") // NEW
-      .sort({ transactionDate: -1 })
-      .skip(skip)
-      .limit(limit);
 
     res.status(200).json({
       pagination: {
@@ -96,7 +138,7 @@ export const getTransactions = async (req, res) => {
         totalPages: Math.ceil(totalTransactions / limit) || 1,
       },
       insights: { totalIncome, totalExpense, netBalance },
-      transactions,
+      transactions: result.paginated,
     });
   } catch (error) {
     res
@@ -133,231 +175,346 @@ export const getTransactionById = async (req, res) => {
 //* @desc    Create a transaction (UPDATED WITH BALANCE MATH)
 //* @route   POST /api/transactions
 export const createTransaction = async (req, res) => {
+  const session = await mongoose.startSession();
   try {
-    const userId = req.user?.id || req.user?._id;
-    const {
-      accountId,
-      categoryId,
-      amount,
-      type,
-      description,
-      merchant,
-      tags,
-      notes,
-      transactionDate,
-      recurring,
-      recurringFrequency,
-    } = req.body;
+    let createdTransaction;
 
-    if (!amount || !type || !categoryId || !accountId) {
-      return res.status(400).json({
-        message: "Missing required fields (amount, type, category, account)",
+    await session.withTransaction(async () => {
+      const userId = req.user?.id || req.user?._id;
+      const {
+        accountId,
+        categoryId,
+        amount,
+        type,
+        description,
+        merchant,
+        tags,
+        notes,
+        transactionDate,
+        recurring,
+        recurringFrequency,
+      } = req.body;
+
+      if (!amount || !type || !categoryId || !accountId) {
+        throw Object.assign(
+          new Error(
+            "Missing required fields (amount, type, category, account)",
+          ),
+          {
+            statusCode: 400,
+          },
+        );
+      }
+
+      //* Validate Account
+      const account = await Account.findOne({ _id: accountId, userId }).session(
+        session,
+      );
+      if (!account) {
+        throw Object.assign(new Error("Account not found or unauthorized"), {
+          statusCode: 400,
+        });
+      }
+
+      //* Validate Category
+      const category = await Category.findOne({
+        _id: categoryId,
+        $or: [{ isDefault: true }, { userId }],
+      }).session(session);
+      if (!category) {
+        throw Object.assign(new Error("Category not found or unauthorized"), {
+          statusCode: 400,
+        });
+      }
+
+      const parsedAmount = parseFloat(amount);
+      const txDate = transactionDate ? new Date(transactionDate) : new Date();
+
+      const transaction = new Transaction({
+        userId,
+        accountId,
+        categoryId,
+        type,
+        description,
+        merchant,
+        tags,
+        notes,
+        amount: parsedAmount,
+        transactionDate: txDate,
+        recurring: recurring || false,
+        recurringFrequency: recurring ? recurringFrequency : null,
       });
-    }
 
-    //* Validate Account
-    const account = await Account.findOne({ _id: accountId, userId });
-    if (!account)
-      return res
-        .status(400)
-        .json({ message: "Account not found or unauthorized" });
+      await transaction.save({ session });
 
-    //* Validate Category
-    const category = await Category.findOne({
-      _id: categoryId,
-      $or: [{ isDefault: true }, { userId }],
-    });
-    if (!category)
-      return res
-        .status(400)
-        .json({ message: "Category not found or unauthorized" });
+      //* Update Account Balance (same session)
+      account.balance += getBalanceImpact(type, parsedAmount);
+      await account.save({ session });
 
-    const transaction = new Transaction({
-      userId,
-      accountId,
-      categoryId,
-      type,
-      description,
-      merchant,
-      tags,
-      notes,
-      amount: parseFloat(amount),
-      transactionDate: transactionDate ? new Date(transactionDate) : new Date(),
-      recurring: recurring || false,
-      recurringFrequency: recurring ? recurringFrequency : null,
+      //* NEW: Sync any matching budgets' cached spend, same session
+      await syncBudgetsOnCreate(
+        {
+          userId,
+          categoryId,
+          transactionDate: txDate,
+          type,
+          amount: parsedAmount,
+        },
+        session,
+      );
+
+      createdTransaction = transaction;
     });
 
-    await transaction.save();
-
-    //* NEW: Update Account Balance
-    account.balance += getBalanceImpact(type, parseFloat(amount));
-    await account.save();
-
-    res
-      .status(201)
-      .json({ message: "Transaction created successfully", transaction });
+    res.status(201).json({
+      message: "Transaction created successfully",
+      transaction: createdTransaction,
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error creating transaction", error: error.message });
+    res.status(error.statusCode || 500).json({
+      message: error.statusCode ? error.message : "Error creating transaction",
+      error: error.message,
+    });
+  } finally {
+    await session.endSession();
   }
 };
 
 //* @desc    Update a transaction (UPDATED WITH COMPLEX BALANCE MATH)
 //* @route   PUT /api/transactions/:id
 export const updateTransaction = async (req, res) => {
+  const session = await mongoose.startSession();
   try {
-    const { id } = req.params;
-    const userId = req.user?.id || req.user?._id;
-    const updates = req.body;
+    let updatedTx;
 
-    if (!mongoose.Types.ObjectId.isValid(id))
-      return res.status(400).json({ message: "Invalid ID format" });
+    await session.withTransaction(async () => {
+      const { id } = req.params;
+      const userId = req.user?.id || req.user?._id;
+      const updates = req.body;
 
-    const originalTx = await Transaction.findOne({ _id: id, userId });
-    if (!originalTx)
-      return res.status(404).json({ message: "Transaction not found" });
-
-    //* Ensure referenced models exist if they are being updated
-    if (updates.categoryId) {
-      const catExists = await Category.findOne({
-        _id: updates.categoryId,
-        $or: [{ isDefault: true }, { userId }],
-      });
-      if (!catExists)
-        return res.status(400).json({ message: "Invalid Category" });
-    }
-
-    //* BALANCE MATH: If amount, type, or account changes, update balances
-    const amountChanged =
-      updates.amount !== undefined &&
-      Number(updates.amount) !== originalTx.amount;
-    const typeChanged =
-      updates.type !== undefined && updates.type !== originalTx.type;
-    const accountChanged =
-      updates.accountId !== undefined &&
-      updates.accountId !== originalTx.accountId.toString();
-
-    if (amountChanged || typeChanged || accountChanged) {
-      const oldImpact = getBalanceImpact(originalTx.type, originalTx.amount);
-      const newType = updates.type || originalTx.type;
-      const newAmount =
-        updates.amount !== undefined
-          ? parseFloat(updates.amount)
-          : originalTx.amount;
-      const newImpact = getBalanceImpact(newType, newAmount);
-
-      if (accountChanged) {
-        const newAccount = await Account.findOne({
-          _id: updates.accountId,
-          userId,
-        });
-        if (!newAccount)
-          return res.status(400).json({ message: "Invalid new Account" });
-
-        //* Revert old account, apply to new account
-        await Account.findByIdAndUpdate(originalTx.accountId, {
-          $inc: { balance: -oldImpact },
-        });
-        await Account.findByIdAndUpdate(updates.accountId, {
-          $inc: { balance: newImpact },
-        });
-      } else {
-        //* Apply net difference to same account
-        const netChange = newImpact - oldImpact;
-        await Account.findByIdAndUpdate(originalTx.accountId, {
-          $inc: { balance: netChange },
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw Object.assign(new Error("Invalid ID format"), {
+          statusCode: 400,
         });
       }
-    }
 
-    //* Parse the date properly if provided
-    if (updates.transactionDate)
-      updates.transactionDate = new Date(updates.transactionDate);
+      const originalTx = await Transaction.findOne({ _id: id, userId }).session(
+        session,
+      );
+      if (!originalTx) {
+        throw Object.assign(new Error("Transaction not found"), {
+          statusCode: 404,
+        });
+      }
 
-    const updatedTx = await Transaction.findByIdAndUpdate(
-      id,
-      { $set: updates },
-      { new: true, runValidators: true },
-    )
-      .populate("categoryId", "name icon color isDefault")
-      .populate("accountId", "name type");
+      //* Ensure referenced models exist if they are being updated
+      if (updates.categoryId) {
+        const catExists = await Category.findOne({
+          _id: updates.categoryId,
+          $or: [{ isDefault: true }, { userId }],
+        }).session(session);
+        if (!catExists) {
+          throw Object.assign(new Error("Invalid Category"), {
+            statusCode: 400,
+          });
+        }
+      }
+
+      //* BALANCE MATH: If amount, type, or account changes, update balances
+      const amountChanged =
+        updates.amount !== undefined &&
+        Number(updates.amount) !== originalTx.amount;
+      const typeChanged =
+        updates.type !== undefined && updates.type !== originalTx.type;
+      const accountChanged =
+        updates.accountId !== undefined &&
+        updates.accountId !== originalTx.accountId.toString();
+
+      if (amountChanged || typeChanged || accountChanged) {
+        const oldImpact = getBalanceImpact(originalTx.type, originalTx.amount);
+        const newType = updates.type || originalTx.type;
+        const newAmount =
+          updates.amount !== undefined
+            ? parseFloat(updates.amount)
+            : originalTx.amount;
+        const newImpact = getBalanceImpact(newType, newAmount);
+
+        if (accountChanged) {
+          const newAccount = await Account.findOne({
+            _id: updates.accountId,
+            userId,
+          }).session(session);
+          if (!newAccount) {
+            throw Object.assign(new Error("Invalid new Account"), {
+              statusCode: 400,
+            });
+          }
+
+          //* Revert old account, apply to new account
+          await Account.findByIdAndUpdate(
+            originalTx.accountId,
+            { $inc: { balance: -oldImpact } },
+            { session },
+          );
+          await Account.findByIdAndUpdate(
+            updates.accountId,
+            { $inc: { balance: newImpact } },
+            { session },
+          );
+        } else {
+          //* Apply net difference to same account
+          const netChange = newImpact - oldImpact;
+          await Account.findByIdAndUpdate(
+            originalTx.accountId,
+            { $inc: { balance: netChange } },
+            { session },
+          );
+        }
+      }
+
+      //* Parse the date properly if provided
+      if (updates.transactionDate)
+        updates.transactionDate = new Date(updates.transactionDate);
+
+      //* NEW: Sync budgets — revert the old (category/amount/type/date)
+      //* combination and apply the new one, same session.
+      await syncBudgetsOnUpdate(originalTx, updates, session);
+
+      updatedTx = await Transaction.findByIdAndUpdate(
+        id,
+        { $set: updates },
+        { new: true, runValidators: true, session },
+      )
+        .populate("categoryId", "name icon color isDefault")
+        .populate("accountId", "name type");
+    });
 
     res
       .status(200)
       .json({ message: "Transaction updated", transaction: updatedTx });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error updating transaction", error: error.message });
+    res.status(error.statusCode || 500).json({
+      message: error.statusCode ? error.message : "Error updating transaction",
+      error: error.message,
+    });
+  } finally {
+    await session.endSession();
   }
 };
 
 //* @desc    Delete a transaction (UPDATED WITH BALANCE REVERSION)
 //* @route   DELETE /api/transactions/:id
 export const deleteTransaction = async (req, res) => {
+  const session = await mongoose.startSession();
   try {
-    const { id } = req.params;
-    const userId = req.user?.id || req.user?._id;
+    let deletedId;
 
-    const tx = await Transaction.findOne({ _id: id, userId });
-    if (!tx) return res.status(404).json({ message: "Transaction not found" });
+    await session.withTransaction(async () => {
+      const { id } = req.params;
+      const userId = req.user?.id || req.user?._id;
 
-    //* Revert the account balance
-    const impact = getBalanceImpact(tx.type, tx.amount);
-    await Account.findByIdAndUpdate(tx.accountId, {
-      $inc: { balance: -impact },
+      const tx = await Transaction.findOne({ _id: id, userId }).session(
+        session,
+      );
+      if (!tx) {
+        throw Object.assign(new Error("Transaction not found"), {
+          statusCode: 404,
+        });
+      }
+
+      //* Revert the account balance
+      const impact = getBalanceImpact(tx.type, tx.amount);
+      await Account.findByIdAndUpdate(
+        tx.accountId,
+        { $inc: { balance: -impact } },
+        { session },
+      );
+
+      //* NEW: Revert this transaction's contribution to any matching budgets
+      await syncBudgetsOnDelete(tx, session);
+
+      await tx.deleteOne({ session });
+      deletedId = id;
     });
 
-    await tx.deleteOne();
-
-    res.status(200).json({ message: "Transaction deleted successfully", id });
-  } catch (error) {
     res
-      .status(500)
-      .json({ message: "Error deleting transaction", error: error.message });
+      .status(200)
+      .json({ message: "Transaction deleted successfully", id: deletedId });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.statusCode ? error.message : "Error deleting transaction",
+      error: error.message,
+    });
+  } finally {
+    await session.endSession();
   }
 };
 
 //* @desc    Bulk delete multiple transactions (UPDATED TO REVERT BALANCES)
 //* @route   POST /api/transactions/bulk-delete
 export const bulkDeleteTransactions = async (req, res) => {
+  const session = await mongoose.startSession();
   try {
-    const userId = req.user?.id || req.user?._id;
-    const { ids } = req.body;
+    let deletedCount = 0;
 
-    if (!ids || !Array.isArray(ids) || ids.length === 0) {
-      return res.status(400).json({ message: "No transaction IDs provided." });
-    }
+    await session.withTransaction(async () => {
+      const userId = req.user?.id || req.user?._id;
+      const { ids } = req.body;
 
-    const validIds = ids.filter((id) => mongoose.Types.ObjectId.isValid(id));
+      if (!ids || !Array.isArray(ids) || ids.length === 0) {
+        throw Object.assign(new Error("No transaction IDs provided."), {
+          statusCode: 400,
+        });
+      }
 
-    //* Find them first so we know how much to revert from the accounts
-    const transactionsToDelete = await Transaction.find({
-      _id: { $in: validIds },
-      userId,
-    });
+      const validIds = ids.filter((id) => mongoose.Types.ObjectId.isValid(id));
 
-    for (const tx of transactionsToDelete) {
-      const impact = getBalanceImpact(tx.type, tx.amount);
-      await Account.findByIdAndUpdate(tx.accountId, {
-        $inc: { balance: -impact },
-      });
-    }
+      //* Find them first so we know how much to revert from the accounts and budgets.
+      const transactionsToDelete = await Transaction.find({
+        _id: { $in: validIds },
+        userId,
+      }).session(session);
 
-    const result = await Transaction.deleteMany({
-      _id: { $in: validIds },
-      userId,
+      const impactByAccount = new Map();
+      for (const tx of transactionsToDelete) {
+        const impact = getBalanceImpact(tx.type, tx.amount);
+        const key = tx.accountId.toString();
+        impactByAccount.set(key, (impactByAccount.get(key) || 0) - impact);
+      }
+
+      await Promise.all(
+        Array.from(impactByAccount.entries()).map(([accountId, netImpact]) =>
+          Account.findByIdAndUpdate(
+            accountId,
+            { $inc: { balance: netImpact } },
+            { session },
+          ),
+        ),
+      );
+
+      await Promise.all(
+        transactionsToDelete.map((tx) => syncBudgetsOnDelete(tx, session)),
+      );
+
+      const result = await Transaction.deleteMany(
+        { _id: { $in: validIds }, userId },
+        { session },
+      );
+
+      deletedCount = result.deletedCount;
     });
 
     res.status(200).json({
-      message: `Deleted ${result.deletedCount} transactions.`,
-      deletedCount: result.deletedCount,
+      message: `Deleted ${deletedCount} transactions.`,
+      deletedCount,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Bulk deletion failed", error: error.message });
+    res.status(error.statusCode || 500).json({
+      message: error.statusCode ? error.message : "Bulk deletion failed",
+      error: error.message,
+    });
+  } finally {
+    await session.endSession();
   }
 };
 
@@ -417,7 +574,6 @@ export const exportTransactionsCSV = async (req, res) => {
       }
     }
 
-    // 2. Fetch data and populate Account & Category
     const transactions = await Transaction.find(filter)
       .populate("categoryId", "name")
       .populate("accountId", "name") // NEW: Fetch account name

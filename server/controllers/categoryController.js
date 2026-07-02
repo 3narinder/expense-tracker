@@ -18,6 +18,8 @@ export const getCategories = async (req, res) => {
       icon: cat.icon,
       color: cat.color,
       isDefault: cat.isDefault,
+      parentId: cat.parentId, // NEW
+      ancestors: cat.ancestors, // NEW
     }));
 
     res.status(200).json(formattedCategories);
@@ -32,7 +34,25 @@ export const getCategories = async (req, res) => {
 //* @route   POST /api/categories
 export const createCategory = async (req, res) => {
   try {
-    const { name, type, icon, color, autoCategorizationRules } = req.body;
+    const { name, type, icon, color, autoCategorizationRules, parentId } =
+      req.body;
+
+    if (parentId) {
+      const parent = await Category.findOne({
+        _id: parentId,
+        $or: [{ isDefault: true }, { userId: req.user.id }],
+      });
+      if (!parent) {
+        return res
+          .status(400)
+          .json({ message: "Parent category not found or unauthorized" });
+      }
+      if (parent.type !== type) {
+        return res
+          .status(400)
+          .json({ message: "Child category type must match parent type" });
+      }
+    }
 
     const category = new Category({
       userId: req.user.id,
@@ -42,6 +62,7 @@ export const createCategory = async (req, res) => {
       color,
       isDefault: false,
       autoCategorizationRules,
+      parentId: parentId || null,
     });
 
     await category.save();
@@ -60,22 +81,13 @@ export const createCategory = async (req, res) => {
 export const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, icon, color, autoCategorizationRules } = req.body;
+    const { name, icon, color, autoCategorizationRules, parentId } = req.body;
 
-    const sanitizeRules = (rules) => {
-      if (rules?.merchantKeywords) {
-        rules.merchantKeywords = rules.merchantKeywords.map((word) =>
-          word.trim().toLowerCase(),
-        );
-      }
-      return rules;
-    };
-
-    const category = await Category.findOneAndUpdate(
-      { _id: id, userId: req.user.id, isDefault: false },
-      { $set: { name, icon, color, autoCategorizationRules } }, // Included
-      { new: true, runValidators: true },
-    );
+    const category = await Category.findOne({
+      _id: id,
+      userId: req.user.id,
+      isDefault: false,
+    });
 
     if (!category) {
       return res
@@ -83,8 +95,42 @@ export const updateCategory = async (req, res) => {
         .json({ message: "Category not found or unauthorized." });
     }
 
+    if (parentId !== undefined) {
+      if (parentId) {
+        const parent = await Category.findOne({
+          _id: parentId,
+          $or: [{ isDefault: true }, { userId: req.user.id }],
+        });
+        if (!parent) {
+          return res
+            .status(400)
+            .json({ message: "Parent category not found or unauthorized" });
+        }
+        if (parent.type !== category.type) {
+          return res
+            .status(400)
+            .json({ message: "Child category type must match parent type" });
+        }
+      }
+      category.parentId = parentId || null;
+    }
+
+    if (name !== undefined) category.name = name;
+    if (icon !== undefined) category.icon = icon;
+    if (color !== undefined) category.color = color;
+    if (autoCategorizationRules !== undefined) {
+      category.autoCategorizationRules = autoCategorizationRules;
+    }
+
+    await category.save();
+
     res.status(200).json({ message: "Updated successfully", category });
   } catch (error) {
+    if (error.code === 11000) {
+      return res
+        .status(400)
+        .json({ message: "Duplicate category name for this type." });
+    }
     res.status(500).json({ message: error.message });
   }
 };

@@ -31,10 +31,18 @@ export const createAccount = async (req, res) => {
 export const updateAccount = async (req, res) => {
   try {
     const { id } = req.params;
+
+    const { name, type, balance, currency } = req.body;
+    const updates = {};
+    if (name !== undefined) updates.name = name;
+    if (type !== undefined) updates.type = type;
+    if (balance !== undefined) updates.balance = balance;
+    if (currency !== undefined) updates.currency = currency;
+
     const account = await Account.findOneAndUpdate(
       { _id: id, userId: req.user.id },
-      { $set: req.body },
-      { new: true },
+      { $set: updates },
+      { new: true, runValidators: true },
     );
     if (!account) return res.status(404).json({ message: "Account not found" });
     res.status(200).json(account);
