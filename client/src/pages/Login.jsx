@@ -4,10 +4,11 @@ import toast from "react-hot-toast";
 import { Wallet, Eye, EyeOff } from "lucide-react";
 import Spinner from "../components/Spinner.jsx";
 import AuthHero from "../components/AuthHero.jsx";
-import { useAuth } from "../context/useAuth.js";
+import { useLogin } from "../features/Authentication/useLogin.js";
 
 const Login = () => {
-  const { login } = useAuth();
+  const { login } = useLogin();
+
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import api from "../lib/axios.js";
-import { API_PATHS } from "../utils/apiPaths.js";
+
 import { todayDateString } from "../utils/format.js";
 import Input from "./ui/Input.jsx";
 import Select from "./ui/Select.jsx";
@@ -25,28 +24,28 @@ const TransactionForm = ({ initial, categories, onSaved, onCancel }) => {
   const submit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    try {
-      const payload = {
-        type: form.type,
-        amount: parseFloat(form.amount),
-        categoryId: form.categoryId || null,
-        description: form.description || null,
-        notes: form.notes || null,
-        transactionDate: form.transactionDate,
-      };
-      if (initial) {
-        await api.put(API_PATHS.TRANSACTIONS.UPDATE(initial.id), payload);
-        toast.success("Transaction updated");
-      } else {
-        await api.post(API_PATHS.TRANSACTIONS.CREATE, payload);
-        toast.success("Transaction added");
-      }
-      onSaved();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to save");
-    } finally {
-      setSaving(false);
-    }
+    // try {
+    //   const payload = {
+    //     type: form.type,
+    //     amount: parseFloat(form.amount),
+    //     categoryId: form.categoryId || null,
+    //     description: form.description || null,
+    //     notes: form.notes || null,
+    //     transactionDate: form.transactionDate,
+    //   };
+    //   if (initial) {
+    //     await api.put(API_PATHS.TRANSACTIONS.UPDATE(initial.id), payload);
+    //     toast.success("Transaction updated");
+    //   } else {
+    //     await api.post(API_PATHS.TRANSACTIONS.CREATE, payload);
+    //     toast.success("Transaction added");
+    //   }
+    //   onSaved();
+    // } catch (err) {
+    //   toast.error(err.response?.data?.message || "Failed to save");
+    // } finally {
+    //   setSaving(false);
+    // }
   };
 
   return (

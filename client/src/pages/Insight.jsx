@@ -9,8 +9,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import api from "../lib/axios.js";
-import { API_PATHS } from "../utils/apiPaths.js";
+
 import { timeAgo } from "../utils/format.js";
 import EmptyState from "../components/EmptyState.jsx";
 import Spinner from "../components/Spinner.jsx";
@@ -76,15 +75,15 @@ const Insights = () => {
   const [generating, setGenerating] = useState(null);
 
   const fetchInsights = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get(API_PATHS.INSIGHTS.LIST);
-      setInsights(res.data);
-    } catch (err) {
-      toast.error("Failed to load insights");
-    } finally {
-      setLoading(false);
-    }
+    // try {
+    //   setLoading(true);
+    //   const res = await api.get(API_PATHS.INSIGHTS.LIST);
+    //   setInsights(res.data);
+    // } catch (err) {
+    //   toast.error("Failed to load insights");
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   useEffect(() => {
@@ -92,16 +91,16 @@ const Insights = () => {
   }, []);
 
   const generate = async (type) => {
-    setGenerating(type);
-    try {
-      await api.post(API_PATHS.INSIGHTS.GENERATE, { type });
-      toast.success("Insight generated");
-      fetchInsights();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to generate");
-    } finally {
-      setGenerating(null);
-    }
+    // setGenerating(type);
+    // try {
+    //   await api.post(API_PATHS.INSIGHTS.GENERATE, { type });
+    //   toast.success("Insight generated");
+    //   fetchInsights();
+    // } catch (err) {
+    //   toast.error(err.response?.data?.message || "Failed to generate");
+    // } finally {
+    //   setGenerating(null);
+    // }
   };
 
   const stats = useMemo(() => {

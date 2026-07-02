@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, Folder } from "lucide-react";
 import toast from "react-hot-toast";
-import api from "../lib/axios.js";
-import { API_PATHS } from "../utils/apiPaths.js";
 import Button from "../components/ui/Button.jsx";
 import Modal from "../components/ui/Modal.jsx";
 import CategoryBadge from "../components/CategoryBadge.jsx";
@@ -16,22 +14,6 @@ const Categories = () => {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
-
-  const fetchCategories = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get(API_PATHS.CATEGORIES.LIST);
-      setCategories(res.data);
-    } catch (err) {
-      toast.error("Failed to load categories");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchCategories();
-  }, []);
 
   const onEdit = (c) => {
     setEditing(c);

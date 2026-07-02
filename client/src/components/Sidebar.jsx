@@ -8,7 +8,9 @@ import {
   Wallet,
   LogOut,
 } from "lucide-react";
-import { useAuth } from "../context/useAuth";
+
+import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
+import { useLogout } from "../features/Authentication/useLogout.js";
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -19,7 +21,9 @@ const navItems = [
 ];
 
 const Sidebar = () => {
-  const { user, logout } = useAuth();
+  const { user } = useCurrentUser();
+  const { logout } = useLogout();
+
   const initial = user?.name?.[0]?.toUpperCase() || "U";
 
   return (

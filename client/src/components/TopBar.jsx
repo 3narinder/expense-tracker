@@ -1,5 +1,5 @@
 import { Bell, Search } from "lucide-react";
-import { useAuth } from "../context/useAuth";
+import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
 
 const greeting = () => {
   const h = new Date().getHours();
@@ -16,7 +16,7 @@ const formatToday = () =>
   });
 
 const TopBar = () => {
-  const { user } = useAuth();
+  const { user } = useCurrentUser();
   const firstName = user?.name?.split(" ")[0] || "";
 
   return (

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import api from "../lib/axios.js";
-import { API_PATHS } from "../utils/apiPaths.js";
+
 import Input from "./ui/Input.jsx";
 import Select from "./ui/Select.jsx";
 import Button from "./ui/Button.jsx";
@@ -17,27 +16,6 @@ const BudgetForm = ({ initial, categories, onSaved, onCancel }) => {
   const submit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    try {
-      if (initial) {
-        await api.put(API_PATHS.BUDGETS.UPDATE(initial.id), {
-          amount: parseFloat(form.amount),
-          period: form.period,
-        });
-        toast.success("Budget updated");
-      } else {
-        await api.post(API_PATHS.BUDGETS.CREATE, {
-          categoryId: parseInt(form.categoryId, 10),
-          amount: parseFloat(form.amount),
-          period: form.period,
-        });
-        toast.success("Budget created");
-      }
-      onSaved();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to save");
-    } finally {
-      setSaving(false);
-    }
   };
 
   return (

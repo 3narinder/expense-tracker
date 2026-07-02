@@ -1,11 +1,13 @@
+import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
 import { Navigate } from "react-router-dom";
 import Spinner from "./Spinner.jsx";
-import { useAuth } from "../context/useAuth.js";
 
 const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useCurrentUser();
 
-  if (loading) {
+  console.log(user);
+
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Spinner size="lg" />

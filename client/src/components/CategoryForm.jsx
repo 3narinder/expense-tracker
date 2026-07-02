@@ -1,7 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import api from "../lib/axios.js";
-import { API_PATHS } from "../utils/apiPaths.js";
+
 import { lucideIconByName } from "../utils/icons.js";
 import Input from "./ui/Input.jsx";
 import Select from "./ui/Select.jsx";
@@ -58,24 +57,24 @@ const CategoryForm = ({ initial, onSaved, onCancel }) => {
   const submit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    try {
-      if (initial) {
-        await api.put(API_PATHS.CATEGORIES.UPDATE(initial.id), {
-          name: form.name,
-          icon: form.icon,
-          color: form.color,
-        });
-        toast.success("Category updated");
-      } else {
-        await api.post(API_PATHS.CATEGORIES.CREATE, form);
-        toast.success("Category created");
-      }
-      onSaved();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to save");
-    } finally {
-      setSaving(false);
-    }
+    // try {
+    //   if (initial) {
+    //     await api.put(API_PATHS.CATEGORIES.UPDATE(initial.id), {
+    //       name: form.name,
+    //       icon: form.icon,
+    //       color: form.color,
+    //     });
+    //     toast.success("Category updated");
+    //   } else {
+    //     await api.post(API_PATHS.CATEGORIES.CREATE, form);
+    //     toast.success("Category created");
+    //   }
+    //   onSaved();
+    // } catch (err) {
+    //   toast.error(err.response?.data?.message || "Failed to save");
+    // } finally {
+    //   setSaving(false);
+    // }
   };
 
   return (

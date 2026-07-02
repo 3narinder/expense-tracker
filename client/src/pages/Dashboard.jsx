@@ -10,18 +10,17 @@ import {
   PlusCircle,
   Receipt,
 } from "lucide-react";
-import api from "../lib/axios.js";
-import { API_PATHS } from "../utils/apiPaths.js";
+
 import { formatCurrency, formatDate } from "../utils/format.js";
 import KpiCard from "../components/KpiCard.jsx";
 import CategoryBadge from "../components/CategoryBadge.jsx";
 import MonthlyTrendChart from "../components/charts/MonthlyTrendChart.jsx";
 import CategoryBreakdownChart from "../components/charts/CategoryBreakdownChart.jsx";
 import Spinner from "../components/Spinner.jsx";
-import { useAuth } from "../context/useAuth.js";
+import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user } = useCurrentUser();
   const currency = user?.currency || "USD";
   const [summary, setSummary] = useState(null);
   const [trend, setTrend] = useState([]);
@@ -32,43 +31,41 @@ const Dashboard = () => {
 
   useEffect(() => {
     const load = async () => {
-      try {
-        const [s, t, b, r, bd] = await Promise.all([
-          api.get(API_PATHS.DASHBOARD.SUMMARY),
-          api.get(API_PATHS.DASHBOARD.MONTHLY_TREND),
-          api.get(API_PATHS.DASHBOARD.CATEGORY_BREAKDOWN),
-          api.get(API_PATHS.TRANSACTIONS.LIST, { params: { limit: 5 } }),
-          api.get(API_PATHS.BUDGETS.LIST),
-        ]);
-
-        // If the backend exists and works, use its data
-        setSummary(s.data);
-        setTrend(t.data || []);
-        setBreakdown(b.data || []);
-        setRecent(r.data || []);
-        setBudgets(bd.data || []);
-      } catch (err) {
-        console.warn(
-          "Backend routes or collections missing. Falling back to clean empty state.",
-          err,
-        );
-
-        // Fallback to safe zero/empty defaults so the app doesn't hang spinning
-        setSummary({
-          balance: 0,
-          incomeThisMonth: 0,
-          expenseThisMonth: 0,
-          savingsRate: 0,
-          incomeDelta: 0,
-          expenseDelta: 0,
-        });
-        setTrend([]);
-        setBreakdown([]);
-        setRecent([]);
-        setBudgets([]);
-      } finally {
-        setLoading(false);
-      }
+      // try {
+      //   const [s, t, b, r, bd] = await Promise.all([
+      //     api.get(API_PATHS.DASHBOARD.SUMMARY),
+      //     api.get(API_PATHS.DASHBOARD.MONTHLY_TREND),
+      //     api.get(API_PATHS.DASHBOARD.CATEGORY_BREAKDOWN),
+      //     api.get(API_PATHS.TRANSACTIONS.LIST, { params: { limit: 5 } }),
+      //     api.get(API_PATHS.BUDGETS.LIST),
+      //   ]);
+      //   // If the backend exists and works, use its data
+      //   setSummary(s.data);
+      //   setTrend(t.data || []);
+      //   setBreakdown(b.data || []);
+      //   setRecent(r.data || []);
+      //   setBudgets(bd.data || []);
+      // } catch (err) {
+      //   console.warn(
+      //     "Backend routes or collections missing. Falling back to clean empty state.",
+      //     err,
+      //   );
+      //   // Fallback to safe zero/empty defaults so the app doesn't hang spinning
+      //   setSummary({
+      //     balance: 0,
+      //     incomeThisMonth: 0,
+      //     expenseThisMonth: 0,
+      //     savingsRate: 0,
+      //     incomeDelta: 0,
+      //     expenseDelta: 0,
+      //   });
+      //   setTrend([]);
+      //   setBreakdown([]);
+      //   setRecent([]);
+      //   setBudgets([]);
+      // } finally {
+      //   setLoading(false);
+      // }
     };
     load();
   }, []);

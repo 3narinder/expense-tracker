@@ -10,8 +10,7 @@ import {
   AlertOctagon,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import api from "../lib/axios.js";
-import { API_PATHS } from "../utils/apiPaths.js";
+
 import { formatCurrency } from "../utils/format.js";
 import Button from "../components/ui/Button.jsx";
 import Modal from "../components/ui/Modal.jsx";
@@ -19,7 +18,7 @@ import CategoryBadge from "../components/CategoryBadge.jsx";
 import EmptyState from "../components/EmptyState.jsx";
 import Spinner from "../components/Spinner.jsx";
 import BudgetForm from "../components/BudgetForm.jsx";
-import { useAuth } from "../context/useAuth.js";
+import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
 
 const statusStyles = {
   good: {
@@ -59,7 +58,7 @@ const AnalysisSkeleton = () => (
 );
 
 const Budgets = () => {
-  const { user } = useAuth();
+  const { user, IsLoading } = useCurrentUser();
   const currency = user?.currency || "USD";
   const [budgets, setBudgets] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -70,36 +69,36 @@ const Budgets = () => {
   const [analyzing, setAnalyzing] = useState(true);
 
   const fetchData = async () => {
-    try {
-      setLoading(true);
-      const [bRes, cRes] = await Promise.all([
-        api.get(API_PATHS.BUDGETS.LIST),
-        api.get(API_PATHS.CATEGORIES.LIST),
-      ]);
-      setBudgets(bRes.data);
-      setCategories(cRes.data);
-    } catch (err) {
-      toast.error("Failed to load budgets");
-    } finally {
-      setLoading(false);
-    }
+    // try {
+    //   setLoading(true);
+    //   const [bRes, cRes] = await Promise.all([
+    //     api.get(API_PATHS.BUDGETS.LIST),
+    //     api.get(API_PATHS.CATEGORIES.LIST),
+    //   ]);
+    //   setBudgets(bRes.data);
+    //   setCategories(cRes.data);
+    // } catch (err) {
+    //   toast.error("Failed to load budgets");
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   const analyzeAll = async () => {
     setAnalyses({});
     setAnalyzing(true);
-    try {
-      const res = await api.post(API_PATHS.BUDGETS.ANALYZE);
-      const map = {};
-      (res.data.analyses || []).forEach((a) => {
-        map[a.budgetId] = a;
-      });
-      setAnalyses(map);
-    } catch (err) {
-      console.error("Failed to analyze budgets", err);
-    } finally {
-      setAnalyzing(false);
-    }
+    // try {
+    //   const res = await api.post(API_PATHS.BUDGETS.ANALYZE);
+    //   const map = {};
+    //   (res.data.analyses || []).forEach((a) => {
+    //     map[a.budgetId] = a;
+    //   });
+    //   setAnalyses(map);
+    // } catch (err) {
+    //   console.error("Failed to analyze budgets", err);
+    // } finally {
+    //   setAnalyzing(false);
+    // }
   };
 
   useEffect(() => {

@@ -11,8 +11,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import api from "../lib/axios.js";
-import { API_PATHS } from "../utils/apiPaths.js";
+
 import { formatCurrency, formatDate } from "../utils/format.js";
 import Button from "../components/ui/Button.jsx";
 import Modal from "../components/ui/Modal.jsx";
@@ -22,10 +21,11 @@ import EmptyState from "../components/EmptyState.jsx";
 import Spinner from "../components/Spinner.jsx";
 import TransactionForm from "../components/TransactionForm.jsx";
 import TransactionTrendChart from "../components/charts/TransactionTrendChart.jsx";
-import { useAuth } from "../context/useAuth.js";
+import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
 
 const Transactions = () => {
-  const { user } = useAuth();
+  const { user } = useCurrentUser();
+
   const currency = user?.currency || "USD";
   const [allTransactions, setAllTransactions] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -47,19 +47,19 @@ const Transactions = () => {
     const params = { limit: 2000 };
     if (filters.search) params.search = filters.search;
     if (filters.categoryId) params.categoryId = filters.categoryId;
-    try {
-      setLoading(true);
-      const [tRes, cRes] = await Promise.all([
-        api.get(API_PATHS.TRANSACTIONS.LIST, { params }),
-        api.get(API_PATHS.CATEGORIES.LIST),
-      ]);
-      setAllTransactions(tRes.data);
-      setCategories(cRes.data);
-    } catch (err) {
-      toast.error("Failed to load transactions");
-    } finally {
-      setLoading(false);
-    }
+    // try {
+    //   setLoading(true);
+    //   const [tRes, cRes] = await Promise.all([
+    //     api.get(API_PATHS.TRANSACTIONS.LIST, { params }),
+    //     api.get(API_PATHS.CATEGORIES.LIST),
+    //   ]);
+    //   setAllTransactions(tRes.data);
+    //   setCategories(cRes.data);
+    // } catch (err) {
+    //   toast.error("Failed to load transactions");
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   useEffect(() => {
@@ -202,14 +202,14 @@ const Transactions = () => {
     setModalOpen(true);
   };
   const onDelete = async (id) => {
-    if (!confirm("Delete this transaction?")) return;
-    try {
-      await api.delete(API_PATHS.TRANSACTIONS.DELETE(id));
-      toast.success("Transaction deleted");
-      fetchData();
-    } catch (err) {
-      toast.error("Failed to delete");
-    }
+    // if (!confirm("Delete this transaction?")) return;
+    // try {
+    //   await api.delete(API_PATHS.TRANSACTIONS.DELETE(id));
+    //   toast.success("Transaction deleted");
+    //   fetchData();
+    // } catch (err) {
+    //   toast.error("Failed to delete");
+    // }
   };
   const onSaved = () => {
     setModalOpen(false);

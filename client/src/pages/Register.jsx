@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Wallet, Eye, EyeOff, ChevronDown } from "lucide-react";
+
+import { useRegister } from "../features/Authentication/useRegister.js";
+
 import AuthHero from "../components/AuthHero.jsx";
 import Spinner from "../components/Spinner.jsx";
-import { useAuth } from "../context/useAuth.js";
 
 const CURRENCIES = [
   { value: "USD", label: "USD - US Dollar" },
@@ -17,7 +19,8 @@ const CURRENCIES = [
 ];
 
 const Register = () => {
-  const { register } = useAuth();
+  const { register, isLoading } = useRegister();
+
   const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
