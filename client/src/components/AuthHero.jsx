@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react";
 import {
   Wallet,
   TrendingUp,
@@ -391,66 +392,68 @@ const column2 = [
   <PortfolioCard key="portfolio" />,
 ];
 
-const AuthHero = ({ headline, subHeadline }) => (
-  <div className="relative h-full w-full overflow-hidden bg-linear-to-br from-violet-100 via-violet-50 to-white">
-    {/* <div className="absolute -top-32 -left-24 w-96 h-96 bg-violet-300/40 rounded-full blur-3xl pointer-events-none z-0" /> */}
-    <div className="absolute top-1/2 -right-24 w-80 h-80 bg-pink-200/30 rounded-full blur-3xl pointer-events-none z-0" />
+const shuffledColumn1 = [...column1, ...column1, ...column2].sort(
+  () => Math.random() - 0.5,
+);
+const shuffledColumn2 = [...column2, ...column2, ...column2];
+const shuffledColumn3 = [...column1, ...column1, ...column2].sort(
+  () => Math.random() - 0.5,
+);
 
-    {/* Full-height tilted card columns */}
-    <div className="absolute inset-0 overflow-hidden z-10">
-      <div
-        className="absolute -inset-40 flex gap-4"
-        style={{ transform: "rotate(-7deg)" }}
-      >
-        <div className="flex-1 min-w-0">
-          <div style={{ animation: "scrollUp 45s linear infinite" }}>
-            {[...column1, ...column1, ...column2]
-              .sort(() => Math.random() - 0.5)
-              .map((card, i) => (
+const AuthHero = ({ headline, subHeadline }) => {
+  return (
+    <div className="relative h-full w-full overflow-hidden bg-linear-to-br from-violet-100 via-violet-50 to-white">
+      <div className="absolute top-1/2 -right-24 w-80 h-80 bg-pink-200/30 rounded-full blur-3xl pointer-events-none z-0" />
+
+      <div className="absolute inset-0 overflow-hidden z-10">
+        <div
+          className="absolute -inset-40 flex gap-4"
+          style={{ transform: "rotate(-7deg)" }}
+        >
+          <div className="flex-1 min-w-0">
+            <div style={{ animation: "scrollUp 45s linear infinite" }}>
+              {shuffledColumn1.map((card, i) => (
                 <div key={i} className="pb-4">
                   {card}
                 </div>
               ))}
+            </div>
           </div>
-        </div>
 
-        <div className="flex-1 min-w-0">
-          <div style={{ animation: "scrollDown 45s linear infinite" }}>
-            {[...column2, ...column2, ...column2].map((card, i) => (
-              <div key={i} className="pb-4">
-                {card}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <div style={{ animation: "scrollUp 45s linear infinite" }}>
-            {[...column1, ...column1, ...column2]
-              .sort(() => Math.random() - 0.5)
-              .map((card, i) => (
+          <div className="flex-1 min-w-0">
+            <div style={{ animation: "scrollDown 45s linear infinite" }}>
+              {shuffledColumn2.map((card, i) => (
                 <div key={i} className="pb-4">
                   {card}
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <div style={{ animation: "scrollUp 45s linear infinite" }}>
+              {shuffledColumn3.map((card, i) => (
+                <div key={i} className="pb-4">
+                  {card}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
+
+      <div className="absolute top-0 left-0 right-0 h-64 bg-linear-to-b from-violet-100 via-violet-50/90 to-transparent pointer-events-none z-20" />
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-linear-to-t from-white via-white/70 to-transparent pointer-events-none z-20" />
+
+      <div className="absolute top-10 left-10 xl:top-14 xl:left-14 z-30 max-w-[70%]">
+        <h1 className="text-5xl xl:text-6xl font-normal tracking-tight text-slate-900 mb-2">
+          {headline}
+        </h1>
+
+        <p className="text-base text-slate-600">{subHeadline}</p>
+      </div>
     </div>
+  );
+};
 
-    {/* Top fade — gives the headline a clean backdrop */}
-    <div className="absolute top-0 left-0 right-0 h-64 bg-linear-to-b from-violet-100 via-violet-50/90 to-transparent pointer-events-none z-20" />
-    {/* Bottom fade */}
-    <div className="absolute bottom-0 left-0 right-0 h-40 bg-linear-to-t from-white via-white/70 to-transparent pointer-events-none z-20" />
-
-    {/* Headline floats on top */}
-    <div className="absolute top-10 left-10 xl:top-14 xl:left-14 z-30 max-w-[70%]">
-      <h1 className="text-5xl xl:text-6xl font-normal tracking-tight text-slate-900 mb-2">
-        {headline}
-      </h1>
-      <p className="text-base text-slate-600">{subHeadline}</p>
-    </div>
-  </div>
-);
-
-export default AuthHero;
+export default memo(AuthHero);

@@ -1,10 +1,9 @@
 import { useState } from "react";
-import toast from "react-hot-toast";
-
 import { lucideIconByName } from "../utils/icons.js";
 import Input from "./ui/Input.jsx";
 import Select from "./ui/Select.jsx";
 import Button from "./ui/Button.jsx";
+import { useCategoryActions } from "../features/Categories/useCategoriesActions.js";
 
 const ICONS = [
   "tag",
@@ -24,7 +23,6 @@ const ICONS = [
   "trending-up",
   "sparkles",
 ];
-
 const COLORS = [
   "#10B981",
   "#22C55E",
@@ -46,35 +44,30 @@ const COLORS = [
 ];
 
 const CategoryForm = ({ initial, onSaved, onCancel }) => {
+  const { addCategory, updateCategory, isCreating, isUpdating } =
+    useCategoryActions();
   const [form, setForm] = useState({
     name: initial?.name || "",
     type: initial?.type || "expense",
     icon: initial?.icon || "tag",
     color: initial?.color || "#10B981",
   });
-  const [saving, setSaving] = useState(false);
 
-  const submit = async (e) => {
+  const isSaving = isCreating || isUpdating;
+
+  const submit = (e) => {
     e.preventDefault();
-    setSaving(true);
-    // try {
-    //   if (initial) {
-    //     await api.put(API_PATHS.CATEGORIES.UPDATE(initial.id), {
-    //       name: form.name,
-    //       icon: form.icon,
-    //       color: form.color,
-    //     });
-    //     toast.success("Category updated");
-    //   } else {
-    //     await api.post(API_PATHS.CATEGORIES.CREATE, form);
-    //     toast.success("Category created");
-    //   }
-    //   onSaved();
-    // } catch (err) {
-    //   toast.error(err.response?.data?.message || "Failed to save");
-    // } finally {
-    //   setSaving(false);
-    // }
+
+    if (initial) {
+      //* Edit mode
+      updateCategory(
+        { id: initial.id, updatedCategory: form },
+        { onSuccess: onSaved },
+      );
+    } else {
+      //* Create mode
+      addCategory(form, { onSuccess: onSaved });
+    }
   };
 
   return (
@@ -104,14 +97,13 @@ const CategoryForm = ({ initial, onSaved, onCancel }) => {
         <div className="grid grid-cols-8 gap-2">
           {ICONS.map((name) => {
             const Icon = lucideIconByName(name);
-            const selected = form.icon === name;
             return (
               <button
                 key={name}
                 type="button"
                 onClick={() => setForm({ ...form, icon: name })}
                 className={`h-10 rounded-lg border flex items-center justify-center transition ${
-                  selected
+                  form.icon === name
                     ? "border-violet-500 bg-violet-50 text-violet-700"
                     : "border-slate-200 text-slate-600 hover:border-slate-300"
                 }`}
@@ -133,9 +125,7 @@ const CategoryForm = ({ initial, onSaved, onCancel }) => {
               key={color}
               type="button"
               onClick={() => setForm({ ...form, color })}
-              className={`h-8 w-8 rounded-full transition ring-offset-2 ${
-                form.color === color ? "ring-2 ring-slate-900" : "ring-0"
-              }`}
+              className={`h-8 w-8 rounded-full transition ring-offset-2 ${form.color === color ? "ring-2 ring-slate-900" : "ring-0"}`}
               style={{ backgroundColor: color }}
             />
           ))}
@@ -146,8 +136,8 @@ const CategoryForm = ({ initial, onSaved, onCancel }) => {
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button type="submit" disabled={saving}>
-          {saving ? "Saving..." : "Save"}
+        <Button type="submit" disabled={isSaving}>
+          {isSaving ? "Saving..." : "Save"}
         </Button>
       </div>
     </form>

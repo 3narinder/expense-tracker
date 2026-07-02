@@ -137,13 +137,11 @@ export const updateCategory = async (req, res) => {
 
 //* @desc    Delete a custom category
 //* @route   DELETE /api/categories/:id
-
 export const deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
 
-    //* 1. Find the category and ensure it belongs to the user and is NOT a default
     const category = await Category.findOne({
       _id: id,
       userId: userId,
@@ -156,28 +154,27 @@ export const deleteCategory = async (req, res) => {
       });
     }
 
-    //* 2. Find the "Uncategorized" system category
     const fallbackCategory = await Category.findOne({
       name: "Uncategorized",
       isDefault: true,
     });
 
     if (!fallbackCategory) {
-      return res.status(500).json({ message: "Fallback category missing." });
+      return res
+        .status(500)
+        .json({ message: "Fallback category missing in database." });
     }
 
-    //* 3. Reassign orphaned transactions to the Uncategorized category
     await Transaction.updateMany(
       { userId: userId, categoryId: id },
       { $set: { categoryId: fallbackCategory._id } },
     );
 
-    //* 4. Delete the category
     await category.deleteOne();
 
     res.status(200).json({
       message:
-        "Category deleted successfully. Orphaned transactions moved to Uncategorized.",
+        "Category deleted successfully. Transactions moved to Uncategorized.",
     });
   } catch (error) {
     res

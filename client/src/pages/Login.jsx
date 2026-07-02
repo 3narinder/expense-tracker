@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Wallet, Eye, EyeOff } from "lucide-react";
 import Spinner from "../components/Spinner.jsx";
@@ -9,7 +9,6 @@ import { useLogin } from "../features/Authentication/useLogin.js";
 const Login = () => {
   const { login } = useLogin();
 
-  const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -18,9 +17,10 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(form.email, form.password);
-      toast.success("Welcome back!");
-      navigate("/", { replace: true });
+      await login({
+        email: form.email,
+        password: form.password,
+      });
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed");
     } finally {

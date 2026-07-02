@@ -8,12 +8,10 @@ export const useCurrentUser = () => {
     retry: false,
   });
 
-  console.log(data);
-
   return {
     user: data?.user,
     isLoading,
-    isAuthenticated: data?.isAuthenticated,
+    isAuthenticated: !!data?.user,
     error,
   };
 };

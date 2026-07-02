@@ -5,8 +5,6 @@ import Spinner from "./Spinner.jsx";
 const ProtectedRoute = ({ children }) => {
   const { user, isLoading } = useCurrentUser();
 
-  console.log(user);
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">

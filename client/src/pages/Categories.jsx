@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Plus, Pencil, Trash2, Folder } from "lucide-react";
-import toast from "react-hot-toast";
+
+//* Components
 import Button from "../components/ui/Button.jsx";
 import Modal from "../components/ui/Modal.jsx";
 import CategoryBadge from "../components/CategoryBadge.jsx";
@@ -9,11 +10,18 @@ import EmptyState from "../components/EmptyState.jsx";
 import Spinner from "../components/Spinner.jsx";
 import CategoryForm from "../components/CategoryForm.jsx";
 
+//* Hooks
+import { useCategories } from "../features/Categories/useCategories.js";
+import { useCategoryActions } from "../features/Categories/useCategoriesActions.js";
+
 const Categories = () => {
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
+
+  //* Data fetching & Mutation hooks
+  const { categories, isPending } = useCategories();
+  const { deleteCategory, isDeleting } = useCategoryActions();
 
   const onEdit = (c) => {
     setEditing(c);
@@ -25,29 +33,24 @@ const Categories = () => {
     setModalOpen(true);
   };
 
-  const onDelete = async (id) => {
-    if (
-      !confirm(
-        "Delete this category? Transactions in this category will become uncategorized.",
-      )
-    )
-      return;
-    try {
-      await api.delete(API_PATHS.CATEGORIES.DELETE(id));
-      toast.success("Category deleted");
-      fetchCategories();
-    } catch (err) {
-      toast.error("Failed to delete");
+  const handleDelete = () => {
+    if (deleteId) {
+      deleteCategory(deleteId, {
+        onSuccess: () => setDeleteId(null),
+      });
     }
   };
 
-  const onSaved = () => {
-    setModalOpen(false);
-    fetchCategories();
-  };
+  if (isPending) {
+    return (
+      <div className="flex justify-center py-12">
+        <Spinner />
+      </div>
+    );
+  }
 
-  const income = categories.filter((c) => c.type === "income");
-  const expense = categories.filter((c) => c.type === "expense");
+  const income = categories?.filter((c) => c.type === "income") || [];
+  const expense = categories?.filter((c) => c.type === "expense") || [];
 
   return (
     <div className="space-y-6">
@@ -65,15 +68,11 @@ const Categories = () => {
         </Button>
       </div>
 
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <Spinner />
-        </div>
-      ) : categories.length === 0 ? (
+      {categories?.length === 0 ? (
         <EmptyState
           icon={Folder}
           title="No categories"
-          description="Add a category to start organizing your transactions."
+          description="Add a category to start organizing."
         />
       ) : (
         <>
@@ -83,10 +82,7 @@ const Categories = () => {
           ].map((group) => (
             <div key={group.label}>
               <h2 className="font-semibold text-slate-900 mb-3">
-                {group.label}{" "}
-                <span className="text-slate-400 font-normal">
-                  ({group.items.length})
-                </span>
+                {group.label}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {group.items.map((c) => (
@@ -110,8 +106,9 @@ const Categories = () => {
                         <Pencil size={14} />
                       </button>
                       <button
-                        onClick={() => onDelete(c.id)}
-                        className="p-1.5 hover:bg-rose-50 rounded-md text-rose-500 transition"
+                        onClick={() => setDeleteId(c.id)} // Point directly to the setter
+                        disabled={isDeleting}
+                        className="p-1.5 hover:bg-rose-50 rounded-md text-rose-500 transition disabled:opacity-50"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -124,6 +121,7 @@ const Categories = () => {
         </>
       )}
 
+      {/* Edit/Create Modal */}
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -131,9 +129,36 @@ const Categories = () => {
       >
         <CategoryForm
           initial={editing}
-          onSaved={onSaved}
+          onSaved={() => setModalOpen(false)}
           onCancel={() => setModalOpen(false)}
         />
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        open={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        title="Delete Category"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-slate-600">
+            Are you sure you want to delete this category? All associated
+            transactions will become uncategorized.
+          </p>
+          <div className="flex gap-2 justify-end pt-2">
+            <Button variant="outline" onClick={() => setDeleteId(null)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-rose-600 hover:bg-rose-700 cursor-pointer"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete Category"}
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );
