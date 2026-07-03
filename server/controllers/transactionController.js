@@ -36,41 +36,44 @@ export const getTransactions = async (req, res) => {
       recurring,
     } = req.query;
 
-    const filter = { userId: userObjectId };
+    //**  Base filter WITHOUT type — shared by counts (so tabs describe each other correctly)
+    const baseFilter = { userId: userObjectId };
 
-    if (type === "income" || type === "expense") filter.type = type;
     if (recurring === "true" || recurring === "false")
-      filter.recurring = recurring === "true";
+      baseFilter.recurring = recurring === "true";
 
     if (categoryId && mongoose.Types.ObjectId.isValid(categoryId)) {
-      filter.categoryId = new mongoose.Types.ObjectId(categoryId);
+      baseFilter.categoryId = new mongoose.Types.ObjectId(categoryId);
     }
     if (accountId && mongoose.Types.ObjectId.isValid(accountId)) {
-      filter.accountId = new mongoose.Types.ObjectId(accountId);
+      baseFilter.accountId = new mongoose.Types.ObjectId(accountId);
     }
-
     if (startDate || endDate) {
-      filter.transactionDate = {};
-      if (startDate) filter.transactionDate.$gte = new Date(startDate);
+      baseFilter.transactionDate = {};
+      if (startDate) baseFilter.transactionDate.$gte = new Date(startDate);
       if (endDate) {
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999);
-        filter.transactionDate.$lte = end;
+        baseFilter.transactionDate.$lte = end;
       }
     }
-
     if (search) {
-      filter.$or = [
+      baseFilter.$or = [
         { description: { $regex: search, $options: "i" } },
         { merchant: { $regex: search, $options: "i" } },
       ];
     }
 
+    //** filter = baseFilter + type, used for the actual list + income/expense totals
+    const filter = { ...baseFilter };
+    if (type === "income" || type === "expense") filter.type = type;
+
     const [result] = await Transaction.aggregate([
-      { $match: filter },
+      { $match: baseFilter }, // match the wider set once; type-specific stages filter further below
       {
         $facet: {
           stats: [
+            { $match: filter.type ? { type: filter.type } : {} },
             {
               $group: {
                 _id: null,
@@ -86,7 +89,9 @@ export const getTransactions = async (req, res) => {
               },
             },
           ],
+          counts: [{ $group: { _id: "$type", count: { $sum: 1 } } }],
           paginated: [
+            { $match: filter.type ? { type: filter.type } : {} },
             { $sort: { transactionDate: -1 } },
             { $skip: skip },
             { $limit: limit },
@@ -124,11 +129,20 @@ export const getTransactions = async (req, res) => {
       },
     ]);
 
-    const stats = result.stats[0] || {};
-    const totalTransactions = stats.count || 0;
-    const totalIncome = stats.totalIncome || 0;
-    const totalExpense = stats.totalExpense || 0;
+    const statsRow = result.stats[0] || {};
+    const totalTransactions = statsRow.count || 0;
+    const totalIncome = statsRow.totalIncome || 0;
+    const totalExpense = statsRow.totalExpense || 0;
     const netBalance = totalIncome - totalExpense;
+
+    //** Reshape counts array -> {all, income, expense}
+    const counts = { all: 0, income: 0, expense: 0 };
+    for (const row of result.counts) {
+      if (row._id === "income" || row._id === "expense") {
+        counts[row._id] = row.count;
+        counts.all += row.count;
+      }
+    }
 
     res.status(200).json({
       pagination: {
@@ -137,7 +151,7 @@ export const getTransactions = async (req, res) => {
         limit,
         totalPages: Math.ceil(totalTransactions / limit) || 1,
       },
-      insights: { totalIncome, totalExpense, netBalance },
+      stats: { totalIncome, totalExpense, netBalance, counts },
       transactions: result.paginated,
     });
   } catch (error) {
@@ -172,6 +186,115 @@ export const getTransactionById = async (req, res) => {
   }
 };
 
+//* @desc    Get income/expense trend bucketed by day or month
+//* @route   GET /api/transactions/trend
+export const getTransactionTrend = async (req, res) => {
+  try {
+    const userId = req.user?.id || req.user?._id;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+    const { type, categoryId, accountId, search, range, startDate, endDate } =
+      req.query;
+
+    const filter = { userId: userObjectId };
+    if (type === "income" || type === "expense") filter.type = type;
+    if (categoryId && mongoose.Types.ObjectId.isValid(categoryId)) {
+      filter.categoryId = new mongoose.Types.ObjectId(categoryId);
+    }
+    if (accountId && mongoose.Types.ObjectId.isValid(accountId)) {
+      filter.accountId = new mongoose.Types.ObjectId(accountId);
+    }
+    if (search) {
+      filter.$or = [
+        { description: { $regex: search, $options: "i" } },
+        { merchant: { $regex: search, $options: "i" } },
+      ];
+    }
+    if (startDate || endDate) {
+      filter.transactionDate = {};
+      if (startDate) filter.transactionDate.$gte = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        filter.transactionDate.$lte = end;
+      }
+    } else if (range) {
+      const now = new Date();
+      let start;
+      if (range === "30d")
+        start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      else if (range === "3m")
+        start = new Date(new Date().setMonth(now.getMonth() - 3));
+      else if (range === "monthly")
+        start = new Date(new Date().setMonth(now.getMonth() - 1));
+      else if (range === "yearly")
+        start = new Date(new Date().setFullYear(now.getFullYear() - 1));
+      if (start) filter.transactionDate = { $gte: start };
+    }
+
+    const bucketFormat = range === "yearly" ? "%Y-%m" : "%Y-%m-%d";
+
+    const rows = await Transaction.aggregate([
+      { $match: filter },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
+          pipeline: [{ $project: { name: 1 } }],
+        },
+      },
+      { $unwind: { path: "$category", preserveNullAndEmptyArrays: true } },
+      {
+        $group: {
+          _id: {
+            label: {
+              $dateToString: { format: bucketFormat, date: "$transactionDate" },
+            },
+            type: "$type",
+            category: { $ifNull: ["$category.name", "Uncategorized"] },
+          },
+          amount: { $sum: "$amount" },
+        },
+      },
+      { $sort: { "_id.label": 1 } },
+    ]);
+
+    // Reshape flat rows into one object per date bucket, with income/expense
+    // totals plus a category breakdown for each side.
+    const buckets = new Map();
+    for (const row of rows) {
+      const { label, type: txType, category } = row._id;
+      if (!buckets.has(label)) {
+        buckets.set(label, {
+          label,
+          income: 0,
+          expense: 0,
+          incomeByCategory: [],
+          expenseByCategory: [],
+        });
+      }
+      const bucket = buckets.get(label);
+      bucket[txType] += row.amount;
+      bucket[`${txType}ByCategory`].push({
+        name: category,
+        amount: row.amount,
+      });
+    }
+
+    const trend = Array.from(buckets.values()).sort((a, b) =>
+      a.label.localeCompare(b.label),
+    );
+
+    res.status(200).json({ trend });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching trend", error: error.message });
+  }
+};
 //* @desc    Create a transaction (UPDATED WITH BALANCE MATH)
 //* @route   POST /api/transactions
 export const createTransaction = async (req, res) => {

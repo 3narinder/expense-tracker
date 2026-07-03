@@ -1,51 +1,51 @@
 import { useState } from "react";
-import toast from "react-hot-toast";
 
-import { todayDateString } from "../utils/format.js";
-import Input from "./ui/Input.jsx";
-import Select from "./ui/Select.jsx";
-import Textarea from "./ui/Textarea.jsx";
-import Button from "./ui/Button.jsx";
+import { todayDateString } from "../../utils/format.js";
+import { useTransactionActions } from "../../features/Transactions/useTransactionActions.js";
+import Input from "../ui/Input.jsx";
+import Select from "../ui/Select.jsx";
+import Textarea from "../ui/Textarea.jsx";
+import Button from "../ui/Button.jsx";
 
 const TransactionForm = ({ initial, categories, onSaved, onCancel }) => {
+  const { addTransaction, isCreating, editTransaction, isUpdating } =
+    useTransactionActions();
+  const saving = isCreating || isUpdating;
+
   const [form, setForm] = useState({
     type: initial?.type || "expense",
-    amount: initial?.amount || "",
-    categoryId: initial?.category_id || "",
+    amount: initial?.amount ?? "",
+    categoryId: initial?.categoryId?._id || initial?.categoryId || "",
+    accountId: initial?.accountId?._id || initial?.accountId || "",
     description: initial?.description || "",
     notes: initial?.notes || "",
     transactionDate:
-      initial?.transaction_date?.split("T")[0] || todayDateString(),
+      initial?.transactionDate?.split("T")[0] || todayDateString(),
   });
-  const [saving, setSaving] = useState(false);
 
   const filteredCategories = categories.filter((c) => c.type === form.type);
 
-  const submit = async (e) => {
+  const submit = (e) => {
     e.preventDefault();
-    setSaving(true);
-    // try {
-    //   const payload = {
-    //     type: form.type,
-    //     amount: parseFloat(form.amount),
-    //     categoryId: form.categoryId || null,
-    //     description: form.description || null,
-    //     notes: form.notes || null,
-    //     transactionDate: form.transactionDate,
-    //   };
-    //   if (initial) {
-    //     await api.put(API_PATHS.TRANSACTIONS.UPDATE(initial.id), payload);
-    //     toast.success("Transaction updated");
-    //   } else {
-    //     await api.post(API_PATHS.TRANSACTIONS.CREATE, payload);
-    //     toast.success("Transaction added");
-    //   }
-    //   onSaved();
-    // } catch (err) {
-    //   toast.error(err.response?.data?.message || "Failed to save");
-    // } finally {
-    //   setSaving(false);
-    // }
+
+    const payload = {
+      type: form.type,
+      amount: parseFloat(form.amount),
+      categoryId: form.categoryId || null,
+      accountId: form.accountId || null,
+      description: form.description || null,
+      notes: form.notes || null,
+      transactionDate: form.transactionDate,
+    };
+
+    if (initial) {
+      editTransaction(
+        { id: initial._id || initial.id, updatedTx: payload },
+        { onSuccess: () => onSaved?.() },
+      );
+    } else {
+      addTransaction(payload, { onSuccess: () => onSaved?.() });
+    }
   };
 
   return (
@@ -91,11 +91,14 @@ const TransactionForm = ({ initial, categories, onSaved, onCancel }) => {
         onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
       >
         <option value="">Uncategorized</option>
-        {filteredCategories.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.name}
-          </option>
-        ))}
+        {filteredCategories.map((c) => {
+          const catId = c.id || c._id;
+          return (
+            <option key={catId} value={catId}>
+              {c.name}
+            </option>
+          );
+        })}
       </Select>
 
       <Input
