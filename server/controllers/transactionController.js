@@ -15,7 +15,6 @@ const getBalanceImpact = (type, amount) =>
 
 //* @desc    Get paginated, sorted, and filtered transactions with real-time insights
 //* @route   GET /api/transactions
-
 export const getTransactions = async (req, res) => {
   try {
     const userId = req.user?.id || req.user?._id;
@@ -161,9 +160,43 @@ export const getTransactions = async (req, res) => {
   }
 };
 
+//* @desc  get latest transactions for dashboard insights
+//* @route   GET /api/transactions
+
+export const getRecentTransactions = async (req, res) => {
+  try {
+    const userId = req.user?.id || req.user?._id;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const mongoUserId = new mongoose.Types.ObjectId(userId);
+
+    const transactions = await Transaction.find({ userId: mongoUserId })
+      .sort({ transactionDate: -1 })
+      .limit(5)
+      .populate("categoryId", "name icon color");
+
+    const formattedTransactions = transactions.map((t) => ({
+      id: t._id,
+      description: t.description || t.categoryId?.name || "Untitled",
+      category_name: t.categoryId?.name || "Uncategorized",
+      category_icon: t.categoryId?.icon || "help-circle",
+      category_color: t.categoryId?.color || "#94A3B8",
+      transaction_date: t.transactionDate,
+      type: t.type,
+      amount: t.amount,
+    }));
+
+    res.status(200).json(formattedTransactions);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching recent transactions",
+      error: error.message,
+    });
+  }
+};
+
 //* @desc    Get a single transaction by ID
 //* @route   GET /api/transactions/:id
-
 export const getTransactionById = async (req, res) => {
   try {
     const { id } = req.params;

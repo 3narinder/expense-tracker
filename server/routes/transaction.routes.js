@@ -8,6 +8,7 @@ import {
   bulkDeleteTransactions,
   exportTransactionsCSV,
   getTransactionTrend,
+  getRecentTransactions,
 } from "../controllers/transactionController.js";
 
 //* Protect the routes
@@ -30,6 +31,8 @@ router.get("/export-csv", exportTransactionsCSV);
 
 //* Route: GET /api/transactions/trends
 router.get("/trend", protect, getTransactionTrend);
+
+router.get("/recent", protect, getRecentTransactions);
 
 //* ==========================================
 //* ROOT & PARAMETERIZED ROUTES

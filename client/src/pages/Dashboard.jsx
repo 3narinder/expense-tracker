@@ -12,65 +12,67 @@ import {
 } from "lucide-react";
 
 import { formatCurrency, formatDate } from "../utils/format.js";
+import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
+
+import { useDashboardData } from "../features/Dashboard/useDashboardData.js";
+
 import KpiCard from "../components/KpiCard.jsx";
 import CategoryBadge from "../components/CategoryBadge.jsx";
 import MonthlyTrendChart from "../components/charts/MonthlyTrendChart.jsx";
 import CategoryBreakdownChart from "../components/charts/CategoryBreakdownChart.jsx";
 import Spinner from "../components/Spinner.jsx";
-import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
 
 const Dashboard = () => {
   const { user } = useCurrentUser();
+  const {
+    monthSummary,
+    monthTrends,
+    categoryBreakDown,
+    recentTransactions,
+    isPending,
+    error,
+  } = useDashboardData();
+
   const currency = user?.currency || "USD";
-  const [summary, setSummary] = useState(null);
-  const [trend, setTrend] = useState([]);
-  const [breakdown, setBreakdown] = useState([]);
-  const [recent, setRecent] = useState([]);
+
   const [budgets, setBudgets] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const load = async () => {
-      // try {
-      //   const [s, t, b, r, bd] = await Promise.all([
-      //     api.get(API_PATHS.DASHBOARD.SUMMARY),
-      //     api.get(API_PATHS.DASHBOARD.MONTHLY_TREND),
-      //     api.get(API_PATHS.DASHBOARD.CATEGORY_BREAKDOWN),
-      //     api.get(API_PATHS.TRANSACTIONS.LIST, { params: { limit: 5 } }),
-      //     api.get(API_PATHS.BUDGETS.LIST),
-      //   ]);
-      //   // If the backend exists and works, use its data
-      //   setSummary(s.data);
-      //   setTrend(t.data || []);
-      //   setBreakdown(b.data || []);
-      //   setRecent(r.data || []);
-      //   setBudgets(bd.data || []);
-      // } catch (err) {
-      //   console.warn(
-      //     "Backend routes or collections missing. Falling back to clean empty state.",
-      //     err,
-      //   );
-      //   // Fallback to safe zero/empty defaults so the app doesn't hang spinning
-      //   setSummary({
-      //     balance: 0,
-      //     incomeThisMonth: 0,
-      //     expenseThisMonth: 0,
-      //     savingsRate: 0,
-      //     incomeDelta: 0,
-      //     expenseDelta: 0,
-      //   });
-      //   setTrend([]);
-      //   setBreakdown([]);
-      //   setRecent([]);
-      //   setBudgets([]);
-      // } finally {
-      //   setLoading(false);
-      // }
-    };
-    load();
+    setBudgets([
+      {
+        id: "b_1",
+        category_name: "Food & Dining",
+        amount: "400.00",
+        spent: "320.00",
+      },
+      {
+        id: "b_2",
+        category_name: "Groceries",
+        amount: "400.00",
+        spent: "262.00",
+      },
+      {
+        id: "b_3",
+        category_name: "Entertainment",
+        amount: "100.00",
+        spent: "80.00",
+      },
+      {
+        id: "b_4",
+        category_name: "Transportation",
+        amount: "250.00",
+        spent: "139.00",
+      },
+      {
+        id: "b_5",
+        category_name: "Shopping",
+        amount: "100.00",
+        spent: "120.00",
+      },
+    ]);
   }, []);
 
-  if (loading || !summary) {
+  if (isPending || !monthSummary) {
     return (
       <div className="flex justify-center py-16">
         <Spinner size="lg" />
@@ -78,14 +80,12 @@ const Dashboard = () => {
     );
   }
 
-  // Determine if the user is completely new / has no data
   const hasNoData =
-    summary.balance === 0 &&
-    summary.incomeThisMonth === 0 &&
-    summary.expenseThisMonth === 0 &&
+    monthSummary.balance === 0 &&
+    monthSummary.incomeThisMonth === 0 &&
+    monthSummary.expenseThisMonth === 0 &&
     recent.length === 0;
 
-  // Render the empty state if there is no data
   if (hasNoData) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
@@ -121,7 +121,6 @@ const Dashboard = () => {
     );
   }
 
-  // --- Normal Dashboard Render for users with data ---
   const totalSpent = budgets.reduce((sum, b) => sum + parseFloat(b.spent), 0);
   const totalBudget = budgets.reduce((sum, b) => sum + parseFloat(b.amount), 0);
   const aggPct = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
@@ -142,27 +141,25 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard
           label="Balance"
-          value={formatCurrency(summary.balance, currency)}
+          value={formatCurrency(monthSummary.balance, currency)}
           icon={Wallet}
           accent="violet"
         />
         <KpiCard
           label="Income"
-          value={formatCurrency(summary.incomeThisMonth, currency)}
-          delta={summary.incomeDelta}
+          value={formatCurrency(monthSummary.incomeThisMonth, currency)}
           icon={TrendingUp}
           accent="orange"
         />
         <KpiCard
           label="Expenses"
-          value={formatCurrency(summary.expenseThisMonth, currency)}
-          delta={summary.expenseDelta}
+          value={formatCurrency(monthSummary.expenseThisMonth, currency)}
           icon={TrendingDown}
           accent="rose"
         />
         <KpiCard
           label="Savings Rate"
-          value={`${summary.savingsRate?.toFixed(1) || 0}%`}
+          value={`${monthSummary.savingsRate?.toFixed(1) || 0}%`}
           icon={PiggyBank}
           accent="blue"
         />
@@ -178,7 +175,7 @@ const Dashboard = () => {
               Income vs expenses, last 6 months
             </p>
           </div>
-          <MonthlyTrendChart data={trend} currency={currency} />
+          <MonthlyTrendChart data={monthTrends} currency={currency} />
         </div>
         <div className="bg-white rounded-3xl border border-slate-100 p-6">
           <div className="mb-5">
@@ -187,13 +184,16 @@ const Dashboard = () => {
             </h2>
             <p className="text-xs text-slate-500 mt-1">Spending this month</p>
           </div>
-          {breakdown.length === 0 ? (
+          {categoryBreakDown.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-48 text-slate-400">
               <Receipt size={32} className="mb-2 opacity-50" />
               <p className="text-sm">No category data yet</p>
             </div>
           ) : (
-            <CategoryBreakdownChart data={breakdown} currency={currency} />
+            <CategoryBreakdownChart
+              data={categoryBreakDown}
+              currency={currency}
+            />
           )}
         </div>
       </div>
@@ -212,7 +212,7 @@ const Dashboard = () => {
               <ArrowRight size={14} />
             </Link>
           </div>
-          {recent.length === 0 ? (
+          {recentTransactions.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-center">
               <Receipt size={32} className="text-slate-300 mb-3" />
               <p className="text-sm text-slate-500 mb-4">
@@ -227,7 +227,7 @@ const Dashboard = () => {
             </div>
           ) : (
             <div className="space-y-1">
-              {recent.map((t) => (
+              {recentTransactions.map((t) => (
                 <div
                   key={t.id}
                   className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition"
