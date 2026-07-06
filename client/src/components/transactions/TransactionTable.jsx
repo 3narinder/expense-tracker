@@ -45,7 +45,6 @@ const TransactionsTable = ({
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          {/* FIXED: Removed the extra header so columns align beautifully */}
           <tr className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">
             <th className="pb-4 pr-4">Category</th>
             <th className="pb-4 pr-4">Description</th>

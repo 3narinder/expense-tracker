@@ -1,10 +1,5 @@
 import api from "../utils/axios";
-
-//** Global helper to standardize error reporting across endpoints
-const handleApiError = (error, context) => {
-  const message = error.response?.data?.message || `Error in ${context}`;
-  throw new Error(message, { cause: error });
-};
+import { handleApiError } from "../utils/format";
 
 //** Fetch paginated, filtered, and sorted transactions along with high-level insights
 export const getTransactions = async (filters = {}) => {

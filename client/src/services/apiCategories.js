@@ -1,12 +1,5 @@
 import api from "../utils/axios";
-
-const handleApiError = (error, context) => {
-  const message =
-    error.response?.data?.message ||
-    error.response?.data?.msg ||
-    `Error in ${context}`;
-  throw new Error(message, { cause: error });
-};
+import { handleApiError } from "../utils/format";
 
 export const getCategories = async () => {
   try {

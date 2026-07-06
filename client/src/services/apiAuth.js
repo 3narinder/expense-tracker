@@ -1,24 +1,41 @@
 import api from "../utils/axios";
+import { handleApiError } from "../utils/format";
 
 export const register = async (formData) => {
-  const res = await api.post("/auth/register", formData);
-  return res.data;
+  try {
+    const res = await api.post("/auth/register", formData);
+    return res.data;
+  } catch (error) {
+    handleApiError(error, "register");
+  }
 };
 
 export const login = async ({ email, password }) => {
-  const res = await api.post("/auth/login", {
-    email,
-    password,
-  });
+  try {
+    const res = await api.post("/auth/login", {
+      email,
+      password,
+    });
 
-  return res.data;
+    return res.data;
+  } catch (error) {
+    handleApiError(error, "login");
+  }
 };
 
 export const getMe = async () => {
-  const res = await api.get("/auth/me");
-  return res.data;
+  try {
+    const res = await api.get("/auth/me");
+    return res.data;
+  } catch (error) {
+    handleApiError(error, "getMe");
+  }
 };
 
 export const logout = async () => {
-  await api.post("/auth/logout");
+  try {
+    await api.post("/auth/logout");
+  } catch (error) {
+    handleApiError(error, "logout");
+  }
 };

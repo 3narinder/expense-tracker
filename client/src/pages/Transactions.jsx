@@ -5,7 +5,10 @@ import { useSearchParams } from "react-router-dom";
 import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
 import { useTransactions } from "../features/Transactions/useTransactions.js";
 import { useTransactionActions } from "../features/Transactions/useTransactionActions.js";
+import { useTransactionTrend } from "../features/Transactions/useTransactionTrend.js";
+
 import { useCategories } from "../features/Categories/useCategories.js";
+import { useAccounts } from "../features/Accounts/useAccounts.js";
 
 //** Components */
 import Modal from "../components/ui/Modal.jsx";
@@ -15,7 +18,7 @@ import AIInsightCard from "../components/transactions/AIInsightCard.jsx";
 import TransactionFilters from "../components/transactions/TransactionFilters.jsx";
 import TransactionTrendCard from "../components/transactions/TransactionCard.jsx";
 import TransactionsTable from "../components/transactions/TransactionTable.jsx";
-import { useTransactionTrend } from "../features/Transactions/useTransactionTrend.js";
+import ConfirmDeleteModal from "../components/ui/ConfirmDeleteModal.jsx";
 
 const PAGE_SIZE = 10;
 
@@ -26,9 +29,11 @@ const Transactions = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [deleteSingleTransaction, setDeleteSingleTransaction] = useState(null);
 
   const { categories } = useCategories();
   const { removeTransaction, isDeleting } = useTransactionActions();
+  const { accounts } = useAccounts();
 
   // 1. Extract raw parameters from URL
   const page = Number(searchParams.get("page")) || 1;
@@ -36,6 +41,7 @@ const Transactions = () => {
   const search = searchParams.get("search") || "";
   const type = searchParams.get("type") || "";
   const categoryId = searchParams.get("categoryId") || "";
+  const safeAccounts = accounts || [];
 
   //**  2. Reconstruct the filters
   const currentFilters = { search, type, categoryId, range, page };
@@ -92,13 +98,18 @@ const Transactions = () => {
     setEditing(null);
     setModalOpen(true);
   };
+
   const onEdit = (t) => {
     setEditing(t);
     setModalOpen(true);
   };
-  const onDelete = (id) => {
-    if (!window.confirm("Delete this transaction?")) return;
-    removeTransaction(id);
+
+  const handleConfirmDelete = () => {
+    if (deleteSingleTransaction) {
+      removeTransaction(deleteSingleTransaction, {
+        onSuccess: () => setDeleteSingleTransaction(null),
+      });
+    }
   };
 
   return (
@@ -129,11 +140,11 @@ const Transactions = () => {
         <TransactionsTable
           transactions={safeTransactions}
           currency={currency}
-          isLoading={isPending || isDeleting}
+          isLoading={isPending}
           pagination={pagination}
           onPageChange={changePage}
           onEdit={onEdit}
-          onDelete={onDelete}
+          onDelete={(id) => setDeleteSingleTransaction(id)}
           onCreate={onCreate}
         />
       </div>
@@ -146,10 +157,21 @@ const Transactions = () => {
         <TransactionForm
           initial={editing}
           categories={safeCategories}
+          accounts={safeAccounts}
           onSaved={() => setModalOpen(false)}
           onCancel={() => setModalOpen(false)}
         />
       </Modal>
+
+      <ConfirmDeleteModal
+        open={!!deleteSingleTransaction}
+        onClose={() => setDeleteSingleTransaction(null)}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
+        title="Delete Transactions"
+        message="Are you sure you want to delete this transaction? This action cannot be undone."
+        itemName="Transaction"
+      />
     </div>
   );
 };

@@ -45,3 +45,8 @@ export const timeAgo = (date) => {
   if (days < 30) return `${days}d ago`;
   return formatDate(date);
 };
+
+export const handleApiError = (error, context) => {
+  const message = error.response?.data?.message || `Error in ${context}`;
+  throw new Error(message, { cause: error });
+};

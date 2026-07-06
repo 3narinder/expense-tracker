@@ -10,7 +10,6 @@ export const useCategoryActions = () => {
   const queryClient = useQueryClient();
 
   //*Create category
-
   const { mutate: addCategory, isPending: isCreating } = useMutation({
     mutationFn: createApi,
     onSuccess: () => {

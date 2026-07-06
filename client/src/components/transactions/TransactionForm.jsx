@@ -1,13 +1,22 @@
 import { useState } from "react";
 
+//** Hooks and functions */
 import { todayDateString } from "../../utils/format.js";
 import { useTransactionActions } from "../../features/Transactions/useTransactionActions.js";
+
+//**Components */
 import Input from "../ui/Input.jsx";
 import Select from "../ui/Select.jsx";
 import Textarea from "../ui/Textarea.jsx";
 import Button from "../ui/Button.jsx";
 
-const TransactionForm = ({ initial, categories, onSaved, onCancel }) => {
+const TransactionForm = ({
+  initial,
+  categories,
+  accounts = [],
+  onSaved,
+  onCancel,
+}) => {
   const { addTransaction, isCreating, editTransaction, isUpdating } =
     useTransactionActions();
   const saving = isCreating || isUpdating;
@@ -84,6 +93,25 @@ const TransactionForm = ({ initial, categories, onSaved, onCancel }) => {
         value={form.amount}
         onChange={(e) => setForm({ ...form, amount: e.target.value })}
       />
+
+      <Select
+        label="Account"
+        required
+        value={form.accountId}
+        onChange={(e) => setForm({ ...form, accountId: e.target.value })}
+      >
+        <option value="" disabled>
+          Select account
+        </option>
+        {accounts.map((a) => {
+          const accId = a.id || a._id;
+          return (
+            <option key={accId} value={accId}>
+              {a.name}
+            </option>
+          );
+        })}
+      </Select>
 
       <Select
         label="Category"

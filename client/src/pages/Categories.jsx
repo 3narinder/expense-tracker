@@ -13,11 +13,12 @@ import CategoryForm from "../components/CategoryForm.jsx";
 //* Hooks
 import { useCategories } from "../features/Categories/useCategories.js";
 import { useCategoryActions } from "../features/Categories/useCategoriesActions.js";
+import ConfirmDeleteModal from "../components/ui/ConfirmDeleteModal.jsx";
 
 const Categories = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [deleteId, setDeleteId] = useState(null);
+  const [deleteSingleCategory, setDeleteSingleCategory] = useState(null);
 
   //* Data fetching & Mutation hooks
   const { categories, isPending } = useCategories();
@@ -34,9 +35,9 @@ const Categories = () => {
   };
 
   const handleDelete = () => {
-    if (deleteId) {
-      deleteCategory(deleteId, {
-        onSuccess: () => setDeleteId(null),
+    if (deleteSingleCategory) {
+      deleteCategory(deleteSingleCategory, {
+        onSuccess: () => setDeleteSingleCategory(null),
       });
     }
   };
@@ -106,7 +107,7 @@ const Categories = () => {
                         <Pencil size={14} />
                       </button>
                       <button
-                        onClick={() => setDeleteId(c.id)} // Point directly to the setter
+                        onClick={() => setDeleteSingleCategory(c.id)} // Point directly to the setter
                         disabled={isDeleting}
                         className="p-1.5 hover:bg-rose-50 rounded-md text-rose-500 transition disabled:opacity-50"
                       >
@@ -135,31 +136,15 @@ const Categories = () => {
       </Modal>
 
       {/* Delete Confirmation Modal */}
-      <Modal
-        open={!!deleteId}
-        onClose={() => setDeleteId(null)}
+      <ConfirmDeleteModal
+        open={!!deleteSingleCategory}
+        onClose={() => setDeleteSingleCategory(null)}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
         title="Delete Category"
-        size="sm"
-      >
-        <div className="space-y-4">
-          <p className="text-sm text-slate-600">
-            Are you sure you want to delete this category? All associated
-            transactions will become uncategorized.
-          </p>
-          <div className="flex gap-2 justify-end pt-2">
-            <Button variant="outline" onClick={() => setDeleteId(null)}>
-              Cancel
-            </Button>
-            <Button
-              className="bg-rose-600 hover:bg-rose-700 cursor-pointer"
-              onClick={handleDelete}
-              disabled={isDeleting}
-            >
-              {isDeleting ? "Deleting..." : "Delete Category"}
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        message="Are you sure you want to delete this category? All associated transactions will become uncategorized."
+        itemName="Category"
+      />
     </div>
   );
 };
