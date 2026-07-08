@@ -8,7 +8,6 @@ import {
   Clock,
   ArrowRight,
 } from "lucide-react";
-import toast from "react-hot-toast";
 
 import { timeAgo } from "../utils/format.js";
 import EmptyState from "../components/EmptyState.jsx";

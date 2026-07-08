@@ -28,7 +28,6 @@ export const useDashboardData = () => {
   });
 
   const isPending = summaryQuery.isPending || trendsQuery.isPending;
-
   const error = summaryQuery.error || trendsQuery.error;
 
   return {
@@ -42,9 +41,9 @@ export const useDashboardData = () => {
             incomeThisMonth: 0,
             expenseThisMonth: 0,
             savingsRate: 0,
+            monthlyNet: 0,
           }
         : undefined),
-
     monthTrends: trendsQuery.data || [],
     categoryBreakDown: categoryBreakDownQuery.data || [],
     recentTransactions: getRecentTransactionsQuery.data || [],

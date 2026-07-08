@@ -69,6 +69,7 @@ export const getMonthSummary = async (req, res) => {
       incomeThisMonth: data.incomeThisMonth,
       expenseThisMonth: data.expenseThisMonth,
       savingsRate: Math.max(0, parseFloat(savingsRate.toFixed(1))),
+      monthlyNet: parseFloat(savingsNet.toFixed(2)),
     });
   } catch (error) {
     res
