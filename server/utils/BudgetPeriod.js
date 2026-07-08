@@ -1,29 +1,28 @@
-//** Shared helper for computing a budget's period window. Used by both the
-//* budget controller (overlap checks, reconciliation) and the sync helper
-//* (deciding whether a transaction date falls inside a budget's window).
-
+// utils/BudgetPeriod.js
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
-
-//** Given a budget's startDate and period, return the exclusive end date of that period.
 
 export const getPeriodEnd = (startDate, period) => {
   const end = new Date(startDate);
+
   switch (period) {
     case "weekly":
-      end.setTime(end.getTime() + 7 * MS_PER_DAY);
+      end.setDate(end.getDate() + 7);
       break;
     case "quarterly":
       end.setMonth(end.getMonth() + 3);
       break;
     case "monthly":
     default:
+      const expectedMonth = (end.getMonth() + 1) % 12;
       end.setMonth(end.getMonth() + 1);
+
+      if (end.getMonth() !== expectedMonth) {
+        end.setDate(0);
+      }
       break;
   }
   return end;
 };
-
-//** True if `date` falls within [startDate, periodEnd) for the given budget period definition.
 
 export const isDateWithinPeriod = (date, startDate, period) => {
   const d = new Date(date).getTime();

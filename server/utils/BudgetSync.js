@@ -1,6 +1,6 @@
 import Budget from "../models/BudgetSchema.js";
 import Transaction from "../models/TransactionSchema.js";
-import { isDateWithinPeriod, getPeriodEnd } from "./BudgetPeriod.js";
+import { getPeriodEnd } from "./BudgetPeriod.js";
 
 export const applyBudgetDelta = async (
   { userId, categoryId, transactionDate, type },
@@ -9,25 +9,25 @@ export const applyBudgetDelta = async (
 ) => {
   if (type !== "expense" || !delta) return;
 
+  const txDate = new Date(transactionDate);
+
   const candidateBudgets = await Budget.find({
     userId,
     categoryIds: categoryId,
+    startDate: { $lte: txDate },
   }).session(session);
 
-  const affected = candidateBudgets.filter((b) =>
-    isDateWithinPeriod(transactionDate, b.startDate, b.period),
-  );
+  const affectedIds = candidateBudgets
+    .filter((b) => txDate < getPeriodEnd(b.startDate, b.period))
+    .map((b) => b._id);
 
-  if (affected.length === 0) return;
+  if (affectedIds.length === 0) return;
+
+  const safeDelta = Math.round(delta * 100) / 100;
 
   await Budget.updateMany(
-    { _id: { $in: affected.map((b) => b._id) } },
-    // $inc with a floor of 0 isn't atomic in a single update, so clamp on
-    // read (reconciliation) rather than trying to prevent small negative
-    // drift here — an update or delete that removes more than was ever
-    // added (e.g. after a manual DB edit) is a signal to re-reconcile, not
-    // something to mask.
-    { $inc: { spent: delta } },
+    { _id: { $in: affectedIds } },
+    { $inc: { spent: safeDelta } },
     { session },
   );
 };
@@ -82,7 +82,7 @@ export const reconcileBudget = async (budget) => {
     { $group: { _id: null, total: { $sum: "$amount" } } },
   ]);
 
-  const trueSpent = result[0]?.total || 0;
+  const trueSpent = Math.round((result[0]?.total || 0) * 100) / 100;
 
   await Budget.findByIdAndUpdate(budget._id, {
     spent: trueSpent,
@@ -99,4 +99,52 @@ export const reconcileAllBudgets = async (userId = null) => {
     await reconcileBudget(budget);
   }
   return budgets.length;
+};
+
+export const getCategoryConflicts = async (
+  userId,
+  categoryIds,
+  period,
+  startDate,
+  excludeBudgetId = null,
+) => {
+  const newStart = new Date(startDate);
+  const newEnd = getPeriodEnd(newStart, period);
+
+  const filter = {
+    userId,
+    categoryIds: { $in: categoryIds },
+    startDate: { $lt: newEnd },
+  };
+
+  if (excludeBudgetId) {
+    filter._id = { $ne: excludeBudgetId };
+  }
+
+  const candidateBudgets = await Budget.find(filter).populate(
+    "categoryIds",
+    "name",
+  );
+
+  const conflicts = [];
+
+  const overlappingBudgets = candidateBudgets.filter((b) => {
+    const existingEnd = getPeriodEnd(b.startDate, b.period);
+    return existingEnd > newStart;
+  });
+
+  overlappingBudgets.forEach((budget) => {
+    budget.categoryIds.forEach((cat) => {
+      if (categoryIds.includes(cat._id.toString())) {
+        conflicts.push({
+          categoryId: cat._id.toString(),
+          categoryName: cat.name,
+          budgetId: budget._id.toString(),
+          budgetName: budget.name,
+        });
+      }
+    });
+  });
+
+  return conflicts;
 };

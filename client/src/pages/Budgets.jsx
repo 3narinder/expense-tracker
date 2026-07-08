@@ -1,15 +1,18 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Plus,
   Target,
   Pencil,
   Trash2,
-  Sparkles,
   CheckCircle2,
   AlertTriangle,
   AlertOctagon,
 } from "lucide-react";
-import toast from "react-hot-toast";
+
+import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
+import { useBudgets } from "../features/Budgets/useBudgets.js";
+import { useBudgetActions } from "../features/Budgets/useBudgetActions.js";
+import { useCategories } from "../features/Categories/useCategories.js";
 
 import { formatCurrency } from "../utils/format.js";
 import Button from "../components/ui/Button.jsx";
@@ -18,93 +21,48 @@ import CategoryBadge from "../components/CategoryBadge.jsx";
 import EmptyState from "../components/EmptyState.jsx";
 import Spinner from "../components/Spinner.jsx";
 import BudgetForm from "../components/BudgetForm.jsx";
-import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
 
 const statusStyles = {
   good: {
     Icon: CheckCircle2,
     label: "On Track",
-    bg: "bg-emerald-50",
-    text: "text-emerald-700",
+    bg: "bg-emerald-50/60 border border-emerald-100",
+    text: "text-emerald-800",
     iconColor: "text-emerald-600",
+    bar: "bg-emerald-500",
   },
   caution: {
     Icon: AlertTriangle,
-    label: "Watch It",
-    bg: "bg-amber-50",
-    text: "text-amber-700",
+    label: "Warning",
+    bg: "bg-amber-50/60 border border-amber-100",
+    text: "text-amber-800",
     iconColor: "text-amber-600",
+    bar: "bg-amber-500",
   },
   concerning: {
     Icon: AlertOctagon,
     label: "Over Budget",
-    bg: "bg-rose-50",
-    text: "text-rose-700",
+    bg: "bg-rose-50/60 border border-rose-100",
+    text: "text-rose-800",
     iconColor: "text-rose-600",
+    bar: "bg-rose-500",
   },
 };
 
-const AnalysisSkeleton = () => (
-  <div className="mt-4 pt-4 border-t border-slate-100 animate-pulse">
-    <div className="flex items-start gap-2.5">
-      <div className="shrink-0 h-6 w-6 rounded-full bg-slate-200" />
-      <div className="flex-1 space-y-2">
-        <div className="h-3.5 w-20 bg-slate-200 rounded-full" />
-        <div className="h-2.5 bg-slate-200 rounded w-full" />
-        <div className="h-2.5 bg-slate-200 rounded w-4/5" />
-      </div>
-    </div>
-  </div>
-);
-
 const Budgets = () => {
-  const { user, IsLoading } = useCurrentUser();
-  const currency = user?.currency || "USD";
-  const [budgets, setBudgets] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useCurrentUser();
+  const currency = user?.currency || "INR";
+
+  const { budgets = [], isPending, error } = useBudgets();
+  const { categories } = useCategories();
+  const allCategories = categories || [];
+
+  const { addBudget, editBudget, removeBudget, isDeleting } =
+    useBudgetActions();
+
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [analyses, setAnalyses] = useState({});
-  const [analyzing, setAnalyzing] = useState(true);
-
-  const fetchData = async () => {
-    // try {
-    //   setLoading(true);
-    //   const [bRes, cRes] = await Promise.all([
-    //     api.get(API_PATHS.BUDGETS.LIST),
-    //     api.get(API_PATHS.CATEGORIES.LIST),
-    //   ]);
-    //   setBudgets(bRes.data);
-    //   setCategories(cRes.data);
-    // } catch (err) {
-    //   toast.error("Failed to load budgets");
-    // } finally {
-    //   setLoading(false);
-    // }
-  };
-
-  const analyzeAll = async () => {
-    setAnalyses({});
-    setAnalyzing(true);
-    // try {
-    //   const res = await api.post(API_PATHS.BUDGETS.ANALYZE);
-    //   const map = {};
-    //   (res.data.analyses || []).forEach((a) => {
-    //     map[a.budgetId] = a;
-    //   });
-    //   setAnalyses(map);
-    // } catch (err) {
-    //   console.error("Failed to analyze budgets", err);
-    // } finally {
-    //   setAnalyzing(false);
-    // }
-  };
-
-  useEffect(() => {
-    fetchData();
-    analyzeAll();
-  }, []);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   const onEdit = (b) => {
     setEditing(b);
@@ -116,155 +74,172 @@ const Budgets = () => {
     setModalOpen(true);
   };
 
-  const onDelete = async (id) => {
-    if (!confirm("Delete this budget?")) return;
-    try {
-      await api.delete(API_PATHS.BUDGETS.DELETE(id));
-      toast.success("Budget deleted");
-      fetchData();
-    } catch (err) {
-      toast.error("Failed to delete");
-    }
+  const onDelete = (id) => setConfirmDeleteId(id);
+
+  const confirmDelete = () => {
+    removeBudget(confirmDeleteId);
+    setConfirmDeleteId(null);
   };
 
-  const onSaved = () => {
-    setModalOpen(false);
-    fetchData();
-    analyzeAll();
+  const handleFormSubmitSuccess = (formData) => {
+    return new Promise((resolve, reject) => {
+      const payload = {
+        name: formData.name.trim(),
+        categoryIds: formData.categoryIds,
+        amount: parseFloat(formData.amount),
+        period: formData.period,
+        startDate: formData.startDate,
+        alertThreshold: formData.alertThreshold,
+      };
+
+      const onSettled = {
+        onSuccess: () => {
+          setModalOpen(false);
+          resolve();
+        },
+        onError: (err) => reject(err),
+      };
+
+      if (editing) {
+        editBudget({ id: editing.id, updatedBudget: payload }, onSettled);
+      } else {
+        addBudget(payload, onSettled);
+      }
+    });
   };
 
-  const hasAnalyses = Object.keys(analyses).length > 0;
+  if (error) {
+    return (
+      <div className="text-center py-12 text-rose-600">
+        <AlertOctagon className="mx-auto h-12 w-12 text-rose-500 mb-3" />
+        <p className="font-semibold">Unable to fetch budget groups.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-50/50 p-6 rounded-3xl border border-slate-100">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
             Budgets
           </h1>
-          <p className="text-sm text-slate-500 mt-1.5">
-            Set spending limits per category — AI scores each one automatically
+          <p className="text-sm text-slate-500 mt-1">
+            Track multi-category limits with automatic health alerts.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={analyzeAll}
-            disabled={analyzing || budgets.length === 0}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
-          >
-            {analyzing ? <Spinner size="sm" /> : <Sparkles size={14} />}
-            {analyzing ? "Analyzing" : hasAnalyses ? "Re-analyze" : "Analyze"}
-          </button>
-          <Button onClick={onCreate}>
-            <Plus size={16} /> Add Budget
-          </Button>
-        </div>
+        <Button onClick={onCreate} className="shrink-0 self-start sm:self-auto">
+          <Plus size={16} className="mr-1.5" /> Add Budget
+        </Button>
       </div>
 
-      {loading ? (
-        <div className="flex justify-center py-12">
+      {isPending ? (
+        <div className="flex justify-center py-20">
           <Spinner />
         </div>
       ) : budgets.length === 0 ? (
         <EmptyState
           icon={Target}
-          title="No budgets yet"
-          description="Create a budget to track spending limits."
+          title="No active budgets"
+          description="Create a limit cap to organize your monthly outlays."
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
           {budgets.map((b) => {
-            const spent = parseFloat(b.spent);
-            const total = parseFloat(b.amount);
-            const pct = total > 0 ? Math.min((spent / total) * 100, 100) : 0;
-            const over = spent > total;
-            const barColor =
-              pct >= 100
-                ? "bg-rose-500"
-                : pct >= 70
-                  ? "bg-amber-500"
-                  : "bg-emerald-500";
-            const analysis = analyses[b.id];
-            const style = analysis ? statusStyles[analysis.status] : null;
+            const isOverBudget = b.spent > b.amount;
+            const style = statusStyles[b.analysis?.status] || statusStyles.good;
 
             return (
               <div
                 key={b.id}
-                className="bg-white rounded-3xl border border-slate-100 p-6 hover:border-slate-200 transition"
+                className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
               >
-                <div className="flex items-start justify-between mb-5">
-                  <CategoryBadge
-                    name={b.category_name}
-                    icon={b.category_icon}
-                    color={b.category_color}
-                  />
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => onEdit(b)}
-                      className="p-1.5 hover:bg-slate-100 rounded-md text-slate-500 transition"
-                    >
-                      <Pencil size={14} />
-                    </button>
-                    <button
-                      onClick={() => onDelete(b.id)}
-                      className="p-1.5 hover:bg-rose-50 rounded-md text-rose-500 transition"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                </div>
-                <div className="mb-3 flex items-baseline justify-between">
-                  <span className="text-3xl font-bold tracking-tight text-slate-900">
-                    {formatCurrency(spent, currency)}
-                  </span>
-                  <span className="text-sm text-slate-500">
-                    of {formatCurrency(total, currency)}
-                  </span>
-                </div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full ${barColor} transition-all`}
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
-                <div className="mt-2.5 flex items-center justify-between text-xs">
-                  <span className="text-slate-500 capitalize">
-                    {b.period} · {pct.toFixed(0)}% used
-                  </span>
-                  <span
-                    className={
-                      over ? "text-rose-600 font-medium" : "text-slate-500"
-                    }
-                  >
-                    {over
-                      ? `Over by ${formatCurrency(spent - total, currency)}`
-                      : `${formatCurrency(total - spent, currency)} left`}
-                  </span>
-                </div>
-
-                {analysis && style ? (
-                  <div className="mt-4 pt-4 border-t border-slate-100">
-                    <div className="flex items-start gap-2.5">
-                      <div
-                        className={`shrink-0 h-6 w-6 rounded-full flex items-center justify-center ${style.bg}`}
-                      >
-                        <style.Icon size={14} className={style.iconColor} />
-                      </div>
-                      <div className="min-w-0">
-                        <span
-                          className={`inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-full ${style.bg} ${style.text} mb-1`}
-                        >
-                          {style.label}
-                        </span>
-                        <p className="text-xs text-slate-600 leading-relaxed">
-                          {analysis.message}
-                        </p>
+                <div>
+                  <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className="min-w-0">
+                      <h3 className="text-lg font-bold text-slate-800 tracking-tight capitalize truncate">
+                        {b.name}
+                      </h3>
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {b.categories?.map((cat) => (
+                          <CategoryBadge
+                            key={cat.id}
+                            name={cat.name}
+                            icon={cat.icon}
+                            color={cat.color}
+                            size="sm"
+                          />
+                        ))}
                       </div>
                     </div>
+                    <div className="flex items-center gap-1 shrink-0 bg-slate-50 p-1 rounded-xl border border-slate-100">
+                      <button
+                        onClick={() => onEdit(b)}
+                        className="p-2 hover:bg-white rounded-lg text-slate-500 transition"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                      <button
+                        onClick={() => onDelete(b.id)}
+                        className="p-2 hover:bg-rose-50 rounded-lg text-rose-500 transition"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   </div>
-                ) : analyzing ? (
-                  <AnalysisSkeleton />
-                ) : null}
+
+                  <div className="mb-4 flex items-baseline justify-between">
+                    <span className="text-3xl font-extrabold tracking-tight text-slate-900">
+                      {formatCurrency(b.spent, currency)}
+                    </span>
+                    <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+                      of {formatCurrency(b.amount, currency)}
+                    </span>
+                  </div>
+
+                  <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden mb-3">
+                    <div
+                      className={`h-full ${style.bar} transition-all duration-500 ease-out rounded-full`}
+                      style={{ width: `${Math.min(b.percentUsed, 100)}%` }}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs font-medium text-slate-500 mb-4">
+                    <span className="capitalize bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">
+                      {b.period} · {b.percentUsed}% filled
+                    </span>
+                    <span
+                      className={
+                        isOverBudget
+                          ? "text-rose-600 font-semibold"
+                          : "text-slate-600"
+                      }
+                    >
+                      {isOverBudget
+                        ? `Over by ${formatCurrency(Math.abs(b.remaining), currency)}`
+                        : `${formatCurrency(b.remaining, currency)} left`}
+                    </span>
+                  </div>
+                </div>
+
+                <div className={`p-3.5 rounded-2xl ${style.bg}`}>
+                  <div className="flex items-start gap-2.5">
+                    <style.Icon
+                      size={16}
+                      className={`${style.iconColor} shrink-0 mt-0.5`}
+                    />
+                    <div className="min-w-0">
+                      <p
+                        className={`text-xs font-bold uppercase tracking-wider ${style.text} mb-0.5`}
+                      >
+                        {style.label}
+                      </p>
+                      <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                        {b.analysis?.message}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             );
           })}
@@ -278,10 +253,39 @@ const Budgets = () => {
       >
         <BudgetForm
           initial={editing}
-          categories={categories.filter((c) => c.type === "expense")}
-          onSaved={onSaved}
+          categories={allCategories}
+          onSaved={handleFormSubmitSuccess}
           onCancel={() => setModalOpen(false)}
         />
+      </Modal>
+
+      <Modal
+        open={!!confirmDeleteId}
+        onClose={() => setConfirmDeleteId(null)}
+        title="Delete budget?"
+        size="sm"
+      >
+        <p className="text-sm text-slate-600 mb-5">
+          This will stop tracking this budget's limit. This action can't be
+          undone.
+        </p>
+        <div className="flex gap-2 justify-end">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setConfirmDeleteId(null)}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            onClick={confirmDelete}
+            disabled={isDeleting}
+            className="bg-rose-500 hover:bg-rose-600 text-white"
+          >
+            {isDeleting ? "Deleting..." : "Delete"}
+          </Button>
+        </div>
       </Modal>
     </div>
   );

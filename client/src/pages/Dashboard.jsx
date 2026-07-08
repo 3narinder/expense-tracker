@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Wallet,
@@ -13,8 +12,8 @@ import {
 
 import { formatCurrency, formatDate } from "../utils/format.js";
 import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
-
 import { useDashboardData } from "../features/Dashboard/useDashboardData.js";
+import { useBudgets } from "../features/Budgets/useBudgets.js";
 
 import KpiCard from "../components/KpiCard.jsx";
 import CategoryBadge from "../components/CategoryBadge.jsx";
@@ -33,44 +32,9 @@ const Dashboard = () => {
     error,
   } = useDashboardData();
 
+  const { budgets = [], isPending: budgetsLoading } = useBudgets();
+
   const currency = user?.currency || "USD";
-
-  const [budgets, setBudgets] = useState([]);
-
-  useEffect(() => {
-    setBudgets([
-      {
-        id: "b_1",
-        category_name: "Food & Dining",
-        amount: "400.00",
-        spent: "320.00",
-      },
-      {
-        id: "b_2",
-        category_name: "Groceries",
-        amount: "400.00",
-        spent: "262.00",
-      },
-      {
-        id: "b_3",
-        category_name: "Entertainment",
-        amount: "100.00",
-        spent: "80.00",
-      },
-      {
-        id: "b_4",
-        category_name: "Transportation",
-        amount: "250.00",
-        spent: "139.00",
-      },
-      {
-        id: "b_5",
-        category_name: "Shopping",
-        amount: "100.00",
-        spent: "120.00",
-      },
-    ]);
-  }, []);
 
   if (isPending || !monthSummary) {
     return (
@@ -84,7 +48,7 @@ const Dashboard = () => {
     monthSummary.balance === 0 &&
     monthSummary.incomeThisMonth === 0 &&
     monthSummary.expenseThisMonth === 0 &&
-    recent.length === 0;
+    recentTransactions.length === 0;
 
   if (hasNoData) {
     return (
@@ -121,8 +85,8 @@ const Dashboard = () => {
     );
   }
 
-  const totalSpent = budgets.reduce((sum, b) => sum + parseFloat(b.spent), 0);
-  const totalBudget = budgets.reduce((sum, b) => sum + parseFloat(b.amount), 0);
+  const totalSpent = budgets.reduce((sum, b) => sum + (b.spent || 0), 0);
+  const totalBudget = budgets.reduce((sum, b) => sum + (b.amount || 0), 0);
   const aggPct = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
   const aggColor =
     aggPct >= 100 ? "#F43F5E" : aggPct >= 70 ? "#F59E0B" : "#10B981";
@@ -274,7 +238,11 @@ const Dashboard = () => {
             </Link>
           </div>
 
-          {budgets.length === 0 ? (
+          {budgetsLoading ? (
+            <div className="flex justify-center py-10">
+              <Spinner />
+            </div>
+          ) : budgets.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
               <div className="h-10 w-10 rounded-full bg-white shadow-sm flex items-center justify-center mb-3">
                 <Target size={18} className="text-violet-400" />
@@ -327,21 +295,25 @@ const Dashboard = () => {
 
               <div className="space-y-3">
                 {budgets.slice(0, 4).map((b) => {
-                  const spent = parseFloat(b.spent);
-                  const total = parseFloat(b.amount);
                   const pct =
-                    total > 0 ? Math.min((spent / total) * 100, 100) : 0;
+                    b.amount > 0
+                      ? Math.min((b.spent / b.amount) * 100, 100)
+                      : 0;
                   const color =
                     pct >= 100 ? "#F43F5E" : pct >= 70 ? "#F59E0B" : "#10B981";
+                  // A budget can track multiple categories — join their names for the label
+                  const label =
+                    b.categories?.map((c) => c.name).join(", ") || b.name;
+
                   return (
                     <div key={b.id}>
                       <div className="flex justify-between items-center text-xs mb-1.5">
                         <span className="text-slate-700 font-medium truncate">
-                          {b.category_name}
+                          {label}
                         </span>
                         <span className="text-slate-500 shrink-0 ml-2 text-[11px]">
-                          {formatCurrency(spent, currency)} /{" "}
-                          {formatCurrency(total, currency)}
+                          {formatCurrency(b.spent, currency)} /{" "}
+                          {formatCurrency(b.amount, currency)}
                         </span>
                       </div>
                       <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">

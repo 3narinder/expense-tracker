@@ -20,7 +20,9 @@ const CategoryBadge = ({ name, icon, color, size = "md" }) => {
         <Icon size={iconSize} style={{ color: baseColor }} />
       </div>
       {name && (
-        <span className="font-medium text-slate-900 truncate">{name}</span>
+        <span className="font-medium text-sm text-slate-900 truncate">
+          {name}
+        </span>
       )}
     </div>
   );
