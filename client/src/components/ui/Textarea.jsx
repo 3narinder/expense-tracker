@@ -1,16 +1,16 @@
 const Textarea = ({ label, error, className = "", ...props }) => {
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       {label && (
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-(--color-text-main)">
           {label}
         </label>
       )}
       <textarea
-        className={`w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent ${className}`}
+        className={`w-full px-4 py-2.5 rounded-lg border border-[var(--color-border-main)] bg-[var(--color-bg-surface)] text-sm text-(--color-text-main) placeholder-[var(--color-text-ghost)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent transition-all resize-vertical ${className}`}
         {...props}
       />
-      {error && <p className="text-xs text-rose-600">{error}</p>}
+      {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
     </div>
   );
 };

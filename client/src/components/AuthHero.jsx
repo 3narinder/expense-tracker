@@ -13,7 +13,7 @@ import {
 
 const BalanceCard = () => (
   <div className="bg-linear-to-br from-violet-600 via-violet-700 to-violet-800 rounded-2xl p-5 text-white shadow-xl shadow-violet-300/40 relative overflow-hidden">
-    <div className="absolute -top-8 -right-8 h-24 w-24 bg-white/10 rounded-full blur-2xl" />
+    <div className="absolute -top-8 -right-8 h-24 w-24 bg-(--color-bg-surface)/10 rounded-full blur-2xl" />
     <div className="relative flex items-center justify-between mb-4">
       <div className="text-xs font-medium opacity-80">Total Balance</div>
       <Wallet size={16} className="opacity-80" />
@@ -28,7 +28,7 @@ const BalanceCard = () => (
 );
 
 const AIInsightCard = () => (
-  <div className="bg-white rounded-2xl p-4 shadow-lg shadow-violet-100 border border-slate-100">
+  <div className="bg-(--color-bg-surface) rounded-2xl p-4 shadow-lg shadow-violet-100 border border-(--color-border-main)">
     <div className="flex items-start gap-2.5">
       <div className="h-9 w-9 rounded-xl bg-linear-to-br from-violet-400 to-violet-600 flex items-center justify-center shrink-0">
         <Sparkles size={16} className="text-white" />
@@ -37,10 +37,10 @@ const AIInsightCard = () => (
         <div className="text-[10px] uppercase tracking-wider font-bold text-violet-600 mb-0.5">
           AI Insight
         </div>
-        <div className="text-xs font-semibold text-slate-900 mb-0.5">
+        <div className="text-xs font-semibold text-(--color-text-main) mb-0.5">
           Coffee budget alert
         </div>
-        <p className="text-[11px] text-slate-600 leading-relaxed">
+        <p className="text-[11px] text-(--color-text-muted) leading-relaxed">
           Cut 2 cups/week → save $32/mo
         </p>
       </div>
@@ -49,23 +49,23 @@ const AIInsightCard = () => (
 );
 
 const BudgetProgressCard = () => (
-  <div className="bg-white rounded-2xl p-4 shadow-md border border-slate-100">
+  <div className="bg-(--color-bg-surface) rounded-2xl p-4 shadow-md border border-(--color-border-main)">
     <div className="flex items-center gap-2 mb-3">
       <div className="h-8 w-8 rounded-lg bg-amber-50 flex items-center justify-center">
         <Utensils size={14} className="text-amber-600" />
       </div>
       <div>
-        <div className="text-xs font-semibold text-slate-900">
+        <div className="text-xs font-semibold text-(--color-text-main)">
           Food & Dining
         </div>
-        <div className="text-[10px] text-slate-500">May 2026</div>
+        <div className="text-[10px] text-(--color-text-muted)">May 2026</div>
       </div>
     </div>
     <div className="flex items-baseline justify-between mb-1.5">
-      <span className="text-base font-bold text-slate-900">$320</span>
-      <span className="text-[10px] text-slate-500">of $400</span>
+      <span className="text-base font-bold text-(--color-text-main)">$320</span>
+      <span className="text-[10px] text-(--color-text-muted)">of $400</span>
     </div>
-    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+    <div className="h-1.5 bg-(--color-bg-muted) rounded-full overflow-hidden">
       <div
         className="h-full bg-amber-500 rounded-full"
         style={{ width: "80%" }}
@@ -78,8 +78,8 @@ const BudgetProgressCard = () => (
 );
 
 const SubscriptionsCard = () => (
-  <div className="bg-white rounded-2xl p-4 shadow-md border border-slate-100">
-    <div className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-3">
+  <div className="bg-(--color-bg-surface) rounded-2xl p-4 shadow-md border border-(--color-border-main)">
+    <div className="text-[10px] uppercase tracking-wider text-(--color-text-muted) font-bold mb-3">
       Subscriptions
     </div>
     <div className="space-y-2.5">
@@ -100,7 +100,7 @@ const SubscriptionsCard = () => (
             >
               {s.initial}
             </div>
-            <span className="text-[11px] font-medium text-slate-900">
+            <span className="text-[11px] font-medium text-(--color-text-main)">
               {s.name}
             </span>
           </div>
@@ -114,17 +114,17 @@ const SubscriptionsCard = () => (
 );
 
 const IncomeExpenseCard = () => (
-  <div className="bg-white rounded-2xl p-4 shadow-md border border-slate-100">
-    <div className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2">
+  <div className="bg-(--color-bg-surface) rounded-2xl p-4 shadow-md border border-(--color-border-main)">
+    <div className="text-[10px] uppercase tracking-wider text-(--color-text-muted) font-bold mb-2">
       Income vs Expense
     </div>
     <div className="grid grid-cols-2 gap-3 mb-3">
       <div>
-        <div className="text-[10px] text-slate-500">Income</div>
+        <div className="text-[10px] text-(--color-text-muted)">Income</div>
         <div className="text-base font-bold text-violet-600">$6.3k</div>
       </div>
       <div>
-        <div className="text-[10px] text-slate-500">Expense</div>
+        <div className="text-[10px] text-(--color-text-muted)">Expense</div>
         <div className="text-base font-bold text-orange-600">$2.4k</div>
       </div>
     </div>
@@ -146,32 +146,34 @@ const IncomeExpenseCard = () => (
 );
 
 const MonthlySummaryCard = () => (
-  <div className="bg-white rounded-2xl p-4 shadow-md border border-slate-100">
+  <div className="bg-(--color-bg-surface) rounded-2xl p-4 shadow-md border border-(--color-border-main)">
     <div className="flex items-center justify-between mb-3">
-      <div className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">
+      <div className="text-[10px] uppercase tracking-wider text-(--color-text-muted) font-bold">
         May 2026
       </div>
       <span className="text-[10px] text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full font-bold">
         Healthy
       </span>
     </div>
-    <div className="text-2xl font-bold tracking-tight text-slate-900 mb-1">
+    <div className="text-2xl font-bold tracking-tight text-(--color-text-main) mb-1">
       $3,936
     </div>
-    <div className="text-[10px] text-slate-500">Net this month</div>
-    <div className="mt-3 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+    <div className="text-[10px] text-(--color-text-muted)">Net this month</div>
+    <div className="mt-3 h-1.5 bg-(--color-bg-muted) rounded-full overflow-hidden">
       <div
         className="h-full bg-linear-to-r from-violet-500 to-violet-700 rounded-full"
         style={{ width: "62%" }}
       />
     </div>
-    <div className="text-[10px] text-slate-500 mt-1.5">62% savings rate</div>
+    <div className="text-[10px] text-(--color-text-muted) mt-1.5">
+      62% savings rate
+    </div>
   </div>
 );
 
 const RecentTransactionsCard = () => (
-  <div className="bg-white rounded-2xl p-4 shadow-md border border-slate-100">
-    <div className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-3">
+  <div className="bg-(--color-bg-surface) rounded-2xl p-4 shadow-md border border-(--color-border-main)">
+    <div className="text-[10px] uppercase tracking-wider text-(--color-text-muted) font-bold mb-3">
       Recent
     </div>
     <div className="space-y-2.5">
@@ -203,7 +205,7 @@ const RecentTransactionsCard = () => (
             >
               <t.icon size={12} />
             </div>
-            <span className="text-[11px] font-medium text-slate-900 truncate">
+            <span className="text-[11px] font-medium text-(--color-text-main) truncate">
               {t.name}
             </span>
           </div>
@@ -219,8 +221,8 @@ const RecentTransactionsCard = () => (
 );
 
 const CategoryDonutCard = () => (
-  <div className="bg-white rounded-2xl p-4 shadow-md border border-slate-100">
-    <div className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-3">
+  <div className="bg-(--color-bg-surface) rounded-2xl p-4 shadow-md border border-(--color-border-main)">
+    <div className="text-[10px] uppercase tracking-wider text-(--color-text-muted) font-bold mb-3">
       Top Categories
     </div>
     <div className="flex items-center gap-3">
@@ -280,9 +282,13 @@ const CategoryDonutCard = () => (
           >
             <div className="flex items-center gap-1.5">
               <div className={`h-1.5 w-1.5 rounded-full ${c.color}`} />
-              <span className="text-slate-600 font-medium">{c.name}</span>
+              <span className="text-(--color-text-muted) font-medium">
+                {c.name}
+              </span>
             </div>
-            <span className="text-slate-900 font-semibold">{c.value}</span>
+            <span className="text-(--color-text-main) font-semibold">
+              {c.value}
+            </span>
           </div>
         ))}
       </div>
@@ -291,25 +297,27 @@ const CategoryDonutCard = () => (
 );
 
 const SavingsGoalCard = () => (
-  <div className="bg-linear-to-br from-emerald-50 via-white to-blue-50 rounded-2xl p-4 shadow-md border border-slate-100">
+  <div className="bg-linear-to-br from-emerald-50 via-white to-blue-50 rounded-2xl p-4 shadow-md border border-(--color-border-main)">
     <div className="flex items-center gap-2 mb-3">
       <div className="h-8 w-8 rounded-lg bg-linear-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
         <Plane size={14} className="text-white" />
       </div>
       <div>
-        <div className="text-xs font-semibold text-slate-900">
+        <div className="text-xs font-semibold text-(--color-text-main)">
           Vacation Fund
         </div>
-        <div className="text-[10px] text-slate-500">Goal: $5,000</div>
+        <div className="text-[10px] text-(--color-text-muted)">
+          Goal: $5,000
+        </div>
       </div>
     </div>
     <div className="flex items-baseline justify-between mb-1.5">
-      <span className="text-lg font-bold tracking-tight text-slate-900">
+      <span className="text-lg font-bold tracking-tight text-(--color-text-main)">
         $3,240
       </span>
       <span className="text-[10px] text-emerald-600 font-bold">65%</span>
     </div>
-    <div className="h-1.5 bg-white rounded-full overflow-hidden">
+    <div className="h-1.5 bg-(--color-bg-surface) rounded-full overflow-hidden">
       <div
         className="h-full bg-linear-to-r from-emerald-400 to-blue-500 rounded-full"
         style={{ width: "65%" }}
@@ -319,7 +327,7 @@ const SavingsGoalCard = () => (
 );
 
 const UpcomingBillCard = () => (
-  <div className="bg-white rounded-2xl p-4 shadow-md border border-slate-100">
+  <div className="bg-(--color-bg-surface) rounded-2xl p-4 shadow-md border border-(--color-border-main)">
     <div className="flex items-center gap-3">
       <div className="h-10 w-10 rounded-xl bg-rose-50 flex items-center justify-center shrink-0">
         <Calendar size={16} className="text-rose-600" />
@@ -328,9 +336,11 @@ const UpcomingBillCard = () => (
         <div className="text-[10px] uppercase tracking-wider text-rose-600 font-bold">
           Due in 2 days
         </div>
-        <div className="text-xs font-semibold text-slate-900">Rent payment</div>
+        <div className="text-xs font-semibold text-(--color-text-main)">
+          Rent payment
+        </div>
       </div>
-      <div className="text-sm font-bold text-slate-900">$1,800</div>
+      <div className="text-sm font-bold text-(--color-text-main)">$1,800</div>
     </div>
   </div>
 );
@@ -446,11 +456,11 @@ const AuthHero = ({ headline, subHeadline }) => {
       <div className="absolute bottom-0 left-0 right-0 h-40 bg-linear-to-t from-white via-white/70 to-transparent pointer-events-none z-20" />
 
       <div className="absolute top-10 left-10 xl:top-14 xl:left-14 z-30 max-w-[70%]">
-        <h1 className="text-5xl xl:text-6xl font-normal tracking-tight text-slate-900 mb-2">
+        <h1 className="text-5xl xl:text-6xl font-normal tracking-tight text-(--color-text-main) mb-2">
           {headline}
         </h1>
 
-        <p className="text-base text-slate-600">{subHeadline}</p>
+        <p className="text-base text-(--color-text-muted)">{subHeadline}</p>
       </div>
     </div>
   );

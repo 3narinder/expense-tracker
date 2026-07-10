@@ -1,17 +1,20 @@
 const variants = {
   primary:
-    "bg-linear-to-b from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white shadow-md shadow-violet-500/25",
-  secondary: "bg-slate-100 hover:bg-slate-200 text-slate-900",
-  ghost: "hover:bg-slate-100 text-slate-700",
+    "bg-(--color-accent) hover:bg-(--color-accent-hover) text-(--color-accent-foreground) shadow-sm transition-colors",
+  secondary:
+    "bg-(--color-bg-muted) hover:bg-(--color-bg-hover) text-(--color-text-main) transition-colors",
+  ghost:
+    "hover:bg-(--color-bg-muted) text-(--color-text-main) transition-colors",
   danger:
-    "bg-linear-to-b from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white shadow-md shadow-rose-500/25",
-  outline: "border border-slate-200 hover:bg-slate-50 text-slate-700",
+    "bg-(--color-danger) hover:bg-red-500 text-(--color-accent-foreground) shadow-sm transition-colors",
+  outline:
+    "border border-(--color-border-main) hover:bg-(--color-bg-muted) text-(--color-text-main) transition-colors",
 };
 
 const sizes = {
-  sm: "px-4 py-1.5 text-sm",
-  md: "px-5 py-2.5 text-sm",
-  lg: "px-6 py-3 text-base",
+  sm: "px-4 py-1.5 text-sm font-medium",
+  md: "px-5 py-2.5 text-sm font-medium",
+  lg: "px-6 py-3 text-base font-semibold",
 };
 
 const Button = ({
@@ -23,7 +26,7 @@ const Button = ({
 }) => {
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 rounded-full font-medium transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     >
       {children}

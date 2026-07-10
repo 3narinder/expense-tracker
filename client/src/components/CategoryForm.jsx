@@ -24,23 +24,22 @@ const ICONS = [
   "sparkles",
 ];
 const COLORS = [
-  "#10B981",
-  "#22C55E",
-  "#14B8A6",
-  "#06B6D4",
-  "#0EA5E9",
-  "#3B82F6",
-  "#6366F1",
-  "#8B5CF6",
-  "#A855F7",
-  "#D946EF",
-  "#EC4899",
-  "#F43F5E",
-  "#EF4444",
-  "#F97316",
-  "#F59E0B",
-  "#EAB308",
-  "#64748B",
+  "#71717a", // muted
+  "#64748b", // slate
+  "#78716c", // stone
+  "#d4af37", // gold
+  "#22c55e", // success
+  "#3b82f6", // info
+  "#ef4444", // danger
+  "#f59e0b", // warning
+  "#8b5cf6", // purple
+  "#ec4899", // pink
+  "#06b6d4", // cyan
+  "#14b8a6", // teal
+  "#0ea5e9", // sky
+  "#6366f1", // indigo
+  "#a855f7", // fuchsia
+  "#eab308", // lime
 ];
 
 const CategoryForm = ({ initial, onSaved, onCancel }) => {
@@ -50,7 +49,7 @@ const CategoryForm = ({ initial, onSaved, onCancel }) => {
     name: initial?.name || "",
     type: initial?.type || "expense",
     icon: initial?.icon || "tag",
-    color: initial?.color || "#10B981",
+    color: initial?.color || "#71717a",
   });
 
   const isSaving = isCreating || isUpdating;
@@ -59,13 +58,11 @@ const CategoryForm = ({ initial, onSaved, onCancel }) => {
     e.preventDefault();
 
     if (initial) {
-      //* Edit mode
       updateCategory(
         { id: initial.id, updatedCategory: form },
         { onSuccess: onSaved },
       );
     } else {
-      //* Create mode
       addCategory(form, { onSuccess: onSaved });
     }
   };
@@ -91,7 +88,7 @@ const CategoryForm = ({ initial, onSaved, onCancel }) => {
       )}
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-2">
+        <label className="block text-sm font-medium text-(--color-text-main) mb-2">
           Icon
         </label>
         <div className="grid grid-cols-8 gap-2">
@@ -102,10 +99,10 @@ const CategoryForm = ({ initial, onSaved, onCancel }) => {
                 key={name}
                 type="button"
                 onClick={() => setForm({ ...form, icon: name })}
-                className={`h-10 rounded-lg border flex items-center justify-center transition ${
+                className={`h-10 rounded-lg border flex items-center justify-center transition-all ${
                   form.icon === name
-                    ? "border-violet-500 bg-violet-50 text-violet-700"
-                    : "border-slate-200 text-slate-600 hover:border-slate-300"
+                    ? "border-[var(--color-accent)] bg-[var(--color-bg-muted)] text-[var(--color-accent)]"
+                    : "border-[var(--color-border-main)] text-(--color-text-muted) hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
                 }`}
               >
                 <Icon size={18} />
@@ -116,7 +113,7 @@ const CategoryForm = ({ initial, onSaved, onCancel }) => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-2">
+        <label className="block text-sm font-medium text-(--color-text-main) mb-2">
           Color
         </label>
         <div className="flex flex-wrap gap-2">
@@ -125,8 +122,9 @@ const CategoryForm = ({ initial, onSaved, onCancel }) => {
               key={color}
               type="button"
               onClick={() => setForm({ ...form, color })}
-              className={`h-8 w-8 rounded-full transition ring-offset-2 ${form.color === color ? "ring-2 ring-slate-900" : "ring-0"}`}
+              className={`h-8 w-8 rounded-lg transition-all ring-offset-2 border-2 ${form.color === color ? "ring-2 ring-[var(--color-accent)]" : "ring-0 border-[var(--color-border-main)]"}`}
               style={{ backgroundColor: color }}
+              title={color}
             />
           ))}
         </div>

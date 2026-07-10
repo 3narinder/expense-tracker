@@ -26,26 +26,29 @@ const statusStyles = {
   good: {
     Icon: CheckCircle2,
     label: "On Track",
-    bg: "bg-emerald-50/60 border border-emerald-100",
-    text: "text-emerald-800",
-    iconColor: "text-emerald-600",
-    bar: "bg-emerald-500",
+    bg: "bg-(--color-success)/10 border border-(--color-success)/25",
+    text: "text-(--color-success) font-bold",
+    iconColor: "text-(--color-success)",
+    msgText: "text-(--color-text-main)/90",
+    bar: "bg-(--color-success)",
   },
   caution: {
     Icon: AlertTriangle,
     label: "Warning",
-    bg: "bg-amber-50/60 border border-amber-100",
-    text: "text-amber-800",
-    iconColor: "text-amber-600",
-    bar: "bg-amber-500",
+    bg: "bg-(--color-warning)/10 border border-(--color-warning)/25",
+    text: "text-(--color-warning) font-bold",
+    iconColor: "text-(--color-warning)",
+    msgText: "text-(--color-text-main)/90",
+    bar: "bg-(--color-warning)",
   },
   concerning: {
     Icon: AlertOctagon,
     label: "Over Budget",
-    bg: "bg-rose-50/60 border border-rose-100",
-    text: "text-rose-800",
-    iconColor: "text-rose-600",
-    bar: "bg-rose-500",
+    bg: "bg-(--color-danger)/10 border border-(--color-danger)/25",
+    text: "text-(--color-danger) font-bold",
+    iconColor: "text-(--color-danger)",
+    msgText: "text-(--color-text-main)/90",
+    bar: "bg-(--color-danger)",
   },
 };
 
@@ -119,12 +122,12 @@ const Budgets = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-50/50 p-6 rounded-3xl border border-slate-100">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-(--color-bg-muted)/50 p-6 rounded-3xl border border-(--color-border-main)">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-3xl font-bold text-(--color-text-main) tracking-tight">
             Budgets
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-(--color-text-muted) mt-1">
             Track multi-category limits with automatic health alerts.
           </p>
         </div>
@@ -152,12 +155,12 @@ const Budgets = () => {
             return (
               <div
                 key={b.id}
-                className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
+                className="bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="min-w-0">
-                      <h3 className="text-lg font-bold text-slate-800 tracking-tight capitalize truncate">
+                      <h3 className="text-lg font-bold text-(--color-text-main) tracking-tight capitalize truncate">
                         {b.name}
                       </h3>
                       <div className="flex flex-wrap gap-1.5 mt-2">
@@ -172,10 +175,10 @@ const Budgets = () => {
                         ))}
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 shrink-0 bg-slate-50 p-1 rounded-xl border border-slate-100">
+                    <div className="flex items-center gap-1 shrink-0 bg-(--color-bg-muted) p-1 rounded-xl border border-(--color-border-main)">
                       <button
                         onClick={() => onEdit(b)}
-                        className="p-2 hover:bg-white rounded-lg text-slate-500 transition"
+                        className="p-2 hover:bg-(--color-bg-surface) rounded-lg text-(--color-text-muted) transition"
                       >
                         <Pencil size={14} />
                       </button>
@@ -189,30 +192,30 @@ const Budgets = () => {
                   </div>
 
                   <div className="mb-4 flex items-baseline justify-between">
-                    <span className="text-3xl font-extrabold tracking-tight text-slate-900">
+                    <span className="text-3xl font-extrabold tracking-tight text-(--color-text-main)">
                       {formatCurrency(b.spent, currency)}
                     </span>
-                    <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    <span className="text-xs font-medium text-(--color-text-ghost) uppercase tracking-wider">
                       of {formatCurrency(b.amount, currency)}
                     </span>
                   </div>
 
-                  <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden mb-3">
+                  <div className="h-2.5 bg-(--color-bg-muted) rounded-full overflow-hidden mb-3">
                     <div
                       className={`h-full ${style.bar} transition-all duration-500 ease-out rounded-full`}
                       style={{ width: `${Math.min(b.percentUsed, 100)}%` }}
                     />
                   </div>
 
-                  <div className="flex items-center justify-between text-xs font-medium text-slate-500 mb-4">
-                    <span className="capitalize bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">
+                  <div className="flex items-center justify-between text-xs font-medium text-(--color-text-muted) mb-4">
+                    <span className="capitalize bg-(--color-bg-muted) text-(--color-text-muted) px-2 py-0.5 rounded-md">
                       {b.period} · {b.percentUsed}% filled
                     </span>
                     <span
                       className={
                         isOverBudget
                           ? "text-rose-600 font-semibold"
-                          : "text-slate-600"
+                          : "text-(--color-text-muted)"
                       }
                     >
                       {isOverBudget
@@ -234,7 +237,9 @@ const Budgets = () => {
                       >
                         {style.label}
                       </p>
-                      <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                      <p
+                        className={`text-xs leading-relaxed font-medium ${style.msgText}`}
+                      >
                         {b.analysis?.message}
                       </p>
                     </div>
@@ -265,7 +270,7 @@ const Budgets = () => {
         title="Delete budget?"
         size="sm"
       >
-        <p className="text-sm text-slate-600 mb-5">
+        <p className="text-sm text-(--color-text-muted) mb-5">
           This will stop tracking this budget's limit. This action can't be
           undone.
         </p>

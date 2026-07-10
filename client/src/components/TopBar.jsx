@@ -1,5 +1,6 @@
 import { Bell, Search } from "lucide-react";
 import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
+import ThemeToggle from "./ThemeToggle.jsx";
 
 const greeting = () => {
   const h = new Date().getHours();
@@ -20,29 +21,31 @@ const TopBar = () => {
   const firstName = user?.name?.split(" ")[0] || "";
 
   return (
-    <header className="h-16 bg-white border-b border-slate-100 flex items-center justify-between px-6 shrink-0">
+    <header className="h-16 bg-[var(--color-bg-surface)] border-b border-[var(--color-border-main)] flex items-center justify-between px-6 shrink-0">
       <div>
-        <div className="text-sm font-semibold text-slate-900 tracking-tight">
+        <div className="text-sm font-semibold text-(--color-text-main) tracking-tight">
           {greeting()}
           {firstName && `, ${firstName}`} 👋
         </div>
-        <div className="text-xs text-slate-500">{formatToday()}</div>
+        <div className="text-xs text-(--color-text-muted)">{formatToday()}</div>
       </div>
 
       <div className="flex items-center gap-1">
         <button
           title="Search"
-          className="h-9 w-9 rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-900 flex items-center justify-center transition"
+          className="h-9 w-9 rounded-lg text-(--color-text-muted) hover:bg-[var(--color-bg-muted)] hover:text-(--color-text-main) flex items-center justify-center transition-colors"
         >
           <Search size={17} />
         </button>
         <button
           title="Notifications"
-          className="relative h-9 w-9 rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-900 flex items-center justify-center transition"
+          className="relative h-9 w-9 rounded-lg text-(--color-text-muted) hover:bg-[var(--color-bg-muted)] hover:text-(--color-text-main) flex items-center justify-center transition-colors"
         >
           <Bell size={17} />
-          <span className="absolute top-2 right-2 h-2 w-2 bg-rose-500 rounded-full ring-2 ring-white" />
+          <span className="absolute top-2 right-2 h-2 w-2 bg-[var(--color-danger)] rounded-full ring-2 ring-[var(--color-bg-surface)]" />
         </button>
+        <div className="w-px h-6 bg-[var(--color-border-main)] mx-1" />
+        <ThemeToggle />
       </div>
     </header>
   );

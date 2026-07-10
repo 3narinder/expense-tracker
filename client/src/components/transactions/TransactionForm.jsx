@@ -63,10 +63,10 @@ const TransactionForm = ({
         <button
           type="button"
           onClick={() => setForm({ ...form, type: "expense", categoryId: "" })}
-          className={`py-2 px-4 rounded-lg text-sm font-medium transition ${
+          className={`py-2 px-4 rounded-lg text-sm font-medium transition-all ${
             form.type === "expense"
-              ? "bg-rose-500 text-white"
-              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              ? "bg-red-600 dark:bg-red-700 text-white shadow-sm"
+              : "bg-[var(--color-bg-muted)] text-(--color-text-main) hover:bg-[var(--color-bg-hover)]"
           }`}
         >
           Expense
@@ -74,10 +74,10 @@ const TransactionForm = ({
         <button
           type="button"
           onClick={() => setForm({ ...form, type: "income", categoryId: "" })}
-          className={`py-2 px-4 rounded-lg text-sm font-medium transition ${
+          className={`py-2 px-4 rounded-lg text-sm font-medium transition-all ${
             form.type === "income"
-              ? "bg-emerald-500 text-white"
-              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              ? "bg-green-600 dark:bg-green-700 text-white shadow-sm"
+              : "bg-[var(--color-bg-muted)] text-(--color-text-main) hover:bg-[var(--color-bg-hover)]"
           }`}
         >
           Income

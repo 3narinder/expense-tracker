@@ -45,7 +45,7 @@ const TransactionsTable = ({
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">
+          <tr className="text-left text-xs font-semibold text-(--color-text-muted) uppercase tracking-wider border-b border-(--color-border-main)">
             <th className="pb-4 pr-4">Category</th>
             <th className="pb-4 pr-4">Description</th>
             <th className="pb-4 pr-4">Date</th>
@@ -54,12 +54,15 @@ const TransactionsTable = ({
             <th className="pb-4"></th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100">
+        <tbody className="divide-y divide-(--color-border-main)">
           {transactions.map((t) => {
             const recordId = t.id || t._id;
 
             return (
-              <tr key={recordId} className="hover:bg-slate-50/60 transition">
+              <tr
+                key={recordId}
+                className="hover:bg-(--color-bg-muted) transition-colors"
+              >
                 <td className="py-4 pr-4">
                   <CategoryBadge
                     name={t.categoryId.name || "Uncategorized"}
@@ -68,10 +71,10 @@ const TransactionsTable = ({
                     size="sm"
                   />
                 </td>
-                <td className="py-4 pr-4 text-sm text-slate-700">
+                <td className="py-4 pr-4 text-sm text-(--color-text-main)">
                   {t.description || "—"}
                 </td>
-                <td className="py-4 pr-4 text-sm text-slate-500 whitespace-nowrap">
+                <td className="py-4 pr-4 text-sm text-(--color-text-muted) whitespace-nowrap">
                   {formatDate(t.transactionDate)}
                 </td>
                 <td className="py-4 pr-4">
@@ -83,7 +86,9 @@ const TransactionsTable = ({
                 </td>
                 <td
                   className={`py-4 pr-4 text-sm font-semibold text-right whitespace-nowrap ${
-                    t.type === "income" ? "text-emerald-600" : "text-rose-600"
+                    t.type === "income"
+                      ? "text-(--color-success)"
+                      : "text-(--color-danger)"
                   }`}
                 >
                   {t.type === "income" ? "+" : "-"}
@@ -93,14 +98,14 @@ const TransactionsTable = ({
                   <div className="flex items-center justify-end gap-1">
                     <button
                       onClick={() => onEdit(t)}
-                      className="p-1.5 hover:bg-slate-100 rounded-md text-slate-500 transition"
+                      className="p-1.5 hover:bg-(--color-bg-muted) rounded-lg text-(--color-text-muted) transition-colors"
                       title="Edit entry"
                     >
                       <Pencil size={14} />
                     </button>
                     <button
                       onClick={() => onDelete(recordId)}
-                      className="p-1.5 hover:bg-rose-50 rounded-md text-rose-500 transition"
+                      className="p-1.5 hover:bg-red-100/50 dark:hover:bg-red-900/20 rounded-lg text-red-600 dark:text-red-400 transition-colors"
                       title="Delete entry"
                     >
                       <Trash2 size={14} />

@@ -57,10 +57,10 @@ const Categories = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-3xl font-bold text-(--color-text-main) tracking-tight">
             Categories
           </h1>
-          <p className="text-sm text-slate-500 mt-1.5">
+          <p className="text-sm text-(--color-text-muted) mt-1.5">
             Organize transactions by category
           </p>
         </div>
@@ -82,14 +82,14 @@ const Categories = () => {
             { label: "Expense", items: expense },
           ].map((group) => (
             <div key={group.label}>
-              <h2 className="font-semibold text-slate-900 mb-3">
+              <h2 className="font-semibold text-(--color-text-main) mb-3">
                 {group.label}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {group.items.map((c) => (
                   <div
                     key={c.id}
-                    className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex items-center justify-between"
+                    className="bg-(--color-bg-surface) rounded-2xl border border-(--color-border-main) shadow-sm p-4 flex items-center justify-between"
                   >
                     <CategoryBadge
                       name={c.name}
@@ -102,7 +102,7 @@ const Categories = () => {
                       )}
                       <button
                         onClick={() => onEdit(c)}
-                        className="p-1.5 hover:bg-slate-100 rounded-md text-slate-500 transition"
+                        className="p-1.5 hover:bg-(--color-bg-muted) rounded-md text-(--color-text-muted) transition"
                       >
                         <Pencil size={14} />
                       </button>

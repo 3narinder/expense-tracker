@@ -19,7 +19,6 @@ const getPageNumbers = (page, totalPages) => {
 };
 
 const Pagination = ({ page, totalPages, total, pageSize, onPageChange }) => {
-  // 1. FORCE cast all string inputs to safe Numbers
   const activePage = Number(page) || 1;
   const totalPagesNum = Number(totalPages) || 1;
   const totalItems = Number(total) || 0;
@@ -30,39 +29,43 @@ const Pagination = ({ page, totalPages, total, pageSize, onPageChange }) => {
   const startIdx = (activePage - 1) * size;
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-5 pt-5 border-t border-slate-100">
-      <div className="text-xs text-slate-500">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-5 pt-5 border-t border-[var(--color-border-main)]">
+      <div className="text-xs text-(--color-text-muted)">
         Showing{" "}
-        <span className="font-semibold text-slate-700">
+        <span className="font-semibold text-(--color-text-main)">
           {totalItems === 0 ? 0 : startIdx + 1}–
           {Math.min(startIdx + size, totalItems)}
         </span>{" "}
-        of <span className="font-semibold text-slate-700">{totalItems}</span>
+        of{" "}
+        <span className="font-semibold text-(--color-text-main)">
+          {totalItems}
+        </span>
       </div>
       <div className="flex items-center gap-1">
-        {/* Prev Button */}
         <button
           onClick={() => onPageChange(Math.max(1, activePage - 1))}
           disabled={activePage === 1}
-          className="h-8 w-8 flex items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
+          className="h-8 w-8 flex items-center justify-center rounded-lg text-(--color-text-muted) hover:bg-[var(--color-bg-muted)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           <ChevronLeft size={16} />
         </button>
 
-        {/* Page Numbers */}
         {getPageNumbers(activePage, totalPagesNum).map((p, i) =>
           p === "…" ? (
-            <span key={`gap-${i}`} className="px-1.5 text-slate-400 text-sm">
+            <span
+              key={`gap-${i}`}
+              className="px-1.5 text-[var(--color-text-ghost)] text-sm"
+            >
               {p}
             </span>
           ) : (
             <button
               key={p}
               onClick={() => onPageChange(p)}
-              className={`h-8 min-w-8 px-2.5 rounded-lg text-sm font-medium transition ${
+              className={`h-8 min-w-8 px-2.5 rounded-lg text-sm font-medium transition-colors ${
                 activePage === p
-                  ? "bg-violet-600 text-white shadow-sm shadow-violet-500/30"
-                  : "text-slate-600 hover:bg-slate-100"
+                  ? "bg-[var(--color-accent)] text-[var(--color-bg-surface)] shadow-sm"
+                  : "text-(--color-text-muted) hover:bg-[var(--color-bg-muted)]"
               }`}
             >
               {p}
@@ -70,11 +73,10 @@ const Pagination = ({ page, totalPages, total, pageSize, onPageChange }) => {
           ),
         )}
 
-        {/* Next Button */}
         <button
           onClick={() => onPageChange(Math.min(totalPagesNum, activePage + 1))}
           disabled={activePage === totalPagesNum}
-          className="h-8 w-8 flex items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
+          className="h-8 w-8 flex items-center justify-center rounded-lg text-(--color-text-muted) hover:bg-[var(--color-bg-muted)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           <ChevronRight size={16} />
         </button>

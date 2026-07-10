@@ -27,21 +27,23 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-white">
+    <div className="min-h-screen flex bg-(--color-bg-surface)">
       <div className="flex-1 flex flex-col px-6 sm:px-10 lg:px-14 py-8 order-1">
         <div className="flex justify-start items-center gap-2">
           <div className="h-9 w-9 rounded-xl bg-linear-to-br from-violet-400 to-violet-600 flex items-center justify-center">
             <Wallet size={18} className="text-white" />
           </div>
-          <span className="font-bold text-xl text-slate-900">ExpenseAI</span>
+          <span className="font-bold text-xl text-(--color-text-main)">
+            ExpenseAI
+          </span>
         </div>
 
         <div className="flex-1 flex items-center justify-center py-6">
           <div className="w-full max-w-md">
-            <h2 className="text-4xl font-bold text-slate-900 tracking-tight mb-2">
+            <h2 className="text-4xl font-bold text-(--color-text-main) tracking-tight mb-2">
               Get Started
             </h2>
-            <p className="text-slate-500 mb-8">
+            <p className="text-(--color-text-muted) mb-8">
               Create your AI-powered finance profile
             </p>
 
@@ -59,7 +61,7 @@ const Register = () => {
                   onChange={(e) =>
                     setForm({ ...form, username: e.target.value })
                   }
-                  className="w-full bg-slate-100/80 hover:bg-slate-100 focus:bg-white border-2 border-transparent focus:border-violet-500 rounded-2xl px-5 py-3.5 text-slate-900 text-sm focus:outline-none transition disabled:opacity-50"
+                  className="w-full bg-(--color-bg-muted)/80 hover:bg-(--color-bg-muted) focus:bg-(--color-bg-surface) border-2 border-transparent focus:border-violet-500 rounded-2xl px-5 py-3.5 text-(--color-text-main) text-sm focus:outline-none transition disabled:opacity-50"
                   placeholder="johndoe"
                 />
               </div>
@@ -75,7 +77,7 @@ const Register = () => {
                   disabled={isLoading}
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full bg-slate-100/80 hover:bg-slate-100 focus:bg-white border-2 border-transparent focus:border-violet-500 rounded-2xl px-5 py-3.5 text-slate-900 text-sm focus:outline-none transition disabled:opacity-50"
+                  className="w-full bg-(--color-bg-muted)/80 hover:bg-(--color-bg-muted) focus:bg-(--color-bg-surface) border-2 border-transparent focus:border-violet-500 rounded-2xl px-5 py-3.5 text-(--color-text-main) text-sm focus:outline-none transition disabled:opacity-50"
                   placeholder="you@example.com"
                 />
               </div>
@@ -94,14 +96,14 @@ const Register = () => {
                     onChange={(e) =>
                       setForm({ ...form, password: e.target.value })
                     }
-                    className="w-full bg-slate-100/80 hover:bg-slate-100 focus:bg-white border-2 border-transparent focus:border-violet-500 rounded-2xl px-5 py-3.5 pr-12 text-slate-900 text-sm focus:outline-none transition disabled:opacity-50"
+                    className="w-full bg-(--color-bg-muted)/80 hover:bg-(--color-bg-muted) focus:bg-(--color-bg-surface) border-2 border-transparent focus:border-violet-500 rounded-2xl px-5 py-3.5 pr-12 text-(--color-text-main) text-sm focus:outline-none transition disabled:opacity-50"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     disabled={isLoading}
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-(--color-text-ghost) hover:text-(--color-text-muted) transition"
                     tabIndex={-1}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -120,7 +122,7 @@ const Register = () => {
                   onChange={(e) =>
                     setForm({ ...form, currency: e.target.value })
                   }
-                  className="w-full bg-slate-100/80 hover:bg-slate-100 focus:bg-white border-2 border-transparent focus:border-violet-500 rounded-2xl px-5 py-3.5 text-slate-900 text-sm focus:outline-none transition appearance-none cursor-pointer disabled:opacity-50"
+                  className="w-full bg-(--color-bg-muted)/80 hover:bg-(--color-bg-muted) focus:bg-(--color-bg-surface) border-2 border-transparent focus:border-violet-500 rounded-2xl px-5 py-3.5 text-(--color-text-main) text-sm focus:outline-none transition appearance-none cursor-pointer disabled:opacity-50"
                 >
                   <option value="USD">USD ($) - US Dollar</option>
                   <option value="INR">INR (₹) - Indian Rupee</option>
@@ -146,7 +148,7 @@ const Register = () => {
               </button>
             </form>
 
-            <p className="text-center mt-6 text-sm text-slate-500">
+            <p className="text-center mt-6 text-sm text-(--color-text-muted)">
               Already have an account?{" "}
               <Link
                 to="/login"
@@ -158,14 +160,16 @@ const Register = () => {
           </div>
         </div>
 
-        <div className="flex justify-start gap-6 text-xs text-slate-500">
-          <a className="hover:text-slate-900 transition cursor-pointer">
+        <div className="flex justify-start gap-6 text-xs text-(--color-text-muted)">
+          <a className="hover:text-(--color-text-main) transition cursor-pointer">
             Privacy Policy
           </a>
-          <a className="hover:text-slate-900 transition cursor-pointer">
+          <a className="hover:text-(--color-text-main) transition cursor-pointer">
             Terms
           </a>
-          <a className="hover:text-slate-900 transition cursor-pointer">FAQ</a>
+          <a className="hover:text-(--color-text-main) transition cursor-pointer">
+            FAQ
+          </a>
         </div>
       </div>
 

@@ -29,21 +29,25 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-white">
+    <div className="min-h-screen flex bg-(--color-bg-surface)">
       <div className="flex-1 flex flex-col px-6 sm:px-10 lg:px-14 py-8 order-1">
         <div className="flex justify-start items-center gap-2">
           <div className="h-9 w-9 rounded-xl bg-linear-to-br from-violet-400 to-violet-600 flex items-center justify-center">
             <Wallet size={18} className="text-white" />
           </div>
-          <span className="font-bold text-xl text-slate-900">ExpenseAI</span>
+          <span className="font-bold text-xl text-(--color-text-main)">
+            ExpenseAI
+          </span>
         </div>
 
         <div className="flex-1 flex items-center justify-center py-10">
           <div className="w-full max-w-md">
-            <h2 className="text-4xl font-bold text-slate-900 tracking-tight mb-2">
+            <h2 className="text-4xl font-bold text-(--color-text-main) tracking-tight mb-2">
               Sign In
             </h2>
-            <p className="text-slate-500 mb-10">Please login to continue</p>
+            <p className="text-(--color-text-muted) mb-10">
+              Please login to continue
+            </p>
 
             <form onSubmit={onSubmit} className="space-y-5">
               <div className="space-y-2">
@@ -55,7 +59,7 @@ const Login = () => {
                   required
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full bg-slate-100/80 hover:bg-slate-100 focus:bg-white border-2 border-transparent focus:border-violet-500 rounded-2xl px-5 py-4 text-slate-900 text-sm focus:outline-none transition"
+                  className="w-full bg-(--color-bg-muted)/80 hover:bg-(--color-bg-muted) focus:bg-(--color-bg-surface) border-2 border-transparent focus:border-violet-500 rounded-2xl px-5 py-4 text-(--color-text-main) text-sm focus:outline-none transition"
                   placeholder="you@example.com"
                 />
               </div>
@@ -72,13 +76,13 @@ const Login = () => {
                     onChange={(e) =>
                       setForm({ ...form, password: e.target.value })
                     }
-                    className="w-full bg-slate-100/80 hover:bg-slate-100 focus:bg-white border-2 border-transparent focus:border-violet-500 rounded-2xl px-5 py-4 pr-12 text-slate-900 text-sm focus:outline-none transition"
+                    className="w-full bg-(--color-bg-muted)/80 hover:bg-(--color-bg-muted) focus:bg-(--color-bg-surface) border-2 border-transparent focus:border-violet-500 rounded-2xl px-5 py-4 pr-12 text-(--color-text-main) text-sm focus:outline-none transition"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-(--color-text-ghost) hover:text-(--color-text-muted) transition"
                     tabIndex={-1}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -102,7 +106,7 @@ const Login = () => {
               </button>
             </form>
 
-            <p className="text-center mt-8 text-sm text-slate-500">
+            <p className="text-center mt-8 text-sm text-(--color-text-muted)">
               No Account Yet?{" "}
               <Link
                 to="/register"
@@ -114,14 +118,16 @@ const Login = () => {
           </div>
         </div>
 
-        <div className="flex justify-start gap-6 text-xs text-slate-500">
-          <a className="hover:text-slate-900 transition cursor-pointer">
+        <div className="flex justify-start gap-6 text-xs text-(--color-text-muted)">
+          <a className="hover:text-(--color-text-main) transition cursor-pointer">
             Privacy Policy
           </a>
-          <a className="hover:text-slate-900 transition cursor-pointer">
+          <a className="hover:text-(--color-text-main) transition cursor-pointer">
             Terms
           </a>
-          <a className="hover:text-slate-900 transition cursor-pointer">FAQ</a>
+          <a className="hover:text-(--color-text-main) transition cursor-pointer">
+            FAQ
+          </a>
         </div>
       </div>
 

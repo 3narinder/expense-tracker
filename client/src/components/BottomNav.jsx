@@ -17,25 +17,37 @@ const navItems = [
 
 const BottomNav = () => {
   return (
-    <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-slate-100 flex items-stretch justify-around pb-[env(safe-area-inset-bottom)]">
+    <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-(--color-bg-surface) border-t border-(--color-border-main) flex items-stretch justify-around pb-[env(safe-area-inset-bottom)]">
       {navItems.map(({ to, label, icon: Icon }) => (
         <NavLink
           key={to}
           to={to}
           end={to === "/"}
           className={({ isActive }) =>
-            `flex flex-1 flex-col items-center justify-center gap-1 py-2 text-[11px] font-medium transition ${
-              isActive ? "text-violet-600" : "text-slate-500"
+            `flex flex-1 flex-col items-center justify-center gap-1 py-3 text-[11px] font-medium transition-colors ${
+              isActive
+                ? "text-(--color-text-main)"
+                : "text-(--color-text-muted)"
             }`
           }
         >
           {({ isActive }) => (
             <>
-              <Icon
-                size={20}
-                strokeWidth={isActive ? 2.25 : 1.75}
-                className={isActive ? "text-violet-600" : "text-slate-400"}
-              />
+              <div
+                className={
+                  isActive ? "p-2 rounded-lg bg-(--color-bg-muted)" : ""
+                }
+              >
+                <Icon
+                  size={20}
+                  strokeWidth={isActive ? 2.25 : 1.75}
+                  className={
+                    isActive
+                      ? "text-(--color-accent)"
+                      : "text-(--color-text-muted)"
+                  }
+                />
+              </div>
               {label}
             </>
           )}

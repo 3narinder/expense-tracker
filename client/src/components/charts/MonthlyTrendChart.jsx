@@ -13,7 +13,7 @@ import { formatMonth, formatCurrency } from "../../utils/format.js";
 const MonthlyTrendChart = ({ data, currency }) => {
   if (!data || data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-sm text-slate-400">
+      <div className="flex items-center justify-center h-64 text-sm text-(--color-text-muted)">
         No data yet
       </div>
     );
@@ -29,29 +29,19 @@ const MonthlyTrendChart = ({ data, currency }) => {
     <div className="h-72">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={formatted} barCategoryGap="35%" barGap={6}>
-          <defs>
-            <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#A78BFA" />
-              <stop offset="100%" stopColor="#7C3AED" />
-            </linearGradient>
-            <linearGradient id="expenseGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#FB923C" />
-              <stop offset="100%" stopColor="#EA580C" />
-            </linearGradient>
-          </defs>
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke="#e5e7eb"
+            stroke="#d4d4d8"
             vertical={false}
           />
           <XAxis
             dataKey="month"
-            tick={{ fill: "#6b7280", fontSize: 12 }}
+            tick={{ fill: "#a1a1aa", fontSize: 12 }}
             tickLine={false}
             axisLine={false}
           />
           <YAxis
-            tick={{ fill: "#6b7280", fontSize: 12 }}
+            tick={{ fill: "#a1a1aa", fontSize: 12 }}
             tickLine={false}
             axisLine={false}
             width={48}
@@ -59,32 +49,41 @@ const MonthlyTrendChart = ({ data, currency }) => {
           <Tooltip
             cursor={false}
             contentStyle={{
-              borderRadius: 12,
-              border: "none",
-              boxShadow: "0 4px 12px rgba(107, 114, 128, 0.15)",
+              borderRadius: 8,
+              border: "1px solid #d4d4d8",
+              backgroundColor: "var(--color-bg-surface)",
+              color: "var(--color-text-main)",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
               fontSize: 12,
             }}
             formatter={(value) => formatCurrency(value, currency)}
+            labelStyle={{ color: "var(--color-text-main)" }}
           />
           <Legend
-            wrapperStyle={{ fontSize: 12, paddingTop: 12 }}
+            wrapperStyle={{
+              fontSize: 12,
+              paddingTop: 12,
+              color: "var(--color-text-main)",
+            }}
             iconType="circle"
             payload={[
-              { value: "income", type: "circle", color: "#7C3AED" },
-              { value: "expense", type: "circle", color: "#EA580C" },
+              { value: "income", type: "circle", color: "#22c55e" },
+              { value: "expense", type: "circle", color: "#ef4444" },
             ]}
           />
           <Bar
             dataKey="income"
-            fill="url(#incomeGradient)"
-            radius={[10, 10, 10, 10]}
-            background={{ fill: "#f1f5f9", radius: 10 }}
+            fill="#22c55e"
+            radius={[8, 8, 0, 0]}
+            opacity={0.85}
+            background={{ fill: "var(--color-bg-muted)", radius: 8 }}
           />
           <Bar
             dataKey="expense"
-            fill="url(#expenseGradient)"
-            radius={[10, 10, 10, 10]}
-            background={{ fill: "#f1f5f9", radius: 10 }}
+            fill="#ef4444"
+            radius={[8, 8, 0, 0]}
+            opacity={0.85}
+            background={{ fill: "var(--color-bg-muted)", radius: 8 }}
           />
         </BarChart>
       </ResponsiveContainer>

@@ -67,10 +67,11 @@ const BudgetForm = ({ initial, categories = [], onSaved, onCancel }) => {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-semibold text-slate-700">
-          Tracked Categories <span className="text-rose-500">*</span>
+        <label className="block text-sm font-semibold text-(--color-text-main)">
+          Tracked Categories{" "}
+          <span className="text-[var(--color-danger)]">*</span>
         </label>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-42.5 overflow-y-auto p-1 bg-slate-50/50 rounded-2xl border border-slate-100">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-42.5 overflow-y-auto p-1 bg-[var(--color-bg-muted)]/50 rounded-lg border border-[var(--color-border-main)]">
           {categories.map((cat) => {
             const isSelected = form.categoryIds.includes(cat.id);
             return (
@@ -78,21 +79,24 @@ const BudgetForm = ({ initial, categories = [], onSaved, onCancel }) => {
                 key={cat.id}
                 type="button"
                 onClick={() => toggleCategorySelection(cat.id)}
-                className={`flex items-center justify-between px-3 py-2.5 rounded-xl border text-sm font-medium transition-all text-left ${
+                className={`flex items-center justify-between px-3 py-2.5 rounded-lg border text-sm font-medium transition-all text-left ${
                   isSelected
-                    ? "border-slate-900 bg-slate-900 text-white shadow-sm"
-                    : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                    ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-bg-surface)] shadow-sm"
+                    : "border-[var(--color-border-main)] bg-[var(--color-bg-surface)] text-(--color-text-muted) hover:bg-[var(--color-bg-muted)]"
                 }`}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div
                     className="w-3 h-3 rounded-full shrink-0"
-                    style={{ backgroundColor: cat.color || "#64748B" }}
+                    style={{ backgroundColor: cat.color || "#71717a" }}
                   />
                   <span className="truncate">{cat.name}</span>
                 </div>
                 {isSelected && (
-                  <Check size={14} className="text-white shrink-0 ml-1" />
+                  <Check
+                    size={14}
+                    className="text-[var(--color-bg-surface)] shrink-0 ml-1"
+                  />
                 )}
               </button>
             );
@@ -120,12 +124,12 @@ const BudgetForm = ({ initial, categories = [], onSaved, onCancel }) => {
         />
       </div>
 
-      <div className="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+      <div className="space-y-3 bg-[var(--color-bg-muted)] p-4 rounded-lg border border-[var(--color-border-main)]">
         <div className="flex justify-between items-center">
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide">
+          <label className="block text-xs font-bold text-(--color-text-main) uppercase tracking-wide">
             Alert Threshold
           </label>
-          <span className="text-xs font-bold text-slate-900 bg-white px-2 py-0.5 rounded-md border border-slate-200">
+          <span className="text-xs font-bold text-(--color-text-main) bg-[var(--color-bg-surface)] px-2 py-0.5 rounded-lg border border-[var(--color-border-main)]">
             {form.alertThreshold}%
           </span>
         </div>
@@ -138,11 +142,11 @@ const BudgetForm = ({ initial, categories = [], onSaved, onCancel }) => {
           onChange={(e) =>
             setForm({ ...form, alertThreshold: parseInt(e.target.value) })
           }
-          className="w-full accent-slate-900 h-1.5 bg-slate-200 rounded-lg cursor-pointer appearance-none"
+          className="w-full h-1.5 bg-[var(--color-border-main)] rounded-lg cursor-pointer appearance-none accent-[var(--color-accent)]"
         />
       </div>
 
-      <div className="flex gap-3 justify-end pt-3 border-t border-slate-100">
+      <div className="flex gap-3 justify-end pt-3 border-t border-[var(--color-border-main)]">
         <Button
           type="button"
           variant="outline"
@@ -151,11 +155,7 @@ const BudgetForm = ({ initial, categories = [], onSaved, onCancel }) => {
         >
           Cancel
         </Button>
-        <Button
-          type="submit"
-          disabled={saving}
-          className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white"
-        >
+        <Button type="submit" disabled={saving}>
           {saving ? "Saving..." : initial ? "Save Changes" : "Create Budget"}
         </Button>
       </div>

@@ -28,7 +28,7 @@ const ActionCard = ({
   <button
     onClick={onClick}
     disabled={generating}
-    className="group relative overflow-hidden bg-white rounded-3xl border border-slate-100 p-6 text-left hover:border-slate-200 hover:shadow-md transition disabled:opacity-60 disabled:cursor-not-allowed"
+    className="group relative overflow-hidden bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) p-6 text-left hover:border-slate-200 hover:shadow-md transition disabled:opacity-60 disabled:cursor-not-allowed"
   >
     <div className="flex items-start justify-between mb-4">
       <div
@@ -45,8 +45,12 @@ const ActionCard = ({
         />
       )}
     </div>
-    <h3 className="text-lg font-bold text-slate-900 mb-1.5">{title}</h3>
-    <p className="text-sm text-slate-500 mb-5 leading-relaxed">{description}</p>
+    <h3 className="text-lg font-bold text-(--color-text-main) mb-1.5">
+      {title}
+    </h3>
+    <p className="text-sm text-(--color-text-muted) mb-5 leading-relaxed">
+      {description}
+    </p>
     <div className="flex items-center justify-between">
       <span
         className={`inline-flex items-center gap-1.5 text-sm font-semibold ${accentText}`}
@@ -60,7 +64,7 @@ const ActionCard = ({
         )}
       </span>
       {lastGenerated && (
-        <span className="text-xs text-slate-400">
+        <span className="text-xs text-(--color-text-ghost)">
           Last: {timeAgo(lastGenerated)}
         </span>
       )}
@@ -137,10 +141,10 @@ const Insights = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+        <h1 className="text-3xl font-bold text-(--color-text-main) tracking-tight">
           AI Insights
         </h1>
-        <p className="text-sm text-slate-500 mt-1.5">
+        <p className="text-sm text-(--color-text-muted) mt-1.5">
           Personalized financial analysis powered by Gemini — generate insights
           and watch your money smarter
         </p>
@@ -202,11 +206,11 @@ const Insights = () => {
 
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+          <h2 className="text-lg font-bold text-(--color-text-main) tracking-tight">
             Recent Analyses
           </h2>
           {!loading && insights.length > 0 && (
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-(--color-text-muted)">
               {insights.length}{" "}
               {insights.length === 1 ? "analysis" : "analyses"}
             </span>
@@ -214,11 +218,11 @@ const Insights = () => {
         </div>
 
         {loading ? (
-          <div className="bg-white rounded-3xl border border-slate-100 py-16 flex justify-center">
+          <div className="bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) py-16 flex justify-center">
             <Spinner size="lg" />
           </div>
         ) : insights.length === 0 ? (
-          <div className="bg-white rounded-3xl border border-slate-100">
+          <div className="bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main)">
             <EmptyState
               icon={Sparkles}
               title="No insights yet"

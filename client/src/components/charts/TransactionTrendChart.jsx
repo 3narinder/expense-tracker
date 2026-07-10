@@ -26,8 +26,8 @@ const CustomTooltip = ({ active, payload, label, currency }) => {
   const point = payload[0].payload;
 
   return (
-    <div className="bg-white/95 backdrop-blur-sm border border-slate-100 shadow-xl rounded-xl p-3.5 min-w-50 text-xs">
-      <div className="font-semibold text-slate-700 pb-2 mb-3 border-b border-slate-100">
+    <div className="bg-(--color-bg-surface)/95 backdrop-blur-sm border border-(--color-border-main) shadow-xl rounded-xl p-3.5 min-w-50 text-xs">
+      <div className="font-semibold text-slate-700 pb-2 mb-3 border-b border-(--color-border-main)">
         {formatLabel(label)}
       </div>
 
@@ -44,7 +44,7 @@ const CustomTooltip = ({ active, payload, label, currency }) => {
                 {point.incomeByCategory.map((c) => (
                   <div
                     key={c.name}
-                    className="flex justify-between items-center text-slate-500"
+                    className="flex justify-between items-center text-(--color-text-muted)"
                   >
                     <span className="truncate pr-3">{c.name}</span>
                     <span className="font-medium text-slate-700">
@@ -69,7 +69,7 @@ const CustomTooltip = ({ active, payload, label, currency }) => {
                 {point.expenseByCategory.map((c) => (
                   <div
                     key={c.name}
-                    className="flex justify-between items-center text-slate-500"
+                    className="flex justify-between items-center text-(--color-text-muted)"
                   >
                     <span className="truncate pr-3">{c.name}</span>
                     <span className="font-medium text-slate-700">
@@ -89,7 +89,7 @@ const CustomTooltip = ({ active, payload, label, currency }) => {
 const TransactionTrendChart = ({ data, currency }) => {
   if (!data || data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-sm text-slate-400 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+      <div className="flex items-center justify-center h-64 text-sm text-(--color-text-ghost) bg-(--color-bg-muted)/50 rounded-2xl border border-dashed border-slate-200">
         No transaction data available for this period.
       </div>
     );
