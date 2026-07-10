@@ -17,6 +17,9 @@ export const useTransactions = ({
   search: searchArg,
   type: typeArg,
   categoryId: categoryIdArg,
+  sort: sortArg, // Add sort
+  startDate: startDateArg, // Add startDate
+  endDate: endDateArg,
 } = {}) => {
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
@@ -26,7 +29,21 @@ export const useTransactions = ({
   const categoryId = categoryIdArg ?? searchParams.get("categoryId") ?? "";
   const page = pageArg ?? (Number(searchParams.get("page")) || 1);
 
-  const filters = { search, type, categoryId, page, range, limit };
+  const sort = sortArg ?? searchParams.get("sort") ?? "";
+  const startDate = startDateArg ?? searchParams.get("startDate") ?? "";
+  const endDate = endDateArg ?? searchParams.get("endDate") ?? "";
+
+  const filters = {
+    search,
+    type,
+    categoryId,
+    page,
+    range,
+    limit,
+    sort,
+    startDate,
+    endDate,
+  };
 
   const { data, isPending, error } = useQuery({
     queryKey: ["transactions", filters],

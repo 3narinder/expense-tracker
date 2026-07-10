@@ -33,6 +33,7 @@ export const getTransactions = async (req, res) => {
       endDate,
       search,
       recurring,
+      sort,
     } = req.query;
 
     //**  Base filter WITHOUT type — shared by counts (so tabs describe each other correctly)
@@ -47,6 +48,8 @@ export const getTransactions = async (req, res) => {
     if (accountId && mongoose.Types.ObjectId.isValid(accountId)) {
       baseFilter.accountId = new mongoose.Types.ObjectId(accountId);
     }
+
+    //** Date filtering
     if (startDate || endDate) {
       baseFilter.transactionDate = {};
       if (startDate) baseFilter.transactionDate.$gte = new Date(startDate);
@@ -66,6 +69,12 @@ export const getTransactions = async (req, res) => {
     //** filter = baseFilter + type, used for the actual list + income/expense totals
     const filter = { ...baseFilter };
     if (type === "income" || type === "expense") filter.type = type;
+
+    //** Dynamic sort
+    let sortObject = { transactionDate: -1 }; //** Default new
+    if (sort === "date_asc") sortObject = { transactionDate: 1 };
+    if (sort === "amount_desc") sortObject = { amount: -1 };
+    if (sort === "amount_asc") sortObject = { amount: 1 };
 
     const [result] = await Transaction.aggregate([
       { $match: baseFilter }, // match the wider set once; type-specific stages filter further below
@@ -91,7 +100,7 @@ export const getTransactions = async (req, res) => {
           counts: [{ $group: { _id: "$type", count: { $sum: 1 } } }],
           paginated: [
             { $match: filter.type ? { type: filter.type } : {} },
-            { $sort: { transactionDate: -1 } },
+            { $sort: sortObject },
             { $skip: skip },
             { $limit: limit },
             {

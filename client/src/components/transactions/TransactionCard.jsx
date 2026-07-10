@@ -43,6 +43,7 @@ const TransactionTrendCard = ({
     <TransactionTrendChart
       data={isLoading ? [] : trend || []}
       currency={currency}
+      isLoading={isLoading}
     />
   </div>
 );

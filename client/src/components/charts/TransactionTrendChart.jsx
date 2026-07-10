@@ -9,6 +9,7 @@ import {
   Legend,
 } from "recharts";
 import { formatCurrency } from "../../utils/format.js";
+import Spinner from "../Spinner.jsx";
 
 const formatLabel = (label) => {
   if (!label) return label;
@@ -86,7 +87,15 @@ const CustomTooltip = ({ active, payload, label, currency }) => {
   );
 };
 
-const TransactionTrendChart = ({ data, currency }) => {
+const TransactionTrendChart = ({ data, currency, isLoading }) => {
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64 bg-(--color-bg-muted)/50 rounded-2xl border border-dashed border-slate-200">
+        <Spinner />
+      </div>
+    );
+  }
+
   if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-64 text-sm text-(--color-text-ghost) bg-(--color-bg-muted)/50 rounded-2xl border border-dashed border-slate-200">

@@ -7,7 +7,7 @@ const sizeMap = {
 const Spinner = ({ size = "md" }) => {
   return (
     <div
-      className={`${sizeMap[size]} animate-spin rounded-full border-[var(--color-border-main)] border-t-[var(--color-accent)]`}
+      className={`${sizeMap[size]} animate-spin rounded-full border-(--color-border-main) border-t-(--color-accent)`}
     />
   );
 };

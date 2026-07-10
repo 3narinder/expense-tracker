@@ -41,10 +41,22 @@ const Transactions = () => {
   const search = searchParams.get("search") || "";
   const type = searchParams.get("type") || "";
   const categoryId = searchParams.get("categoryId") || "";
+  const sort = searchParams.get("sort") || "";
+  const startDate = searchParams.get("startDate") || "";
+  const endDate = searchParams.get("endDate") || "";
   const safeAccounts = accounts || [];
 
   //**  2. Reconstruct the filters
-  const currentFilters = { search, type, categoryId, range, page };
+  const currentFilters = {
+    search,
+    type,
+    categoryId,
+    range,
+    page,
+    sort,
+    startDate,
+    endDate,
+  };
 
   const { transactions, pagination, stats, isPending } = useTransactions({
     page,
@@ -52,6 +64,9 @@ const Transactions = () => {
     search,
     type,
     categoryId,
+    sort,
+    startDate,
+    endDate,
     limit: PAGE_SIZE,
   });
 
@@ -60,6 +75,9 @@ const Transactions = () => {
     search,
     type,
     categoryId,
+    sort,
+    startDate,
+    endDate,
   });
 
   const safeTransactions = transactions || [];
