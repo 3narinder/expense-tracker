@@ -8,64 +8,21 @@ import {
   Clock,
   ArrowRight,
 } from "lucide-react";
-import toast from "react-hot-toast";
 
 import { timeAgo } from "../utils/format.js";
 import EmptyState from "../components/EmptyState.jsx";
 import Spinner from "../components/Spinner.jsx";
 import InsightCard from "../components/InsightCard.jsx";
+import {
+  useInsights,
+  useGenerateInsight,
+} from "../features/AiInsights/useInsights.js";
 import KpiCard from "../components/KpiCard.jsx";
 
-// --- 1. HARDCODED MOCK DATA ---
-const MOCK_INSIGHTS = [
-  {
-    id: "insight_1",
-    insight_type: "monthly_summary",
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
-    content_json: {
-      health_score: 78,
-      potential_savings: 0,
-      total_analysis: 12,
-      summary:
-        "You're keeping your expenses well within limits this month. However, your dining out expenses have increased by 15% compared to last month.",
-      recommendations: [
-        "Try to limit restaurant visits to weekends to stay within your food budget.",
-        "Your utility bills are slightly higher, consider adjusting the thermostat.",
-      ],
-    },
-  },
-  {
-    id: "insight_2",
-    insight_type: "savings_tips",
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(), // 3 days ago
-    content_json: {
-      health_score: 75,
-      potential_savings: 145,
-      total_analysis: 11,
-      tips: [
-        {
-          title: "Cancel unused subscriptions",
-          description:
-            "We noticed you haven't used your gym membership in 2 months.",
-          estimatedSavings: 60,
-        },
-        {
-          title: "Switch to a cheaper phone plan",
-          description:
-            "Based on your data usage, you could downgrade your plan.",
-          estimatedSavings: 85,
-        },
-      ],
-    },
-  },
-];
-
-const ActionCard = ({
+const ActionStamp = ({
   title,
   description,
   icon: Icon,
-  accentGradient,
-  accentText,
   onClick,
   generating,
   lastGenerated,
@@ -73,34 +30,30 @@ const ActionCard = ({
   <button
     onClick={onClick}
     disabled={generating}
-    className="group relative overflow-hidden bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) p-6 text-left hover:border-slate-200 hover:shadow-md transition disabled:opacity-60 disabled:cursor-not-allowed"
+    className="group relative flex-1 min-w-65 overflow-hidden bg-(--color-bg-surface) rounded-2xl border border-(--color-border-main) p-6 text-left hover:border-(--color-emerald)/40 hover:shadow-[0_1px_0_0_var(--color-border-main)] transition disabled:opacity-60 disabled:cursor-not-allowed"
   >
-    <div className="flex items-start justify-between mb-4">
-      <div
-        className={`h-14 w-14 rounded-2xl bg-linear-to-br ${accentGradient} flex items-center justify-center group-hover:scale-105 transition shadow-sm`}
-      >
-        <Icon size={24} className="text-white" />
+    <div className="flex items-start justify-between mb-5">
+      <div className="h-11 w-11 rounded-full border border-(--color-border-main) bg-(--color-bg-muted) flex items-center justify-center group-hover:border-(--color-emerald)/50 transition">
+        <Icon size={18} className="text-(--color-emerald)" />
       </div>
       {generating ? (
         <Spinner size="sm" />
       ) : (
         <Sparkles
-          size={16}
-          className="text-slate-300 group-hover:text-violet-500 transition"
+          size={15}
+          className="text-(--color-text-ghost) group-hover:text-(--color-gold) transition"
         />
       )}
     </div>
-    <h3 className="text-lg font-bold text-(--color-text-main) mb-1.5">
+    <h3 className="font-display text-lg font-semibold text-(--color-text-main) mb-1">
       {title}
     </h3>
-    <p className="text-sm text-(--color-text-muted) mb-5 leading-relaxed">
+    <p className="text-sm text-(--color-text-muted) mb-6 leading-relaxed">
       {description}
     </p>
-    <div className="flex items-center justify-between">
-      <span
-        className={`inline-flex items-center gap-1.5 text-sm font-semibold ${accentText}`}
-      >
-        {generating ? "Analyzing..." : "Generate Insight"}
+    <div className="flex items-center justify-between border-t border-dashed border-(--color-border-main) pt-3">
+      <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-(--color-emerald)">
+        {generating ? "Analyzing…" : "Generate insight"}
         {!generating && (
           <ArrowRight
             size={14}
@@ -109,8 +62,8 @@ const ActionCard = ({
         )}
       </span>
       {lastGenerated && (
-        <span className="text-xs text-(--color-text-ghost)">
-          Last: {timeAgo(lastGenerated)}
+        <span className="font-mono-tab text-[11px] text-(--color-text-ghost)">
+          {timeAgo(lastGenerated)}
         </span>
       )}
     </div>
@@ -118,37 +71,13 @@ const ActionCard = ({
 );
 
 const Insights = () => {
-  // --- 2. HARDCODED STATE ---
-  const [insights, setInsights] = useState(MOCK_INSIGHTS);
-  const [loading, setLoading] = useState(false); // Set to false since data is local
+  const { insights, isPending: loading } = useInsights();
+  const { generate, isGenerating } = useGenerateInsight();
   const [activeType, setActiveType] = useState(null);
 
   const handleGenerate = (type) => {
     setActiveType(type);
-
-    setTimeout(() => {
-      const newInsight = {
-        id: `mock_new_${Date.now()}`,
-        insight_type: type,
-        created_at: new Date().toISOString(),
-        content_json: {
-          health_score: Math.floor(Math.random() * (95 - 60 + 1)) + 60, // Random score 60-95
-          potential_savings: type === "savings_tips" ? 200 : 0,
-          total_analysis: insights.length + 1,
-          summary:
-            "This is a freshly generated hardcoded insight! Your AI engine is running perfectly.",
-          tips:
-            type === "savings_tips"
-              ? [{ title: "New tip!", estimatedSavings: 200 }]
-              : undefined,
-        },
-      };
-
-      setInsights((prev) => [newInsight, ...prev]);
-
-      toast.success("Insight generated successfully!");
-      setActiveType(null);
-    }, 2000);
+    generate(type, { onSettled: () => setActiveType(null) });
   };
 
   const stats = useMemo(() => {
@@ -157,17 +86,12 @@ const Insights = () => {
     );
     const latestTips = insights.find((i) => i.insight_type === "savings_tips");
 
-    const monthly = latestMonthly?.content_json;
-    const tips = latestTips?.content_json;
-
-    const healthScore = monthly?.health_score || tips?.health_score || null;
-    const potentialSavings =
-      tips?.potential_savings || monthly?.potential_savings || 0;
-    const total =
-      monthly?.total_analysis || tips?.total_analysis || insights.length || 0;
+    const healthScore =
+      latestMonthly?.health_score ?? latestTips?.health_score ?? null;
+    const potentialSavings = latestTips?.content_json?.potential_savings || 0;
 
     return {
-      total,
+      total: insights.length,
       healthScore,
       potentialSavings,
       lastAt: insights[0]?.created_at || null,
@@ -178,98 +102,105 @@ const Insights = () => {
 
   const healthAccent =
     stats.healthScore == null
-      ? "slate"
+      ? "neutral"
       : stats.healthScore >= 70
         ? "emerald"
         : stats.healthScore >= 40
-          ? "amber"
-          : "rose";
+          ? "warning"
+          : "danger";
+
+  const today = new Date().toLocaleDateString(undefined, {
+    month: "long",
+    year: "numeric",
+  });
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-(--color-text-main) tracking-tight">
-          AI Insights
-        </h1>
-        <p className="text-sm text-(--color-text-muted) mt-1.5">
-          Personalized financial analysis powered by Gemini — generate insights
-          and watch your money smarter
-        </p>
+    <div className="space-y-8">
+      {/* Statement header */}
+      <div className="flex items-start justify-between flex-wrap gap-4">
+        <div>
+          <div className="text-[11px] uppercase tracking-[0.16em] font-semibold text-(--color-gold) mb-2">
+            Statement · {today}
+          </div>
+          <h1 className="font-display text-3xl font-semibold text-(--color-text-main) tracking-tight">
+            AI Insights
+          </h1>
+          <p className="text-sm text-(--color-text-muted) mt-2 max-w-md leading-relaxed">
+            A running analysis of your finances, drawn up on demand and kept on
+            file below.
+          </p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard
-          label="Insights generated"
-          value={stats.total}
-          icon={Sparkles}
-          accent="violet"
-        />
+      {/* Ledger strip */}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <KpiCard label="Insights" value={stats.total} icon={Sparkles} />
+
         <KpiCard
           label="Health score"
-          value={stats.healthScore != null ? `${stats.healthScore}/100` : "—"}
           icon={Activity}
+          value={stats.healthScore != null ? `${stats.healthScore}` : "—"}
           accent={healthAccent}
         />
+
         <KpiCard
           label="Potential savings"
           value={
             stats.potentialSavings > 0
-              ? `$${stats.potentialSavings.toFixed(0)}/mo`
+              ? `₹${stats.potentialSavings.toFixed(0)}/mo` // Updated to Rupee!
               : "—"
           }
           icon={Wallet}
-          accent="orange"
+          accent="gold"
         />
+
         <KpiCard
-          label="Last analysis"
+          label="Last drawn up"
           value={stats.lastAt ? timeAgo(stats.lastAt) : "—"}
           icon={Clock}
-          accent="blue"
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ActionCard
+      {/* Generate actions */}
+      <div className="flex flex-wrap gap-4">
+        <ActionStamp
           title="Monthly Summary"
           description="A full breakdown of this month's income, expenses, and a personalized health score with actionable recommendations."
           icon={TrendingUp}
-          accentGradient="from-violet-400 to-violet-600"
-          accentText="text-violet-600"
           onClick={() => handleGenerate("monthly_summary")}
-          generating={activeType === "monthly_summary"}
+          generating={isGenerating && activeType === "monthly_summary"}
           lastGenerated={stats.latestMonthlyAt}
         />
-        <ActionCard
+        <ActionStamp
           title="Savings Tips"
           description="Tailored, ranked ways to save money based on your top spending categories from the last 30 days."
           icon={Lightbulb}
-          accentGradient="from-blue-400 to-blue-600"
-          accentText="text-blue-600"
           onClick={() => handleGenerate("savings_tips")}
-          generating={activeType === "savings_tips"}
+          generating={isGenerating && activeType === "savings_tips"}
           lastGenerated={stats.latestTipsAt}
         />
       </div>
 
+      {/* Recent analyses */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-(--color-text-main) tracking-tight">
+          <h2 className="font-display text-lg font-semibold text-(--color-text-main) tracking-tight">
             Recent Analyses
           </h2>
           {!loading && insights.length > 0 && (
-            <span className="text-xs text-(--color-text-muted)">
-              {insights.length}{" "}
-              {insights.length === 1 ? "analysis" : "analyses"}
+            <span className="font-mono-tab text-[11px] text-(--color-text-muted)">
+              {insights.length} {insights.length === 1 ? "entry" : "entries"}
             </span>
           )}
         </div>
 
         {loading ? (
-          <div className="bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) py-16 flex justify-center">
+          <div className="bg-(--color-bg-surface) rounded-2xl border border-(--color-border-main) py-16 flex justify-center">
             <Spinner size="lg" />
           </div>
         ) : insights.length === 0 ? (
-          <div className="bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main)">
+          <div className="bg-(--color-bg-surface) rounded-2xl border border-(--color-border-main)">
             <EmptyState
               icon={Sparkles}
               title="No insights yet"
@@ -277,9 +208,15 @@ const Insights = () => {
             />
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-5">
             {insights.map((i, idx) => (
-              <InsightCard key={i.id} insight={i} defaultExpanded={idx === 0} />
+              <div
+                key={i.id}
+                className="ledger-fade-in"
+                style={{ animationDelay: `${Math.min(idx, 6) * 40}ms` }}
+              >
+                <InsightCard insight={i} defaultExpanded={idx === 0} />
+              </div>
             ))}
           </div>
         )}

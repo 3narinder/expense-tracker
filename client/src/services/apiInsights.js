@@ -7,7 +7,7 @@ const handleApiError = (error, context) => {
 
 export const getInsights = async () => {
   try {
-    const { data } = await api.get("/insight");
+    const { data } = await api.get("/insight/recent");
     return data;
   } catch (error) {
     handleApiError(error, "getInsights");
@@ -17,6 +17,15 @@ export const getInsights = async () => {
 export const generateInsight = async (type) => {
   try {
     const { data } = await api.post("/insight/generate", { type });
+    return data;
+  } catch (error) {
+    handleApiError(error, "generateInsight");
+  }
+};
+
+export const generateLatestInsight = async (type) => {
+  try {
+    const { data } = await api.post(`/insight/latest/${type}`, { type });
     return data;
   } catch (error) {
     handleApiError(error, "generateInsight");

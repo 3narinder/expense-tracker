@@ -233,7 +233,7 @@ const Dashboard = () => {
           )}
         </div>
 
-        <div className="lg:col-span-5 bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) p-6">
+        <div className="lg:col-span-5 bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main)] p-6">
           <div className="mb-5 flex items-center justify-between">
             <h2 className="text-lg font-bold text-(--color-text-main) tracking-tight">
               Budget Status

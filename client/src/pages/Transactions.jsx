@@ -14,7 +14,7 @@ import { useAccounts } from "../features/Accounts/useAccounts.js";
 import Modal from "../components/ui/Modal.jsx";
 import TransactionForm from "../components/transactions/TransactionForm.jsx";
 import TransactionsHeader from "../components/transactions/TransactionHeader.jsx";
-import AIInsightCard from "../components/transactions/AIInsightCard.jsx";
+// import AIInsightCard from "../components/transactions/AIInsightCard.jsx";
 import TransactionFilters from "../components/transactions/TransactionFilters.jsx";
 import TransactionTrendCard from "../components/transactions/TransactionCard.jsx";
 import TransactionsTable from "../components/transactions/TransactionTable.jsx";
@@ -142,10 +142,10 @@ const Transactions = () => {
         isLoading={trendLoading}
       />
 
-      <AIInsightCard
+      {/* <AIInsightCard
         transactionIds={safeTransactions.map((t) => t.id || t._id)}
         transactionCount={safeTransactions.length}
-      />
+      /> */}
 
       <div className="bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) p-5">
         <TransactionFilters
