@@ -7,7 +7,7 @@ import {
   syncBudgetsOnCreate,
   syncBudgetsOnUpdate,
   syncBudgetsOnDelete,
-} from "../utils/budgetSync.js";
+} from "../utils/BudgetSync.js";
 
 // Helper: Calculate how a transaction affects an account balance
 const getBalanceImpact = (type, amount) =>
