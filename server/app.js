@@ -12,7 +12,7 @@ import aiInsightRoutes from "./routes/aiInsight.routes.js";
 
 const app = express();
 
-const clientOrigins = (process.env.CLIENT_ORIGINS || "")
+const clientOrigins = (process.env.CLIENT_ORIGINS || process.env.CLIENT_ORIGIN || "")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
@@ -26,11 +26,13 @@ const allowedOrigins = [...defaultLocalOrigins, ...clientOrigins].filter(
   (value, index, self) => self.indexOf(value) === index,
 );
 
-if (allowedOrigins.length === 0) {
-  console.warn(
-    "⚠️ No CLIENT_ORIGINS / CLIENT_ORIGIN configured for CORS. In production this will block browser requests unless origin is explicitly allowed.",
+if (process.env.NODE_ENV === "production" && allowedOrigins.length === 0) {
+  throw new Error(
+    "Missing CLIENT_ORIGINS / CLIENT_ORIGIN in production environment. Please configure the allowed client origin(s) in your .env or Render environment settings.",
   );
 }
+
+console.log(`✅ Allowed CORS origins: ${allowedOrigins.join(", ")}`);
 
 app.use(
   cors({
@@ -46,6 +48,13 @@ app.use(
     credentials: true,
   }),
 );
+
+app.use((err, req, res, next) => {
+  if (err?.message?.startsWith("CORS policy")) {
+    return res.status(403).json({ message: err.message });
+  }
+  return next(err);
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -28,6 +28,9 @@ export const getMe = async () => {
     const res = await api.get("/auth/me");
     return res.data;
   } catch (error) {
+    if (error.response?.status === 401) {
+      return null;
+    }
     handleApiError(error, "getMe");
   }
 };
