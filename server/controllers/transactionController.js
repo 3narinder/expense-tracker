@@ -5,8 +5,8 @@ import Account from "../models/AccountSchema.js";
 
 import {
   syncBudgetsOnCreate,
-  syncBudgetsOnUpdate,
   syncBudgetsOnDelete,
+  syncBudgetsOnUpdate,
 } from "../utils/BudgetSync.js";
 
 // Helper: Calculate how a transaction affects an account balance
