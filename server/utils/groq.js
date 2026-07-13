@@ -3,10 +3,18 @@ import Groq from "groq-sdk";
 
 dotenv.config();
 
-if (!process.env.GORQ_API_KEY) {
-  console.log("⚠️ WARNING: GORQ_API_KEY is not set.");
-}
+let groqInstance = null;
 
-export const groq = new Groq({
-  apiKey: process.env.GORQ_API_KEY,
-});
+export const getGroqClient = () => {
+  if (!groqInstance) {
+    // Fixed the typo here from GORQ to GROQ
+    const apiKey = process.env.GROQ_API_KEY;
+
+    if (!apiKey) {
+      throw new Error("❌ GROQ_API_KEY is missing or empty in your .env file.");
+    }
+
+    groqInstance = new Groq({ apiKey });
+  }
+  return groqInstance;
+};

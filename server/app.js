@@ -30,6 +30,6 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/accounts", accountRoutes);
 app.use("/api/budgets", budgetRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/ai-insight", aiInsightRoutes);
+app.use("/api/insight", aiInsightRoutes);
 
 export default app;

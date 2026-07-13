@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Sparkles,
   TrendingUp,
@@ -8,12 +8,57 @@ import {
   Clock,
   ArrowRight,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 import { timeAgo } from "../utils/format.js";
 import EmptyState from "../components/EmptyState.jsx";
 import Spinner from "../components/Spinner.jsx";
 import InsightCard from "../components/InsightCard.jsx";
 import KpiCard from "../components/KpiCard.jsx";
+
+// --- 1. HARDCODED MOCK DATA ---
+const MOCK_INSIGHTS = [
+  {
+    id: "insight_1",
+    insight_type: "monthly_summary",
+    created_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
+    content_json: {
+      health_score: 78,
+      potential_savings: 0,
+      total_analysis: 12,
+      summary:
+        "You're keeping your expenses well within limits this month. However, your dining out expenses have increased by 15% compared to last month.",
+      recommendations: [
+        "Try to limit restaurant visits to weekends to stay within your food budget.",
+        "Your utility bills are slightly higher, consider adjusting the thermostat.",
+      ],
+    },
+  },
+  {
+    id: "insight_2",
+    insight_type: "savings_tips",
+    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(), // 3 days ago
+    content_json: {
+      health_score: 75,
+      potential_savings: 145,
+      total_analysis: 11,
+      tips: [
+        {
+          title: "Cancel unused subscriptions",
+          description:
+            "We noticed you haven't used your gym membership in 2 months.",
+          estimatedSavings: 60,
+        },
+        {
+          title: "Switch to a cheaper phone plan",
+          description:
+            "Based on your data usage, you could downgrade your plan.",
+          estimatedSavings: 85,
+        },
+      ],
+    },
+  },
+];
 
 const ActionCard = ({
   title,
@@ -73,37 +118,37 @@ const ActionCard = ({
 );
 
 const Insights = () => {
-  const [insights, setInsights] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(null);
+  // --- 2. HARDCODED STATE ---
+  const [insights, setInsights] = useState(MOCK_INSIGHTS);
+  const [loading, setLoading] = useState(false); // Set to false since data is local
+  const [activeType, setActiveType] = useState(null);
 
-  const fetchInsights = async () => {
-    // try {
-    //   setLoading(true);
-    //   const res = await api.get(API_PATHS.INSIGHTS.LIST);
-    //   setInsights(res.data);
-    // } catch (err) {
-    //   toast.error("Failed to load insights");
-    // } finally {
-    //   setLoading(false);
-    // }
-  };
+  const handleGenerate = (type) => {
+    setActiveType(type);
 
-  useEffect(() => {
-    fetchInsights();
-  }, []);
+    setTimeout(() => {
+      const newInsight = {
+        id: `mock_new_${Date.now()}`,
+        insight_type: type,
+        created_at: new Date().toISOString(),
+        content_json: {
+          health_score: Math.floor(Math.random() * (95 - 60 + 1)) + 60, // Random score 60-95
+          potential_savings: type === "savings_tips" ? 200 : 0,
+          total_analysis: insights.length + 1,
+          summary:
+            "This is a freshly generated hardcoded insight! Your AI engine is running perfectly.",
+          tips:
+            type === "savings_tips"
+              ? [{ title: "New tip!", estimatedSavings: 200 }]
+              : undefined,
+        },
+      };
 
-  const generate = async (type) => {
-    // setGenerating(type);
-    // try {
-    //   await api.post(API_PATHS.INSIGHTS.GENERATE, { type });
-    //   toast.success("Insight generated");
-    //   fetchInsights();
-    // } catch (err) {
-    //   toast.error(err.response?.data?.message || "Failed to generate");
-    // } finally {
-    //   setGenerating(null);
-    // }
+      setInsights((prev) => [newInsight, ...prev]);
+
+      toast.success("Insight generated successfully!");
+      setActiveType(null);
+    }, 2000);
   };
 
   const stats = useMemo(() => {
@@ -111,17 +156,19 @@ const Insights = () => {
       (i) => i.insight_type === "monthly_summary",
     );
     const latestTips = insights.find((i) => i.insight_type === "savings_tips");
+
     const monthly = latestMonthly?.content_json;
     const tips = latestTips?.content_json;
+
+    const healthScore = monthly?.health_score || tips?.health_score || null;
     const potentialSavings =
-      tips?.tips?.reduce(
-        (sum, t) => sum + (Number(t.estimatedSavings) || 0),
-        0,
-      ) || 0;
+      tips?.potential_savings || monthly?.potential_savings || 0;
+    const total =
+      monthly?.total_analysis || tips?.total_analysis || insights.length || 0;
 
     return {
-      total: insights.length,
-      healthScore: monthly?.healthScore ?? null,
+      total,
+      healthScore,
       potentialSavings,
       lastAt: insights[0]?.created_at || null,
       latestMonthlyAt: latestMonthly?.created_at,
@@ -188,8 +235,8 @@ const Insights = () => {
           icon={TrendingUp}
           accentGradient="from-violet-400 to-violet-600"
           accentText="text-violet-600"
-          onClick={() => generate("monthly_summary")}
-          generating={generating === "monthly_summary"}
+          onClick={() => handleGenerate("monthly_summary")}
+          generating={activeType === "monthly_summary"}
           lastGenerated={stats.latestMonthlyAt}
         />
         <ActionCard
@@ -198,8 +245,8 @@ const Insights = () => {
           icon={Lightbulb}
           accentGradient="from-blue-400 to-blue-600"
           accentText="text-blue-600"
-          onClick={() => generate("savings_tips")}
-          generating={generating === "savings_tips"}
+          onClick={() => handleGenerate("savings_tips")}
+          generating={activeType === "savings_tips"}
           lastGenerated={stats.latestTipsAt}
         />
       </div>
