@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 const connectDB = async () => {
   try {
     const mongoURI =
-      process.env.NODE_ENV === "production"
-        ? process.env.MONGO_URI_PRODUCTION
-        : process.env.MONGO_URI_DEV;
+      process.env.NODE_ENV === "development"
+        ? process.env.MONGO_URI_DEV
+        : process.env.MONGO_URI_PRODUCTION;
 
     if (!mongoURI) {
       throw new Error(
@@ -19,8 +19,6 @@ const connectDB = async () => {
       `✅ MongoDB Connected (${process.env.NODE_ENV === "production" ? "production" : "development"} DB)`,
     );
   } catch (error) {
-    console.error("❌ MongoDB Connection Failed");
-    console.error(error.message);
     process.exit(1);
   }
 };
