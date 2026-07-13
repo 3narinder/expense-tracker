@@ -45,4 +45,25 @@ const connectDB = async () => {
   }
 };
 
+export const getMongoUsageInfo = () => {
+  const nodeEnvIsDev = process.env.NODE_ENV === "development";
+  const envBased = nodeEnvIsDev
+    ? process.env.MONGO_URI_DEV
+    : process.env.MONGO_URI_PRODUCTION;
+
+  let mongoURI =
+    process.env.MONGO_URI || envBased || process.env.MONGO_URI_PRODUCTION || process.env.MONGO_URI_DEV;
+
+  let usedVar = "(none)";
+  if (process.env.MONGO_URI) usedVar = "MONGO_URI";
+  else if (envBased && envBased === process.env.MONGO_URI_PRODUCTION)
+    usedVar = "MONGO_URI_PRODUCTION (via NODE_ENV)";
+  else if (envBased && envBased === process.env.MONGO_URI_DEV)
+    usedVar = "MONGO_URI_DEV (via NODE_ENV)";
+  else if (process.env.MONGO_URI_PRODUCTION) usedVar = "MONGO_URI_PRODUCTION";
+  else if (process.env.MONGO_URI_DEV) usedVar = "MONGO_URI_DEV";
+
+  return { nodeEnvIsDev, usedVar };
+};
+
 export default connectDB;
