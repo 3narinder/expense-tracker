@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 import Budget from "../models/BudgetSchema.js";
 import Category from "../models/CategorySchema.js";
-import { reconcileBudget, getCategoryConflicts } from "../utils/budgetSync.js";
-import { getPeriodEnd } from "../utils/budgetPeriod.js";
+import { reconcileBudget, getCategoryConflicts } from "../utils/BudgetSync.js";
+import { getPeriodEnd } from "../utils/BudgetPeriod.js";
 
 const formatBudgetForUI = (budget, calculatedSpent = null) => {
   const spentValue =
