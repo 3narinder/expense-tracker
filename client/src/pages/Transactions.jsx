@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 //* Hooks */
 import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
@@ -14,11 +15,11 @@ import { useAccounts } from "../features/Accounts/useAccounts.js";
 import Modal from "../components/ui/Modal.jsx";
 import TransactionForm from "../components/transactions/TransactionForm.jsx";
 import TransactionsHeader from "../components/transactions/TransactionHeader.jsx";
-// import AIInsightCard from "../components/transactions/AIInsightCard.jsx";
 import TransactionFilters from "../components/transactions/TransactionFilters.jsx";
 import TransactionTrendCard from "../components/transactions/TransactionCard.jsx";
 import TransactionsTable from "../components/transactions/TransactionTable.jsx";
 import ConfirmDeleteModal from "../components/ui/ConfirmDeleteModal.jsx";
+import { exportTransactionsCSV } from "../services/apiTransaction.js";
 
 const PAGE_SIZE = 10;
 
@@ -30,9 +31,13 @@ const Transactions = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [deleteSingleTransaction, setDeleteSingleTransaction] = useState(null);
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [isExporting, setIsExporting] = useState(false);
 
   const { categories } = useCategories();
-  const { removeTransaction, isDeleting } = useTransactionActions();
+  const { removeTransaction, isDeleting, removeMultipleTransactions, isBulkDeleting } =
+    useTransactionActions();
   const { accounts } = useAccounts();
 
   // 1. Extract raw parameters from URL
@@ -83,6 +88,8 @@ const Transactions = () => {
   const safeTransactions = transactions || [];
   const safeCategories = categories || [];
 
+  const selectedCount = selectedIds.length;
+
   //** 3. Dynamic filter updater that syncs component state changes to the URL bar
   const handleFilterChange = (nextFilters) => {
     const params = new URLSearchParams(searchParams);
@@ -96,6 +103,7 @@ const Transactions = () => {
     });
 
     params.set("page", "1"); // Always drop back to page 1 on filter updates
+    setSelectedIds([]);
     setSearchParams(params);
   };
 
@@ -103,12 +111,14 @@ const Transactions = () => {
     const params = new URLSearchParams(searchParams);
     params.set("range", newRange);
     params.set("page", "1");
+    setSelectedIds([]);
     setSearchParams(params);
   };
 
   const changePage = (newPage) => {
     const params = new URLSearchParams(searchParams);
     params.set("page", String(newPage));
+    setSelectedIds([]);
     setSearchParams(params);
   };
 
@@ -125,14 +135,86 @@ const Transactions = () => {
   const handleConfirmDelete = () => {
     if (deleteSingleTransaction) {
       removeTransaction(deleteSingleTransaction, {
-        onSuccess: () => setDeleteSingleTransaction(null),
+        onSuccess: () => {
+          setSelectedIds((prev) => prev.filter((id) => id !== deleteSingleTransaction));
+          setDeleteSingleTransaction(null);
+        },
       });
+    }
+  };
+
+  const toggleSelect = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+    );
+  };
+
+  const toggleSelectAll = (checked) => {
+    const pageIds = safeTransactions.map((t) => t.id || t._id).filter(Boolean);
+    if (!checked) {
+      setSelectedIds((prev) => prev.filter((id) => !pageIds.includes(id)));
+      return;
+    }
+    setSelectedIds((prev) => Array.from(new Set([...prev, ...pageIds])));
+  };
+
+  const confirmBulkDelete = () => {
+    removeMultipleTransactions(selectedIds, {
+      onSuccess: () => {
+        setSelectedIds([]);
+        setShowBulkDeleteModal(false);
+      },
+    });
+  };
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const params =
+        selectedIds.length > 0
+          ? { ids: selectedIds.join(",") }
+          : {
+              type,
+              categoryId,
+              sort,
+              startDate,
+              endDate,
+              search,
+            };
+
+      const { blob, filename } = await exportTransactionsCSV(params);
+      const url = window.URL.createObjectURL(
+        new Blob([blob], { type: "text/csv;charset=utf-8;" }),
+      );
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success(
+        selectedIds.length > 0
+          ? "Selected transactions exported."
+          : "Transactions exported.",
+      );
+    } catch (error) {
+      toast.error(error.message || "Failed to export transactions.");
+    } finally {
+      setIsExporting(false);
     }
   };
 
   return (
     <div className="space-y-6">
-      <TransactionsHeader onCreate={onCreate} />
+      <TransactionsHeader
+        onCreate={onCreate}
+        onExport={handleExport}
+        onBulkDelete={() => setShowBulkDeleteModal(true)}
+        selectedCount={selectedCount}
+        isBulkDeleting={isBulkDeleting}
+        isExporting={isExporting}
+      />
 
       <TransactionTrendCard
         trend={trend}
@@ -141,11 +223,6 @@ const Transactions = () => {
         onRangeChange={changeRange}
         isLoading={trendLoading}
       />
-
-      {/* <AIInsightCard
-        transactionIds={safeTransactions.map((t) => t.id || t._id)}
-        transactionCount={safeTransactions.length}
-      /> */}
 
       <div className="bg-[var(--color-bg-surface)] rounded-3xl border border-[var(--color-border-main)] p-5">
         <TransactionFilters
@@ -164,6 +241,9 @@ const Transactions = () => {
           onEdit={onEdit}
           onDelete={(id) => setDeleteSingleTransaction(id)}
           onCreate={onCreate}
+          selectedIds={selectedIds}
+          onToggleSelect={toggleSelect}
+          onToggleSelectAll={toggleSelectAll}
         />
       </div>
 
@@ -189,6 +269,16 @@ const Transactions = () => {
         title="Delete Transactions"
         message="Are you sure you want to delete this transaction? This action cannot be undone."
         itemName="Transaction"
+      />
+
+      <ConfirmDeleteModal
+        open={showBulkDeleteModal}
+        onClose={() => setShowBulkDeleteModal(false)}
+        onConfirm={confirmBulkDelete}
+        isDeleting={isBulkDeleting}
+        title="Delete selected transactions"
+        message={`Delete ${selectedCount} selected transaction${selectedCount === 1 ? "" : "s"}? This action cannot be undone.`}
+        itemName="Selected"
       />
     </div>
   );

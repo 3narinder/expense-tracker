@@ -1,6 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { getInsights, generateInsight } from "../../services/apiInsights";
+import {
+  getInsights,
+  generateInsight,
+  getLatestInsightByType,
+} from "../../services/apiInsights";
 
 export const useInsights = () => {
   const {
@@ -26,6 +30,7 @@ export const useGenerateInsight = () => {
     mutationFn: (type) => generateInsight(type),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["insights"] });
+      queryClient.invalidateQueries({ queryKey: ["insight-latest"] });
       toast.success("Insight generated successfully!");
     },
     onError: (err) => {
@@ -34,4 +39,18 @@ export const useGenerateInsight = () => {
   });
 
   return { generate, isGenerating, error };
+};
+
+export const useLatestInsightByType = (type) => {
+  const {
+    data: insight = null,
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ["insight-latest", type],
+    queryFn: () => getLatestInsightByType(type),
+    enabled: !!type,
+  });
+
+  return { insight, isPending, error };
 };

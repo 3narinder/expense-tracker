@@ -84,29 +84,22 @@ export const analyzeTransactions = async (transactionIds) => {
   }
 };
 
-//**Fetch filtered/selected financial entries converted to downloadable raw CSV files
+export const exportTransactionsCSV = async (filters = {}) => {
+  try {
+    const response = await api.get("/transactions/export-csv", {
+      params: filters,
+      responseType: "blob",
+    });
 
-// export const exportTransactionsCSV = async (filters = {}) => {
-//   try {
-//     const response = await api.get("/transactions/export-csv", {
-//       params: filters,
-//       responseType: "blob", // Critical binary flag configuration for secure file streams
-//     });
+    const header = response.headers["content-disposition"] || "";
+    const filenameMatch = header.match(/filename="?([^"]+)"?/i);
+    const filename = filenameMatch?.[1] || "transactions_export.csv";
 
-//     // Create virtual reference link mapping, enforce direct trigger download, discard allocations
-//     const blob = new Blob([response.data], { type: "text/csv;charset=utf-8;" });
-//     const url = window.URL.createObjectURL(blob);
-//     const link = document.createElement("a");
-
-//     link.href = url;
-//     link.setAttribute("download", "transactions_export.csv");
-//     document.body.appendChild(link);
-//     link.click();
-
-//     // Cleanup reference memory mappings properly
-//     link.remove();
-//     window.URL.revokeObjectURL(url);
-//   } catch (error) {
-//     handleApiError(error, "exportTransactionsCSV");
-//   }
-// };
+    return {
+      blob: response.data,
+      filename,
+    };
+  } catch (error) {
+    handleApiError(error, "exportTransactionsCSV");
+  }
+};

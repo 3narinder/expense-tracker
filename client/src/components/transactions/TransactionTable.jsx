@@ -17,6 +17,9 @@ const TransactionsTable = ({
   onEdit,
   onDelete,
   onCreate,
+  selectedIds = [],
+  onToggleSelect,
+  onToggleSelectAll,
 }) => {
   if (isLoading) {
     return (
@@ -41,11 +44,24 @@ const TransactionsTable = ({
     );
   }
 
+  const allSelected =
+    transactions.length > 0 &&
+    transactions.every((t) => selectedIds.includes(t.id || t._id));
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
           <tr className="text-left text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider border-b border-[var(--color-border-main)]">
+            <th className="pb-4 pr-3 w-10">
+              <input
+                type="checkbox"
+                aria-label="Select all transactions on this page"
+                checked={allSelected}
+                onChange={(e) => onToggleSelectAll?.(e.target.checked)}
+                className="h-4 w-4 rounded border-[var(--color-border-main)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
+              />
+            </th>
             <th className="pb-4 pr-4">Category</th>
             <th className="pb-4 pr-4">Description</th>
             <th className="pb-4 pr-4">Date</th>
@@ -63,6 +79,15 @@ const TransactionsTable = ({
                 key={recordId}
                 className="hover:bg-[var(--color-bg-muted)] transition-colors"
               >
+                <td className="py-4 pr-3">
+                  <input
+                    type="checkbox"
+                    aria-label={`Select transaction ${t.description || recordId}`}
+                    checked={selectedIds.includes(recordId)}
+                    onChange={() => onToggleSelect?.(recordId)}
+                    className="h-4 w-4 rounded border-[var(--color-border-main)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
+                  />
+                </td>
                 <td className="py-4 pr-4">
                   <CategoryBadge
                     name={t.categoryId?.name || "Uncategorized"}
@@ -87,8 +112,8 @@ const TransactionsTable = ({
                 <td
                   className={`py-4 pr-4 text-sm font-semibold text-right whitespace-nowrap ${
                     t.type === "income"
-                      ? "text-(--color-success)"
-                      : "text-(--color-danger)"
+                      ? "text-[var(--color-success)]"
+                      : "text-[var(--color-danger)]"
                   }`}
                 >
                   {t.type === "income" ? "+" : "-"}
@@ -98,14 +123,14 @@ const TransactionsTable = ({
                   <div className="flex items-center justify-end gap-1">
                     <button
                       onClick={() => onEdit(t)}
-                      className="p-1.5 hover:bg-(--color-bg-muted) rounded-lg text-(--color-text-muted) transition-colors"
+                      className="p-1.5 hover:bg-[var(--color-bg-muted)] rounded-lg text-[var(--color-text-muted)] transition-colors"
                       title="Edit entry"
                     >
                       <Pencil size={14} />
                     </button>
                     <button
                       onClick={() => onDelete(recordId)}
-                      className="p-1.5 hover:bg-(--color-danger-soft) rounded-lg text-(--color-danger) transition-colors"
+                      className="p-1.5 hover:bg-[var(--color-danger-soft)] rounded-lg text-[var(--color-danger)] transition-colors"
                       title="Delete entry"
                     >
                       <Trash2 size={14} />

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Wallet,
@@ -8,18 +9,149 @@ import {
   Target,
   PlusCircle,
   Receipt,
+  Sparkles,
+  Bot,
 } from "lucide-react";
+import {
+  RadialBarChart,
+  RadialBar,
+  PolarAngleAxis,
+  ResponsiveContainer,
+} from "recharts";
 
-import { formatCurrency, formatDate } from "../utils/format.js";
+import { formatCurrency, formatDate, timeAgo } from "../utils/format.js";
 import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
 import { useDashboardData } from "../features/Dashboard/useDashboardData.js";
 import { useBudgets } from "../features/Budgets/useBudgets.js";
+import { useBudgetActions } from "../features/Budgets/useBudgetActions.js";
+import { useCategories } from "../features/Categories/useCategories.js";
+import { useAccounts } from "../features/Accounts/useAccounts.js";
+import {
+  useGenerateInsight,
+  useLatestInsightByType,
+} from "../features/AiInsights/useInsights.js";
 
 import KpiCard from "../components/KpiCard.jsx";
 import CategoryBadge from "../components/CategoryBadge.jsx";
 import MonthlyTrendChart from "../components/charts/MonthlyTrendChart.jsx";
 import CategoryBreakdownChart from "../components/charts/CategoryBreakdownChart.jsx";
 import Spinner from "../components/Spinner.jsx";
+import Button from "../components/ui/Button.jsx";
+import Modal from "../components/ui/Modal.jsx";
+import TransactionForm from "../components/transactions/TransactionForm.jsx";
+import BudgetForm from "../components/BudgetForm.jsx";
+
+const scoreTone = (score) =>
+  score >= 70
+    ? "text-[var(--color-success)]"
+    : score >= 40
+      ? "text-[var(--color-warning)]"
+      : "text-[var(--color-danger)]";
+
+const DashboardAIInsightCard = ({ insight, onGenerate, isGenerating }) => {
+  if (!insight) {
+    return (
+      <div className="bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) p-6">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="h-10 w-10 rounded-xl bg-(--color-primary-soft) flex items-center justify-center">
+            <Bot size={18} className="text-(--color-primary)" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-(--color-text-main)">
+              AI Monthly Snapshot
+            </h2>
+            <p className="text-xs text-(--color-text-muted)">
+              Generate a concise monthly summary and health score
+            </p>
+          </div>
+        </div>
+        <Button onClick={onGenerate} disabled={isGenerating}>
+          <Sparkles size={16} />
+          {isGenerating ? "Generating..." : "Create Insight"}
+        </Button>
+      </div>
+    );
+  }
+
+  const c = insight.content_json || {};
+  const score = Number(c.health_score) || 0;
+  const gaugeData = [{ value: Math.max(0, Math.min(100, score)) }];
+  const summary = c.summary || "Your monthly AI summary is ready.";
+
+  return (
+    <div className="bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) p-6">
+      <div className="flex items-start justify-between gap-4 mb-4">
+        <div>
+          <h2 className="text-lg font-bold text-(--color-text-main)">
+            AI Monthly Snapshot
+          </h2>
+          <p className="text-xs text-(--color-text-muted) mt-1">
+            Updated {timeAgo(insight.created_at)}
+          </p>
+        </div>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={onGenerate}
+          disabled={isGenerating}
+        >
+          <Sparkles size={14} />
+          {isGenerating ? "Refreshing..." : "Refresh"}
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+        <div className="h-36">
+          <ResponsiveContainer width="100%" height="100%">
+            <RadialBarChart
+              data={gaugeData}
+              innerRadius="70%"
+              outerRadius="100%"
+              startAngle={90}
+              endAngle={-270}
+              barSize={14}
+            >
+              <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
+              <RadialBar
+                dataKey="value"
+                cornerRadius={10}
+                fill={
+                  score >= 70
+                    ? "var(--color-success)"
+                    : score >= 40
+                      ? "var(--color-warning)"
+                      : "var(--color-danger)"
+                }
+                background={{ fill: "var(--color-bg-muted)" }}
+              />
+            </RadialBarChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="sm:col-span-2">
+          <div
+            className={`text-3xl font-bold tracking-tight mb-1 ${scoreTone(score)}`}
+          >
+            {score}/100
+          </div>
+          <p className="text-sm text-(--color-text-main) leading-relaxed">
+            {summary}
+          </p>
+          {c.recommendations?.length > 0 && (
+            <p className="text-xs text-(--color-text-muted) mt-2">
+              Next step: {c.recommendations[0]}
+            </p>
+          )}
+          <Link
+            to="/insights"
+            className="inline-flex items-center gap-1 text-sm font-medium text-(--color-primary) hover:text-(--color-primary-hover) mt-3"
+          >
+            Open full insights <ArrowRight size={14} />
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Dashboard = () => {
   const { user } = useCurrentUser();
@@ -31,7 +163,16 @@ const Dashboard = () => {
     isPending,
   } = useDashboardData();
   const { budgets = [], isPending: budgetsLoading } = useBudgets();
+  const { categories = [] } = useCategories();
+  const { accounts = [] } = useAccounts();
+  const { addBudget } = useBudgetActions();
+  const { generate, isGenerating } = useGenerateInsight();
+  const { insight: latestMonthlyInsight } =
+    useLatestInsightByType("monthly_summary");
   const currency = user?.currency || "USD";
+
+  const [transactionModalOpen, setTransactionModalOpen] = useState(false);
+  const [budgetModalOpen, setBudgetModalOpen] = useState(false);
 
   if (isPending || !monthSummary) {
     return (
@@ -47,38 +188,6 @@ const Dashboard = () => {
     monthSummary.expenseThisMonth === 0 &&
     recentTransactions.length === 0;
 
-  if (hasNoData) {
-    return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
-        <div className="h-24 w-24 bg-gradient-to-br from-[var(--color-primary-soft)] to-[var(--color-bg-surface)] rounded-full flex items-center justify-center mb-6 shadow-inner">
-          <Wallet size={40} className="text-[var(--color-primary)]" />
-        </div>
-        <h1 className="text-3xl md:text-4xl font-bold text-[var(--color-text-main)] tracking-tight mb-3">
-          Welcome to ExpenseAI!
-        </h1>
-        <p className="text-[var(--color-text-muted)] max-w-md mx-auto mb-8 leading-relaxed">
-          Your financial dashboard is currently empty. Let's get started by
-          adding your first transaction or setting up a monthly budget to unlock
-          your insights.
-        </p>
-        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-          <Link
-            to="/transactions"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-hover)] hover:from-[var(--color-primary-hover)] hover:to-[var(--color-primary)] text-[var(--color-primary-foreground)] font-semibold py-3 px-6 rounded-xl transition shadow-lg shadow-[var(--color-primary)]/30"
-          >
-            <PlusCircle size={18} /> Add Transaction
-          </Link>
-          <Link
-            to="/budgets"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[var(--color-bg-surface)] border-2 border-[var(--color-border-main)] hover:border-[var(--color-border-focus)] hover:bg-[var(--color-bg-hover)] text-[var(--color-text-main)] font-semibold py-3 px-6 rounded-xl transition"
-          >
-            <Target size={18} /> Set a Budget
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   const totalSpent = budgets.reduce((sum, b) => sum + (b.spent || 0), 0);
   const totalBudget = budgets.reduce((sum, b) => sum + (b.amount || 0), 0);
   const aggPct = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
@@ -89,25 +198,123 @@ const Dashboard = () => {
         ? "var(--color-warning)"
         : "var(--color-success)";
 
+  const handleCreateBudget = (formData) =>
+    new Promise((resolve, reject) => {
+      const payload = {
+        name: formData.name.trim(),
+        categoryIds: formData.categoryIds,
+        amount: parseFloat(formData.amount),
+        period: formData.period,
+        startDate: formData.startDate,
+        alertThreshold: formData.alertThreshold,
+      };
+
+      addBudget(payload, {
+        onSuccess: () => {
+          setBudgetModalOpen(false);
+          resolve();
+        },
+        onError: reject,
+      });
+    });
+
+  const quickActions = (
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full lg:max-w-3xl">
+      <Button
+        onClick={() => setTransactionModalOpen(true)}
+        className="w-full justify-center"
+      >
+        <PlusCircle size={16} /> Add Transaction
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() => setBudgetModalOpen(true)}
+        className="w-full justify-center"
+      >
+        <Target size={16} /> Add Budget
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() => generate("monthly_summary")}
+        disabled={isGenerating}
+        className="w-full justify-center"
+      >
+        <Sparkles size={16} />
+        {isGenerating ? "Creating..." : "Create Insight"}
+      </Button>
+    </div>
+  );
+
+  if (hasNoData) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
+        <div className="h-24 w-24 bg-linear-to-br from-(--color-primary-soft) to-(--color-bg-surface) rounded-full flex items-center justify-center mb-6 shadow-inner">
+          <Wallet size={40} className="text-(--color-primary)" />
+        </div>
+        <h1 className="text-3xl md:text-4xl font-bold text-(--color-text-main) tracking-tight mb-3">
+          Welcome to ExpenseAI!
+        </h1>
+        <p className="text-(--color-text-muted) max-w-md mx-auto mb-8 leading-relaxed">
+          Your dashboard is empty right now. Add a transaction, set a budget, or
+          generate your first AI monthly summary.
+        </p>
+        {quickActions}
+
+        <Modal
+          open={transactionModalOpen}
+          onClose={() => setTransactionModalOpen(false)}
+          title="New Transaction"
+        >
+          <TransactionForm
+            categories={categories}
+            accounts={accounts}
+            onSaved={() => setTransactionModalOpen(false)}
+            onCancel={() => setTransactionModalOpen(false)}
+          />
+        </Modal>
+
+        <Modal
+          open={budgetModalOpen}
+          onClose={() => setBudgetModalOpen(false)}
+          title="New Budget"
+        >
+          <BudgetForm
+            categories={categories}
+            onSaved={handleCreateBudget}
+            onCancel={() => setBudgetModalOpen(false)}
+          />
+        </Modal>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-[var(--color-text-main)] tracking-tight">
-            Dashboard
-          </h1>
-          <p className="text-sm text-[var(--color-text-muted)] mt-1.5">
-            An overview of your finances this month
-          </p>
-        </div>
-        <div className="text-left sm:text-right">
-          <div className="text-xs font-medium text-[var(--color-text-ghost)] uppercase tracking-wider mb-1">
-            Total Balance
+      <div className="bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) p-5 md:p-6">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-(--color-text-main) tracking-tight">
+              Dashboard
+            </h1>
+            <p className="text-sm text-(--color-text-muted) mt-1.5">
+              An overview of your finances this month
+            </p>
           </div>
-          <div className="text-2xl font-bold text-[var(--color-text-main)] tracking-tight">
-            {formatCurrency(monthSummary.balance, currency)}
+          <div className="inline-flex items-center gap-3 px-4 py-3 rounded-2xl bg-(--color-bg-muted) border border-(--color-border-main)">
+            <div className="h-9 w-9 rounded-xl bg-(--color-primary-soft) text-(--color-primary) flex items-center justify-center">
+              <Wallet size={16} />
+            </div>
+            <div className="text-left">
+              <div className="text-[11px] font-medium text-(--color-text-ghost) uppercase tracking-wider">
+                Total Balance
+              </div>
+              <div className="text-2xl font-bold text-(--color-text-main) tracking-tight">
+                {formatCurrency(monthSummary.balance, currency)}
+              </div>
+            </div>
           </div>
         </div>
+        <div className="mt-4">{quickActions}</div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -136,6 +343,12 @@ const Dashboard = () => {
           accent="blue"
         />
       </div>
+
+      <DashboardAIInsightCard
+        insight={latestMonthlyInsight}
+        onGenerate={() => generate("monthly_summary")}
+        isGenerating={isGenerating}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) p-6">
@@ -180,7 +393,7 @@ const Dashboard = () => {
             </h2>
             <Link
               to="/transactions"
-              className="inline-flex items-center gap-1 text-sm font-medium text-violet-600 hover:text-violet-700 transition"
+              className="inline-flex items-center gap-1 text-sm font-medium text-(--color-primary) hover:text-(--color-primary-hover) transition"
             >
               View all <ArrowRight size={14} />
             </Link>
@@ -191,12 +404,9 @@ const Dashboard = () => {
               <p className="text-sm text-(--color-text-muted) mb-4">
                 No transactions this month.
               </p>
-              <Link
-                to="/transactions"
-                className="text-sm font-medium text-violet-600 hover:text-violet-700 bg-violet-500/10 px-4 py-2 rounded-lg transition"
-              >
+              <Button size="sm" onClick={() => setTransactionModalOpen(true)}>
                 Add a transaction
-              </Link>
+              </Button>
             </div>
           ) : (
             <div className="space-y-1">
@@ -233,14 +443,14 @@ const Dashboard = () => {
           )}
         </div>
 
-        <div className="lg:col-span-5 bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main)] p-6">
+        <div className="lg:col-span-5 bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) p-6">
           <div className="mb-5 flex items-center justify-between">
             <h2 className="text-lg font-bold text-(--color-text-main) tracking-tight">
               Budget Status
             </h2>
             <Link
               to="/budgets"
-              className="inline-flex items-center gap-1 text-sm font-medium text-violet-600 hover:text-violet-700 transition"
+              className="inline-flex items-center gap-1 text-sm font-medium text-(--color-primary) hover:text-(--color-primary-hover) transition"
             >
               View all <ArrowRight size={14} />
             </Link>
@@ -251,22 +461,19 @@ const Dashboard = () => {
               <Spinner />
             </div>
           ) : budgets.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-center bg-(--color-bg-muted)] rounded-2xl border border-dashed border-(--color-border-main)]">
-              <div className="h-10 w-10 rounded-full bg-(--color-bg-surface)] shadow-sm flex items-center justify-center mb-3">
-                <Target size={18} className="text-violet-400" />
+            <div className="flex flex-col items-center justify-center py-8 text-center bg-(--color-bg-muted) rounded-2xl border border-dashed border-(--color-border-main)">
+              <div className="h-10 w-10 rounded-full bg-(--color-bg-surface) shadow-sm flex items-center justify-center mb-3">
+                <Target size={18} className="text-(--color-primary)" />
               </div>
-              <p className="text-sm font-semibold text-(--color-text-main)] mb-1">
+              <p className="text-sm font-semibold text-(--color-text-main) mb-1">
                 No active budgets
               </p>
               <p className="text-xs text-(--color-text-muted) mb-4 px-4">
                 Keep your spending in check by setting limits.
               </p>
-              <Link
-                to="/budgets"
-                className="text-xs text-white bg-(--color-accent) hover:bg-(--color-accent-hover) px-4 py-2 rounded-lg font-medium transition"
-              >
+              <Button size="sm" onClick={() => setBudgetModalOpen(true)}>
                 Create Budget
-              </Link>
+              </Button>
             </div>
           ) : (
             <>
@@ -342,6 +549,31 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+
+      <Modal
+        open={transactionModalOpen}
+        onClose={() => setTransactionModalOpen(false)}
+        title="New Transaction"
+      >
+        <TransactionForm
+          categories={categories}
+          accounts={accounts}
+          onSaved={() => setTransactionModalOpen(false)}
+          onCancel={() => setTransactionModalOpen(false)}
+        />
+      </Modal>
+
+      <Modal
+        open={budgetModalOpen}
+        onClose={() => setBudgetModalOpen(false)}
+        title="New Budget"
+      >
+        <BudgetForm
+          categories={categories}
+          onSaved={handleCreateBudget}
+          onCancel={() => setBudgetModalOpen(false)}
+        />
+      </Modal>
     </div>
   );
 };

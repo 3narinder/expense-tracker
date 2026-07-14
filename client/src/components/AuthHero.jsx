@@ -31,7 +31,10 @@ const AIInsightCard = () => (
   <div className="bg-[var(--color-bg-surface)] rounded-2xl p-4 shadow-lg border border-[var(--color-border-main)]">
     <div className="flex items-start gap-2.5">
       <div className="h-9 w-9 rounded-xl bg-[var(--color-primary)] flex items-center justify-center shrink-0">
-        <Sparkles size={16} className="text-[var(--color-primary-foreground)]" />
+        <Sparkles
+          size={16}
+          className="text-[var(--color-primary-foreground)]"
+        />
       </div>
       <div className="min-w-0">
         <div className="text-[10px] uppercase tracking-wider font-bold text-[var(--color-text-muted)] mb-0.5">
@@ -58,12 +61,18 @@ const BudgetProgressCard = () => (
         <div className="text-xs font-semibold text-[var(--color-text-main)]">
           Food & Dining
         </div>
-        <div className="text-[10px] text-[var(--color-text-muted)]">May 2026</div>
+        <div className="text-[10px] text-[var(--color-text-muted)]">
+          May 2026
+        </div>
       </div>
     </div>
     <div className="flex items-baseline justify-between mb-1.5">
-      <span className="text-base font-bold text-[var(--color-text-main)]">$320</span>
-      <span className="text-[10px] text-[var(--color-text-muted)]">of $400</span>
+      <span className="text-base font-bold text-[var(--color-text-main)]">
+        $320
+      </span>
+      <span className="text-[10px] text-[var(--color-text-muted)]">
+        of $400
+      </span>
     </div>
     <div className="h-1.5 bg-[var(--color-bg-muted)] rounded-full overflow-hidden">
       <div
@@ -114,11 +123,17 @@ const IncomeExpenseCard = () => (
     <div className="grid grid-cols-2 gap-3 mb-3">
       <div>
         <div className="text-[10px] text-[var(--color-text-muted)]">Income</div>
-        <div className="text-base font-bold text-[var(--color-success)]">$6.3k</div>
+        <div className="text-base font-bold text-[var(--color-success)]">
+          $6.3k
+        </div>
       </div>
       <div>
-        <div className="text-[10px] text-[var(--color-text-muted)]">Expense</div>
-        <div className="text-base font-bold text-[var(--color-danger)]">$2.4k</div>
+        <div className="text-[10px] text-[var(--color-text-muted)]">
+          Expense
+        </div>
+        <div className="text-base font-bold text-[var(--color-danger)]">
+          $2.4k
+        </div>
       </div>
     </div>
     <div className="flex items-end gap-1 h-10">
@@ -151,7 +166,9 @@ const MonthlySummaryCard = () => (
     <div className="text-2xl font-bold tracking-tight text-[var(--color-text-main)] mb-1">
       $3,936
     </div>
-    <div className="text-[10px] text-[var(--color-text-muted)]">Net this month</div>
+    <div className="text-[10px] text-[var(--color-text-muted)]">
+      Net this month
+    </div>
     <div className="mt-3 h-1.5 bg-[var(--color-bg-muted)] rounded-full overflow-hidden">
       <div
         className="h-full bg-[var(--color-primary)] rounded-full"
@@ -199,7 +216,9 @@ const RecentTransactionsCard = () => (
           </div>
           <span
             className={`text-[11px] font-semibold ${
-              t.positive ? "text-[var(--color-success)]" : "text-[var(--color-text-main)]"
+              t.positive
+                ? "text-[var(--color-success)]"
+                : "text-[var(--color-text-main)]"
             }`}
           >
             {t.amount}
@@ -305,7 +324,9 @@ const SavingsGoalCard = () => (
       <span className="text-lg font-bold tracking-tight text-[var(--color-text-main)]">
         $3,240
       </span>
-      <span className="text-[10px] text-[var(--color-success)] font-bold">65%</span>
+      <span className="text-[10px] text-[var(--color-success)] font-bold">
+        65%
+      </span>
     </div>
     <div className="h-1.5 bg-[var(--color-bg-muted)] rounded-full overflow-hidden">
       <div
@@ -330,7 +351,9 @@ const UpcomingBillCard = () => (
           Rent payment
         </div>
       </div>
-      <div className="text-sm font-bold text-[var(--color-text-main)]">$1,800</div>
+      <div className="text-sm font-bold text-[var(--color-text-main)]">
+        $1,800
+      </div>
     </div>
   </div>
 );
@@ -402,9 +425,7 @@ const shuffledColumn3 = [...column1, ...column1, ...column2].sort(
 
 const AuthHero = ({ headline, subHeadline }) => {
   return (
-    <div
-      className="relative h-full w-full overflow-hidden bg-[var(--color-bg-app)]"
-    >
+    <div className="relative h-full w-full overflow-hidden bg-[var(--color-bg-app)]">
       <div className="absolute top-1/2 -right-24 w-80 h-80 bg-[var(--color-primary)]/10 rounded-full blur-3xl pointer-events-none z-0" />
 
       <div className="absolute inset-0 overflow-hidden z-10">
@@ -451,7 +472,9 @@ const AuthHero = ({ headline, subHeadline }) => {
         <h1 className="text-5xl xl:text-6xl font-normal tracking-tight text-[var(--color-text-main)] mb-2">
           {headline}
         </h1>
-        <p className="text-base text-[var(--color-text-muted)]">{subHeadline}</p>
+        <p className="text-base text-[var(--color-text-muted)]">
+          {subHeadline}
+        </p>
       </div>
     </div>
   );

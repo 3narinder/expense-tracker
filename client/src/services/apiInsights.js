@@ -31,3 +31,13 @@ export const generateLatestInsight = async (type) => {
     handleApiError(error, "generateInsight");
   }
 };
+
+export const getLatestInsightByType = async (type) => {
+  try {
+    const { data } = await api.get(`/insight/latest/${type}`);
+    return data;
+  } catch (error) {
+    if (error.response?.status === 404) return null;
+    handleApiError(error, "getLatestInsightByType");
+  }
+};

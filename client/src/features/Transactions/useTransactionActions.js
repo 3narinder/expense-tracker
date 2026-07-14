@@ -9,13 +9,21 @@ import {
 
 export const useTransactionActions = () => {
   const queryClient = useQueryClient();
+  const refreshTransactionViews = () => {
+    queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    queryClient.invalidateQueries({ queryKey: ["transaction"] });
+    queryClient.invalidateQueries({ queryKey: ["summary"] });
+    queryClient.invalidateQueries({ queryKey: ["trends"] });
+    queryClient.invalidateQueries({ queryKey: ["category-breakdown"] });
+    queryClient.invalidateQueries({ queryKey: ["budget"] });
+  };
 
   //** 1. Create Transaction Mutation
   const { mutate: addTransaction, isPending: isCreating } = useMutation({
     mutationFn: createTransaction,
     onSuccess: () => {
       toast.success("Transaction created successfully");
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      refreshTransactionViews();
     },
     onError: (error) => {
       toast.error(error.message || "Failed to create transaction");
@@ -27,7 +35,7 @@ export const useTransactionActions = () => {
     mutationFn: updateTransaction,
     onSuccess: (data) => {
       toast.success("Transaction updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      refreshTransactionViews();
       // Invalidate the single transaction cache line if it exists
       queryClient.invalidateQueries({
         queryKey: ["transaction", data?.id || data?._id],
@@ -43,7 +51,7 @@ export const useTransactionActions = () => {
     mutationFn: deleteTransaction,
     onSuccess: () => {
       toast.success("Transaction deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      refreshTransactionViews();
     },
     onError: (error) => {
       toast.error(error.message || "Failed to delete transaction");
@@ -56,7 +64,7 @@ export const useTransactionActions = () => {
       mutationFn: bulkDeleteTransactions,
       onSuccess: () => {
         toast.success("Selected transactions deleted successfully");
-        queryClient.invalidateQueries({ queryKey: ["transactions"] });
+        refreshTransactionViews();
       },
       onError: (error) => {
         toast.error(error.message || "Failed to delete selected transactions");
