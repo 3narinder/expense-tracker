@@ -29,19 +29,25 @@ const defaultLocalOrigins =
     ? ["http://localhost:5173", "http://localhost:3000"]
     : [];
 
-const allowedOrigins = [...defaultLocalOrigins, ...clientOrigins].filter(
+const fallbackProductionOrigins =
+  process.env.NODE_ENV === "production"
+    ? ["https://expense-tracker-seven-pi-3cuyyv3gbu.vercel.app"]
+    : [];
+
+const allowedOrigins = [...defaultLocalOrigins, ...clientOrigins, ...fallbackProductionOrigins].filter(
   (value, index, self) => self.indexOf(value) === index,
 );
 
+const originSource = clientOrigins.length > 0 ? "env" : "fallback";
 console.log(
-  `🔧 CORS config: NODE_ENV=${process.env.NODE_ENV}, rawOrigins=${JSON.stringify(
+  `🔧 CORS config: NODE_ENV=${process.env.NODE_ENV || "undefined"}, rawOrigins=${JSON.stringify(
     rawOrigins,
-  )}, allowedOrigins=${JSON.stringify(allowedOrigins)}`,
+  )}, allowedOrigins=${JSON.stringify(allowedOrigins)}, source=${originSource}`,
 );
 
-if (process.env.NODE_ENV === "production" && allowedOrigins.length === 0) {
-  throw new Error(
-    "Missing CLIENT_ORIGINS / CLIENT_ORIGIN / CORS_ORIGINS / CORS_ORIGIN in production environment. Please configure the allowed client origin(s) in your production environment settings.",
+if (process.env.NODE_ENV === "production" && clientOrigins.length === 0) {
+  console.warn(
+    "⚠️ CLIENT_ORIGINS / CLIENT_ORIGIN / CORS_ORIGINS / CORS_ORIGIN is not configured in production. Using fallback frontend origin only. Please configure the allowed client origin(s) in your production environment.",
   );
 }
 
