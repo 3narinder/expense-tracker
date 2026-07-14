@@ -172,7 +172,7 @@ const SavingsTipsView = ({ c }) => {
             >
               <div className="flex items-center justify-between mb-3">
                 {savings > 0 && (
-                  <span className="inline-flex items-center gap-1 text-xs font-bold text-green-700 dark:text-green-400 bg-green-100/30 dark:bg-green-900/20 px-2.5 py-1 rounded-lg ml-auto">
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-(--color-emerald) bg-(--color-emerald-soft) px-2.5 py-1 rounded-lg ml-auto">
                     <TrendingUp size={11} />
                     ~${savings}/mo
                   </span>

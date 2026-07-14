@@ -65,9 +65,9 @@ const TransactionsTable = ({
               >
                 <td className="py-4 pr-4">
                   <CategoryBadge
-                    name={t.categoryId.name || "Uncategorized"}
-                    icon={t.categoryId.icon}
-                    color={t.categoryId.color}
+                    name={t.categoryId?.name || "Uncategorized"}
+                    icon={t.categoryId?.icon}
+                    color={t.categoryId?.color}
                     size="sm"
                   />
                 </td>
@@ -105,7 +105,7 @@ const TransactionsTable = ({
                     </button>
                     <button
                       onClick={() => onDelete(recordId)}
-                      className="p-1.5 hover:bg-red-100/50 dark:hover:bg-red-900/20 rounded-lg text-red-600 dark:text-red-400 transition-colors"
+                      className="p-1.5 hover:bg-(--color-danger-soft) rounded-lg text-(--color-danger) transition-colors"
                       title="Delete entry"
                     >
                       <Trash2 size={14} />
