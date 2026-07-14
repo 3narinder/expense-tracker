@@ -425,7 +425,7 @@ const shuffledColumn3 = [...column1, ...column1, ...column2].sort(
 
 const AuthHero = ({ headline, subHeadline }) => {
   return (
-    <div className="relative h-full w-full overflow-hidden bg-[var(--color-bg-app)]">
+    <div className="relative h-full w-full overflow-hidden bg-[var(--color-bg-app)] transition-colors duration-300">
       <div className="absolute top-1/2 -right-24 w-80 h-80 bg-[var(--color-primary)]/10 rounded-full blur-3xl pointer-events-none z-0" />
 
       <div className="absolute inset-0 overflow-hidden z-10">
@@ -465,7 +465,7 @@ const AuthHero = ({ headline, subHeadline }) => {
         </div>
       </div>
 
-      <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-[var(--color-bg-app)] via-[var(--color-bg-app)]/90 to-transparent pointer-events-none z-20" />
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-[var(--color-bg-app)] [mask-image:linear-gradient(to_top,black_40%,transparent)] [-webkit-mask-image:linear-gradient(to_top,black_40%,transparent)] pointer-events-none z-20" />
       <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[var(--color-bg-app)] via-[var(--color-bg-app)]/70 to-transparent pointer-events-none z-20" />
 
       <div className="absolute top-10 left-10 xl:top-14 xl:left-14 z-30 max-w-[70%]">

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Wallet, Eye, EyeOff } from "lucide-react";
-import Spinner from "../components/Spinner.jsx";
 import AuthHero from "../components/AuthHero.jsx";
 import Input from "../components/ui/Input.jsx";
 import Button from "../components/ui/Button.jsx";
@@ -20,12 +19,16 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-[var(--color-bg-surface)]">
+    <div className="min-h-screen flex bg-[var(--color-bg-surface)] transition-colors duration-300">
+      {/* Left Column: Content Form */}
       <div className="flex-1 flex flex-col px-6 sm:px-10 lg:px-14 py-8 order-1">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-hover)] flex items-center justify-center shadow-sm">
-              <Wallet size={20} className="text-[var(--color-primary-foreground)]" />
+            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-[var(--color-primary)] to-[var(--color-primary-hover)] flex items-center justify-center shadow-sm">
+              <Wallet
+                size={20}
+                className="text-[var(--color-primary-foreground)]"
+              />
             </div>
             <span className="font-bold text-xl text-[var(--color-text-main)]">
               ExpenseAI
@@ -49,7 +52,10 @@ const Login = () => {
                 type="email"
                 required
                 value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                // Functional state update safeguards rapid keystrokes
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, email: e.target.value }))
+                }
                 placeholder="you@example.com"
               />
 
@@ -58,34 +64,33 @@ const Login = () => {
                 type={showPassword ? "text" : "password"}
                 required
                 value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, password: e.target.value }))
+                }
                 placeholder="••••••••"
                 endAdornment={
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
                     className="text-[var(--color-text-ghost)] hover:text-[var(--color-text-muted)] transition-colors p-1 rounded-md hover:bg-[var(--color-bg-muted)]"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 }
               />
 
+              {/* Leveraged the internal loading states of your button component */}
               <Button
                 type="submit"
                 size="lg"
+                loading={isLoading}
                 disabled={isLoading}
                 className="w-full"
               >
-                {isLoading ? (
-                  <>
-                    <Spinner size="sm" />
-                    Signing in...
-                  </>
-                ) : (
-                  "Sign in"
-                )}
+                {isLoading ? "Signing in..." : "Sign in"}
               </Button>
             </form>
 
@@ -101,19 +106,30 @@ const Login = () => {
           </div>
         </div>
 
+        {/* Fixed accessibility by turning empty links into genuine routing destinations */}
         <div className="flex justify-start gap-6 text-xs text-[var(--color-text-muted)]">
-          <a className="hover:text-[var(--color-text-main)] transition-colors cursor-pointer">
+          <Link
+            to="/privacy"
+            className="hover:text-[var(--color-text-main)] transition-colors"
+          >
             Privacy Policy
-          </a>
-          <a className="hover:text-[var(--color-text-main)] transition-colors cursor-pointer">
+          </Link>
+          <Link
+            to="/terms"
+            className="hover:text-[var(--color-text-main)] transition-colors"
+          >
             Terms
-          </a>
-          <a className="hover:text-[var(--color-text-main)] transition-colors cursor-pointer">
+          </Link>
+          <Link
+            to="/faq"
+            className="hover:text-[var(--color-text-main)] transition-colors"
+          >
             FAQ
-          </a>
+          </Link>
         </div>
       </div>
 
+      {/* Right Column: Hero Visual Showcase */}
       <div className="hidden lg:flex lg:w-1/2 xl:w-[55%] order-2">
         <AuthHero headline="Empower" subHeadline="Your financial future" />
       </div>

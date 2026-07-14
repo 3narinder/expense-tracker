@@ -313,10 +313,12 @@ body {
 }
 
 /** Smooth transitions for theme switching */
+
 * {
-  transition-property: background-color, border-color, color, box-shadow;
-  transition-timing-function: ease;
-  transition-duration: 0.2s;
+  transition-property:
+    background-color, border-color, color, box-shadow, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
 }
 
 @keyframes scrollUp {
