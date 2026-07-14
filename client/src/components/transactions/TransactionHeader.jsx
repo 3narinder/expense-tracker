@@ -12,10 +12,10 @@ const TransactionsHeader = ({
 }) => (
   <div className="flex items-center justify-between">
     <div>
-      <h1 className="text-3xl font-bold text-[var(--color-text-main)] tracking-tight">
+      <h1 className="text-3xl font-bold text-(--color-text-main) tracking-tight">
         Transactions
       </h1>
-      <p className="text-sm text-[var(--color-text-muted)] mt-1.5">
+      <p className="text-sm text-(--color-text-muted) mt-1.5">
         All your income and expenses
       </p>
     </div>
@@ -28,6 +28,7 @@ const TransactionsHeader = ({
         variant="danger"
         onClick={onBulkDelete}
         disabled={selectedCount === 0 || isBulkDeleting}
+        tooltip={selectedCount === 0 ? "Select transactions to delete" : ""}
       >
         <Trash2 size={16} />
         {isBulkDeleting ? "Deleting..." : `Delete Selected (${selectedCount})`}

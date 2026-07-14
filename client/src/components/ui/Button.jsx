@@ -1,40 +1,86 @@
 const variants = {
   primary:
-    "bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-[var(--color-primary-foreground)] shadow-sm hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-2 focus:ring-offset-[var(--color-bg-surface)]",
+    "bg-[var(--color-primary)] text-[var(--color-primary-foreground)] hover:bg-[var(--color-primary-hover)] shadow-sm hover:shadow-md focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]",
+
   secondary:
-    "bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)] text-[var(--color-secondary-foreground)] shadow-sm hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-[var(--color-secondary)] focus:ring-offset-2 focus:ring-offset-[var(--color-bg-surface)]",
-  ghost:
-    "bg-transparent hover:bg-[var(--color-bg-muted)] text-[var(--color-text-main)] transition-all duration-200 focus:ring-2 focus:ring-[var(--color-border-focus)] focus:ring-offset-2 focus:ring-offset-[var(--color-bg-surface)]",
-  danger:
-    "bg-[var(--color-danger)] hover:bg-[var(--color-danger-hover)] text-[var(--color-danger-foreground)] shadow-sm hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-[var(--color-danger)] focus:ring-offset-2 focus:ring-offset-[var(--color-bg-surface)]",
+    "bg-[var(--color-secondary)] text-[var(--color-secondary-foreground)] hover:bg-[var(--color-secondary-hover)] shadow-sm hover:shadow-md focus-visible:ring-2 focus-visible:ring-[var(--color-secondary)]",
+
   outline:
-    "border border-[var(--color-border-main)] hover:bg-[var(--color-bg-muted)] hover:border-[var(--color-border-focus)] text-[var(--color-text-main)] transition-all duration-200 focus:ring-2 focus:ring-[var(--color-border-focus)] focus:ring-offset-2 focus:ring-offset-[var(--color-bg-surface)]",
+    "border border-[var(--color-border-main)] bg-transparent text-[var(--color-text-main)] hover:bg-[var(--color-bg-muted)] hover:border-[var(--color-border-focus)] focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]",
+
+  ghost:
+    "bg-transparent text-[var(--color-text-main)] hover:bg-[var(--color-bg-muted)] focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]",
+
   success:
-    "bg-[var(--color-success)] hover:bg-[var(--color-success-hover)] text-[var(--color-success-foreground)] shadow-sm hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-[var(--color-success)] focus:ring-offset-2 focus:ring-offset-[var(--color-bg-surface)]",
+    "bg-[var(--color-success)] text-[var(--color-success-foreground)] hover:bg-[var(--color-success-hover)] shadow-sm hover:shadow-md focus-visible:ring-2 focus-visible:ring-[var(--color-success)]",
+
+  danger:
+    "bg-[var(--color-danger)] text-[var(--color-danger-foreground)] hover:bg-[var(--color-danger-hover)] shadow-sm hover:shadow-md focus-visible:ring-2 focus-visible:ring-[var(--color-danger)]",
 };
 
 const sizes = {
-  sm: "px-3 py-1.5 text-sm font-medium rounded-md",
-  md: "px-4 py-2 text-sm font-medium rounded-lg",
-  lg: "px-6 py-2.5 text-base font-semibold rounded-lg",
-  xl: "px-8 py-3 text-base font-semibold rounded-lg",
+  sm: "h-9 px-3 rounded-md text-sm",
+  md: "h-10 px-4 rounded-lg text-sm",
+  lg: "h-11 px-5 rounded-xl text-base",
+  xl: "h-12 px-6 rounded-xl text-base",
 };
 
-const Button = ({
+export default function Button({
   variant = "primary",
   size = "md",
+  loading = false,
+  disabled = false,
   className = "",
   children,
+  type = "button",
+  tooltip = "", // Added tooltip prop
   ...props
-}) => {
+}) {
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:opacity-50 active:scale-[0.98] ${variants[variant]} ${sizes[size]} ${className}`}
+      type={type}
+      disabled={disabled || loading}
+      title={tooltip} // Binds the tooltip to the native HTML title attribute
+      className={`
+        inline-flex
+        items-center
+        justify-center
+        gap-2
+        font-medium
+        transition-all
+        duration-200
+        cursor-pointer
+        active:scale-[0.98]
+        disabled:cursor-not-allowed  /* Changed to allow the 'no-cursor' style & trigger tooltips */
+        disabled:opacity-50
+        ring-offset-2
+        ring-offset-[var(--color-bg-surface)]
+        ${variants[variant]}
+        ${sizes[size]}
+        ${className}
+      `}
       {...props}
     >
+      {loading && (
+        <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+          <circle
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="3"
+            opacity=".2"
+          />
+          <path
+            d="M22 12A10 10 0 0012 2"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+        </svg>
+      )}
+
       {children}
     </button>
   );
-};
-
-export default Button;
+}

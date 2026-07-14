@@ -36,11 +36,15 @@ const Transactions = () => {
   const [isExporting, setIsExporting] = useState(false);
 
   const { categories } = useCategories();
-  const { removeTransaction, isDeleting, removeMultipleTransactions, isBulkDeleting } =
-    useTransactionActions();
+  const {
+    removeTransaction,
+    isDeleting,
+    removeMultipleTransactions,
+    isBulkDeleting,
+  } = useTransactionActions();
   const { accounts } = useAccounts();
 
-  // 1. Extract raw parameters from URL
+  //** 1. Extract raw parameters from URL
   const page = Number(searchParams.get("page")) || 1;
   const range = searchParams.get("range") || "monthly";
   const search = searchParams.get("search") || "";
@@ -136,7 +140,9 @@ const Transactions = () => {
     if (deleteSingleTransaction) {
       removeTransaction(deleteSingleTransaction, {
         onSuccess: () => {
-          setSelectedIds((prev) => prev.filter((id) => id !== deleteSingleTransaction));
+          setSelectedIds((prev) =>
+            prev.filter((id) => id !== deleteSingleTransaction),
+          );
           setDeleteSingleTransaction(null);
         },
       });
@@ -224,7 +230,7 @@ const Transactions = () => {
         isLoading={trendLoading}
       />
 
-      <div className="bg-[var(--color-bg-surface)] rounded-3xl border border-[var(--color-border-main)] p-5">
+      <div className="bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) p-5">
         <TransactionFilters
           filters={currentFilters}
           onChange={handleFilterChange}
