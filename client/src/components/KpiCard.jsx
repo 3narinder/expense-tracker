@@ -10,15 +10,15 @@ const KpiCard = ({ label, value, delta, icon: Icon }) => {
         <div className="h-14 w-14 rounded-xl flex items-center justify-center shrink-0 bg-[var(--color-bg-muted)]">
           <Icon
             size={24}
-            className="text-[var(--color-accent)]"
+            className="text-[var(--color-primary)]"
             strokeWidth={1.75}
           />
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <p className="text-sm text-(--color-text-muted) truncate">{label}</p>
+        <p className="text-sm text-[var(--color-text-muted)] truncate">{label}</p>
         <div className="flex items-baseline gap-2 mt-1">
-          <h3 className="text-2xl font-bold text-(--color-text-main) tracking-tight truncate">
+          <h3 className="text-2xl font-bold text-[var(--color-text-main)] tracking-tight truncate">
             {value}
           </h3>
           {hasDelta && (

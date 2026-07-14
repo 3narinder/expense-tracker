@@ -67,7 +67,7 @@ const BudgetForm = ({ initial, categories = [], onSaved, onCancel }) => {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-semibold text-(--color-text-main)">
+        <label className="block text-sm font-semibold text-[var(--color-text-main)]">
           Tracked Categories{" "}
           <span className="text-[var(--color-danger)]">*</span>
         </label>

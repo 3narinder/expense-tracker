@@ -50,13 +50,13 @@ const Dashboard = () => {
   if (hasNoData) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
-        <div className="h-24 w-24 bg-linear-to-br from-violet-100 to-violet-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
-          <Wallet size={40} className="text-violet-500" />
+        <div className="h-24 w-24 bg-gradient-to-br from-[var(--color-primary-soft)] to-[var(--color-bg-surface)] rounded-full flex items-center justify-center mb-6 shadow-inner">
+          <Wallet size={40} className="text-[var(--color-primary)]" />
         </div>
-        <h1 className="text-3xl md:text-4xl font-bold text-(--color-text-main) tracking-tight mb-3">
+        <h1 className="text-3xl md:text-4xl font-bold text-[var(--color-text-main)] tracking-tight mb-3">
           Welcome to ExpenseAI!
         </h1>
-        <p className="text-(--color-text-muted) max-w-md mx-auto mb-8 leading-relaxed">
+        <p className="text-[var(--color-text-muted)] max-w-md mx-auto mb-8 leading-relaxed">
           Your financial dashboard is currently empty. Let's get started by
           adding your first transaction or setting up a monthly budget to unlock
           your insights.
@@ -64,13 +64,13 @@ const Dashboard = () => {
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
           <Link
             to="/transactions"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-linear-to-br from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white font-semibold py-3 px-6 rounded-xl transition shadow-lg shadow-violet-500/30"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-hover)] hover:from-[var(--color-primary-hover)] hover:to-[var(--color-primary)] text-[var(--color-primary-foreground)] font-semibold py-3 px-6 rounded-xl transition shadow-lg shadow-[var(--color-primary)]/30"
           >
             <PlusCircle size={18} /> Add Transaction
           </Link>
           <Link
             to="/budgets"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-(--color-bg-surface) border-2 border-(--color-border-main)] hover:border-(--color-divider) hover:bg-(--color-bg-hover) text-(--color-text-main) font-semibold py-3 px-6 rounded-xl transition"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[var(--color-bg-surface)] border-2 border-[var(--color-border-main)] hover:border-[var(--color-border-focus)] hover:bg-[var(--color-bg-hover)] text-[var(--color-text-main)] font-semibold py-3 px-6 rounded-xl transition"
           >
             <Target size={18} /> Set a Budget
           </Link>
@@ -93,18 +93,18 @@ const Dashboard = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-(--color-text-main) tracking-tight">
+          <h1 className="text-3xl font-bold text-[var(--color-text-main)] tracking-tight">
             Dashboard
           </h1>
-          <p className="text-sm text-(--color-text-muted) mt-1.5">
+          <p className="text-sm text-[var(--color-text-muted)] mt-1.5">
             An overview of your finances this month
           </p>
         </div>
         <div className="text-left sm:text-right">
-          <div className="text-xs font-medium text-(--color-text-ghost) uppercase tracking-wider mb-1">
+          <div className="text-xs font-medium text-[var(--color-text-ghost)] uppercase tracking-wider mb-1">
             Total Balance
           </div>
-          <div className="text-2xl font-bold text-(--color-text-main) tracking-tight">
+          <div className="text-2xl font-bold text-[var(--color-text-main)] tracking-tight">
             {formatCurrency(monthSummary.balance, currency)}
           </div>
         </div>

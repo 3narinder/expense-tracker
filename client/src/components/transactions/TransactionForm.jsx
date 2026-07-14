@@ -65,8 +65,8 @@ const TransactionForm = ({
           onClick={() => setForm({ ...form, type: "expense", categoryId: "" })}
           className={`py-2 px-4 rounded-lg text-sm font-medium transition-all ${
             form.type === "expense"
-              ? "bg-red-600 dark:bg-red-700 text-white shadow-sm"
-              : "bg-(--color-bg-muted) text-(--color-text-main) hover:bg-(--color-bg-hover)"
+              ? "bg-[var(--color-danger)] text-white shadow-sm"
+              : "bg-[var(--color-bg-muted)] text-[var(--color-text-main)] hover:bg-[var(--color-bg-hover)]"
           }`}
         >
           Expense
@@ -76,8 +76,8 @@ const TransactionForm = ({
           onClick={() => setForm({ ...form, type: "income", categoryId: "" })}
           className={`py-2 px-4 rounded-lg text-sm font-medium transition-all ${
             form.type === "income"
-              ? "bg-green-600 dark:bg-green-700 text-white shadow-sm"
-              : "bg-(--color-bg-muted)] text-(--color-text-main) hover:bg-(--color-bg-hover)"
+              ? "bg-[var(--color-success)] text-white shadow-sm"
+              : "bg-[var(--color-bg-muted)] text-[var(--color-text-main)] hover:bg-[var(--color-bg-hover)]"
           }`}
         >
           Income

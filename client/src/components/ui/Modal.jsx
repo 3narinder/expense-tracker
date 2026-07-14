@@ -34,10 +34,10 @@ const Modal = ({ open, onClose, title, children, size = "md" }) => {
         className={`relative bg-[var(--color-bg-surface)] rounded-2xl shadow-lg w-full ${sizeClasses[size]} max-h-[90vh] flex flex-col`}
       >
         <div className="flex items-center justify-between p-6 border-b border-[var(--color-border-main)] shrink-0">
-          <h2 className="font-semibold text-(--color-text-main)">{title}</h2>
+          <h2 className="font-semibold text-[var(--color-text-main)]">{title}</h2>
           <button
             onClick={onClose}
-            className="p-1.5 hover:bg-[var(--color-bg-muted)] rounded-lg text-(--color-text-muted) transition-colors"
+            className="p-1.5 hover:bg-[var(--color-bg-muted)] rounded-lg text-[var(--color-text-muted)] transition-colors"
           >
             <X size={18} />
           </button>

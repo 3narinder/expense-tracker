@@ -3,12 +3,12 @@ const EmptyState = ({ icon: Icon, title, description, action }) => {
     <div className="flex flex-col items-center justify-center py-16 text-center">
       {Icon && (
         <div className="h-12 w-12 rounded-lg bg-[var(--color-bg-muted)] flex items-center justify-center mb-4">
-          <Icon size={24} className="text-(--color-text-muted)" />
+          <Icon size={24} className="text-[var(--color-text-muted)]" />
         </div>
       )}
-      <h3 className="font-semibold text-(--color-text-main) mb-1">{title}</h3>
+      <h3 className="font-semibold text-[var(--color-text-main)] mb-1">{title}</h3>
       {description && (
-        <p className="text-sm text-(--color-text-muted) max-w-sm">
+        <p className="text-sm text-[var(--color-text-muted)] max-w-sm">
           {description}
         </p>
       )}

@@ -5,10 +5,10 @@ import Button from "../ui/Button.jsx";
 const TransactionsHeader = ({ onCreate }) => (
   <div className="flex items-center justify-between">
     <div>
-      <h1 className="text-3xl font-bold text-(--color-text-main) tracking-tight">
+      <h1 className="text-3xl font-bold text-[var(--color-text-main)] tracking-tight">
         Transactions
       </h1>
-      <p className="text-sm text-(--color-text-muted) mt-1.5">
+      <p className="text-sm text-[var(--color-text-muted)] mt-1.5">
         All your income and expenses
       </p>
     </div>

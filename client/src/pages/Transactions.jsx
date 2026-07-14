@@ -147,7 +147,7 @@ const Transactions = () => {
         transactionCount={safeTransactions.length}
       /> */}
 
-      <div className="bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) p-5">
+      <div className="bg-[var(--color-bg-surface)] rounded-3xl border border-[var(--color-border-main)] p-5">
         <TransactionFilters
           filters={currentFilters}
           onChange={handleFilterChange}

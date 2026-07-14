@@ -30,14 +30,14 @@ const Pagination = ({ page, totalPages, total, pageSize, onPageChange }) => {
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-5 pt-5 border-t border-[var(--color-border-main)]">
-      <div className="text-xs text-(--color-text-muted)">
+      <div className="text-xs text-[var(--color-text-muted)]">
         Showing{" "}
-        <span className="font-semibold text-(--color-text-main)">
+        <span className="font-semibold text-[var(--color-text-main)]">
           {totalItems === 0 ? 0 : startIdx + 1}–
           {Math.min(startIdx + size, totalItems)}
         </span>{" "}
         of{" "}
-        <span className="font-semibold text-(--color-text-main)">
+        <span className="font-semibold text-[var(--color-text-main)]">
           {totalItems}
         </span>
       </div>
@@ -45,7 +45,7 @@ const Pagination = ({ page, totalPages, total, pageSize, onPageChange }) => {
         <button
           onClick={() => onPageChange(Math.max(1, activePage - 1))}
           disabled={activePage === 1}
-          className="h-8 w-8 flex items-center justify-center rounded-lg text-(--color-text-muted) hover:bg-[var(--color-bg-muted)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="h-8 w-8 flex items-center justify-center rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-bg-muted)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           <ChevronLeft size={16} />
         </button>
@@ -64,8 +64,8 @@ const Pagination = ({ page, totalPages, total, pageSize, onPageChange }) => {
               onClick={() => onPageChange(p)}
               className={`h-8 min-w-8 px-2.5 rounded-lg text-sm font-medium transition-colors ${
                 activePage === p
-                  ? "bg-[var(--color-accent)] text-[var(--color-bg-surface)] shadow-sm"
-                  : "text-(--color-text-muted) hover:bg-[var(--color-bg-muted)]"
+                  ? "bg-[var(--color-primary)] text-[var(--color-primary-foreground)] shadow-sm"
+                  : "text-[var(--color-text-muted)] hover:bg-[var(--color-bg-muted)]"
               }`}
             >
               {p}
@@ -76,7 +76,7 @@ const Pagination = ({ page, totalPages, total, pageSize, onPageChange }) => {
         <button
           onClick={() => onPageChange(Math.min(totalPagesNum, activePage + 1))}
           disabled={activePage === totalPagesNum}
-          className="h-8 w-8 flex items-center justify-center rounded-lg text-(--color-text-muted) hover:bg-[var(--color-bg-muted)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="h-8 w-8 flex items-center justify-center rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-bg-muted)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           <ChevronRight size={16} />
         </button>

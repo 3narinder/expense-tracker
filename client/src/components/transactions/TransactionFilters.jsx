@@ -53,7 +53,7 @@ const formatDisplayDate = (date) =>
     : "";
 
 const controlClasses =
-  "h-10 flex items-center px-4 rounded-xl border border-(--color-border-main) bg-(--color-bg-surface) text-sm text-(--color-text-main) focus:outline-none focus:ring-2 focus:ring-(--color-accent) focus:border-transparent transition-all";
+  "h-10 flex items-center px-4 rounded-xl border border-[var(--color-border-main)] bg-[var(--color-bg-surface)] text-sm text-[var(--color-text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all";
 
 const TransactionFilters = ({
   filters,
@@ -97,19 +97,19 @@ const TransactionFilters = ({
       value: "",
       label: "All",
       count: counts?.all || 0,
-      badge: "bg-(--color-bg-muted) text-(--color-text-main)",
+      badge: "bg-[var(--color-bg-muted)] text-[var(--color-text-main)]",
     },
     {
       value: "income",
       label: "Income",
       count: counts?.income || 0,
-      badge: "bg-(--color-income-bg) text-(--color-income-text)",
+      badge: "bg-[var(--color-success)]/10 text-[var(--color-success)]",
     },
     {
       value: "expense",
       label: "Expense",
       count: counts?.expense || 0,
-      badge: "bg-(--color-expense-bg) text-(--color-expense-text)",
+      badge: "bg-[var(--color-danger)]/10 text-[var(--color-danger)]",
     },
   ];
 
@@ -151,7 +151,7 @@ const TransactionFilters = ({
         <div className="relative flex-1">
           <Search
             size={16}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-(--color-text-muted)"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
           />
           <input
             value={localSearch}
@@ -162,16 +162,16 @@ const TransactionFilters = ({
           />
         </div>
 
-        <div className="flex items-center gap-1 bg-(--color-bg-muted) p-1 rounded-xl h-10 self-start lg:self-auto shrink-0">
+        <div className="flex items-center gap-1 bg-[var(--color-bg-muted)] p-1 rounded-xl h-10 self-start lg:self-auto shrink-0">
           {tabs.map((tab) => (
             <button
               key={tab.value || "all"}
               onClick={() => onChange({ ...filters, type: tab.value })}
               aria-pressed={filters.type === tab.value}
-              className={`h-8 px-4 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-accent) ${
+              className={`h-8 px-4 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] ${
                 filters.type === tab.value
-                  ? "bg-(--color-bg-surface) shadow-sm text-(--color-text-main) border border-(--color-border-main)"
-                  : "text-(--color-text-muted) hover:text-(--color-text-main)"
+                  ? "bg-[var(--color-bg-surface)] shadow-sm text-[var(--color-text-main)] border border-[var(--color-border-main)]"
+                  : "text-[var(--color-text-muted)] hover:text-[var(--color-text-main)]"
               }`}
             >
               {tab.label}
@@ -186,7 +186,7 @@ const TransactionFilters = ({
       </div>
 
       {/* ROW 2: Sort, Category, Date range — one aligned toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-3 border-t border-(--color-border-muted)">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-3 border-t border-[var(--color-border-muted)]">
         <div className="relative w-full sm:w-auto sm:min-w-42.5">
           <label htmlFor="sort-select" className="sr-only">
             Sort transactions
@@ -204,7 +204,7 @@ const TransactionFilters = ({
           </select>
           <ArrowUpDown
             size={14}
-            className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-(--color-text-muted)"
+            className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-text-muted)]"
           />
         </div>
 
@@ -232,7 +232,7 @@ const TransactionFilters = ({
           </select>
           <ChevronDown
             size={14}
-            className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-(--color-text-muted)"
+            className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-text-muted)]"
           />
         </div>
 
@@ -245,8 +245,8 @@ const TransactionFilters = ({
             aria-haspopup="dialog"
             className={`w-full sm:w-auto gap-2 justify-between sm:justify-start ${controlClasses} ${
               hasDateRange
-                ? "border-(--color-accent) text-(--color-text-main)"
-                : "text-(--color-text-muted)"
+                ? "border-[var(--color-primary)] text-[var(--color-text-main)]"
+                : "text-[var(--color-text-muted)]"
             }`}
           >
             <span className="flex items-center gap-2">
@@ -268,7 +268,7 @@ const TransactionFilters = ({
                     clearDateRange();
                   }
                 }}
-                className="ml-1 p-0.5 rounded hover:bg-(--color-bg-muted) text-(--color-text-muted) hover:text-red-500"
+                className="ml-1 p-0.5 rounded hover:bg-[var(--color-bg-muted)] text-[var(--color-text-muted)] hover:text-red-500"
               >
                 <X size={14} />
               </span>
@@ -279,19 +279,19 @@ const TransactionFilters = ({
             <div
               role="dialog"
               aria-label="Select date range"
-              className="absolute right-0 z-20 mt-2 p-4 rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) shadow-lg"
+              className="absolute right-0 z-20 mt-2 p-4 rounded-2xl border border-[var(--color-border-main)] bg-[var(--color-bg-surface)] shadow-lg"
               style={{
-                "--rdp-accent-color": "var(--color-accent)",
-                "--rdp-today-color": "var(--color-accent)",
+                "--rdp-accent-color": "var(--color-primary)",
+                "--rdp-today-color": "var(--color-primary)",
               }}
             >
-              <div className="flex flex-wrap items-center gap-1 mb-2 bg-(--color-bg-muted) p-1 rounded-xl">
+              <div className="flex flex-wrap items-center gap-1 mb-2 bg-[var(--color-bg-muted)] p-1 rounded-xl">
                 {DATE_PRESETS.map((preset) => (
                   <button
                     key={preset.value}
                     type="button"
                     onClick={() => applyPreset(preset.value)}
-                    className="px-3 py-1.5 rounded-lg text-xs font-medium text-(--color-text-muted) hover:text-(--color-text-main) hover:bg-(--color-bg-surface) transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-accent)"
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text-main)] hover:bg-[var(--color-bg-surface)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
                   >
                     {preset.label}
                   </button>
@@ -306,7 +306,7 @@ const TransactionFilters = ({
                 defaultMonth={selectedRange.from || new Date()}
               />
 
-              <div className="flex justify-between items-center pt-2 border-t border-(--color-border-muted) mt-2">
+              <div className="flex justify-between items-center pt-2 border-t border-[var(--color-border-muted)] mt-2">
                 <button
                   type="button"
                   onClick={clearDateRange}
@@ -317,7 +317,7 @@ const TransactionFilters = ({
                 <button
                   type="button"
                   onClick={() => setCalendarOpen(false)}
-                  className="text-xs font-medium px-3 py-1.5 rounded-lg bg-(--color-accent) text-white hover:opacity-90"
+                  className="text-xs font-medium px-3 py-1.5 rounded-lg bg-[var(--color-primary)] text-white hover:opacity-90"
                 >
                   Done
                 </button>

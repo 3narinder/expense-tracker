@@ -23,7 +23,7 @@ const CategoryBadge = ({ name, icon, color, size = "md" }) => {
         <Icon size={iconSize} style={{ color: baseColor }} strokeWidth={1.75} />
       </div>
       {name && (
-        <span className="font-medium text-sm text-(--color-text-main) truncate">
+        <span className="font-medium text-sm text-[var(--color-text-main)] truncate">
           {name}
         </span>
       )}

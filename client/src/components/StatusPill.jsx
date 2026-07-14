@@ -1,10 +1,10 @@
 const styles = {
-  income: "bg-(--color-success-soft) text-(--color-success-foreground)",
-  expense: "bg-(--color-danger-soft) text-(--color-danger-foreground)",
-  warning: "bg-(--color-warning-soft) text-(--color-warning-foreground)",
-  info: "bg-(--color-info-soft) text-(--color-info-foreground)",
-  critical: "bg-(--color-danger-soft) text-(--color-danger-foreground)",
-  neutral: "bg-(--color-bg-muted) text-(--color-text-main)",
+  income: "bg-[var(--color-success)]/10 text-[var(--color-success)]",
+  expense: "bg-[var(--color-danger)]/10 text-[var(--color-danger)]",
+  warning: "bg-[var(--color-warning)]/10 text-[var(--color-warning)]",
+  info: "bg-[var(--color-info)]/10 text-[var(--color-info)]",
+  critical: "bg-[var(--color-danger)]/10 text-[var(--color-danger)]",
+  neutral: "bg-[var(--color-bg-muted)] text-[var(--color-text-main)]",
 };
 
 const StatusPill = ({ variant = "neutral", children }) => {

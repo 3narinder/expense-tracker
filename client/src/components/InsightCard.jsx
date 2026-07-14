@@ -168,17 +168,15 @@ const SavingsTipsView = ({ c }) => {
           return (
             <div
               key={i}
-              className="group relative p-5 rounded-lg bg-(--color-bg-surface) border border-(--color-border-main) hover:border-blue-200/50 dark:hover:border-blue-900/50 transition"
+              className="group relative p-5 rounded-lg bg-(--color-bg-surface) border border-(--color-border-main) hover:border-(--color-emerald)/30 transition"
             >
-              <div className="flex items-center justify-between mb-3">
-                {savings > 0 && (
-                  <span className="inline-flex items-center gap-1 text-xs font-bold text-(--color-emerald) bg-(--color-emerald-soft) px-2.5 py-1 rounded-lg ml-auto">
-                    <TrendingUp size={11} />
-                    ~${savings}/mo
-                  </span>
-                )}
-              </div>
-              <h5 className="text-base font-bold text-(--color-text-main) mb-1.5">
+              {savings > 0 && (
+                <span className="absolute top-4 right-4 inline-flex items-center gap-1 text-xs font-bold text-(--color-emerald) bg-(--color-emerald-soft) px-2.5 py-1 rounded-lg">
+                  <TrendingUp size={11} />
+                  ~${savings}/mo
+                </span>
+              )}
+              <h5 className="text-base font-bold text-(--color-text-main) mb-1.5 pr-24">
                 {t.title}
               </h5>
               <p className="text-sm text-(--color-text-muted) leading-relaxed">
@@ -211,10 +209,10 @@ const headerChip = (insight) => {
     const score = c.health_score;
     const tone =
       score >= 70
-        ? "bg-green-100/30 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+        ? "bg-[var(--color-success)]/10 text-[var(--color-success)]"
         : score >= 40
-          ? "bg-amber-100/30 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400"
-          : "bg-red-100/30 text-red-700 dark:bg-red-900/20 dark:text-red-400";
+          ? "bg-[var(--color-warning)]/10 text-[var(--color-warning)]"
+          : "bg-[var(--color-danger)]/10 text-[var(--color-danger)]";
     return (
       <span
         className={`text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-lg ${tone}`}
@@ -225,7 +223,7 @@ const headerChip = (insight) => {
   }
   if (insight.insight_type === "savings_tips" && c.potential_savings > 0) {
     return (
-      <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-lg bg-green-100/30 text-green-700 dark:bg-green-900/20 dark:text-green-400">
+      <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-lg bg-[var(--color-success)]/10 text-[var(--color-success)]">
         ~${c.potential_savings}/mo
       </span>
     );

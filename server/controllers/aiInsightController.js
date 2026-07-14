@@ -121,7 +121,7 @@ export const generateInsightExtended = async (req, res) => {
       ],
       response_format: { type: "json_object" },
       max_tokens: 800,
-      temperature: 0.2,
+      temperature: type === "savings_tips" ? 0.6 : 0.2,
     });
 
     const parsedAIOutput = JSON.parse(response.choices[0].message.content);

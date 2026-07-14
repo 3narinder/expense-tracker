@@ -45,7 +45,7 @@ const TransactionsTable = ({
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="text-left text-xs font-semibold text-(--color-text-muted) uppercase tracking-wider border-b border-(--color-border-main)">
+          <tr className="text-left text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider border-b border-[var(--color-border-main)]">
             <th className="pb-4 pr-4">Category</th>
             <th className="pb-4 pr-4">Description</th>
             <th className="pb-4 pr-4">Date</th>
@@ -54,14 +54,14 @@ const TransactionsTable = ({
             <th className="pb-4"></th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-(--color-border-main)">
+        <tbody className="divide-y divide-[var(--color-border-main)]">
           {transactions.map((t) => {
             const recordId = t.id || t._id;
 
             return (
               <tr
                 key={recordId}
-                className="hover:bg-(--color-bg-muted) transition-colors"
+                className="hover:bg-[var(--color-bg-muted)] transition-colors"
               >
                 <td className="py-4 pr-4">
                   <CategoryBadge
@@ -71,10 +71,10 @@ const TransactionsTable = ({
                     size="sm"
                   />
                 </td>
-                <td className="py-4 pr-4 text-sm text-(--color-text-main)">
+                <td className="py-4 pr-4 text-sm text-[var(--color-text-main)]">
                   {t.description || "—"}
                 </td>
-                <td className="py-4 pr-4 text-sm text-(--color-text-muted) whitespace-nowrap">
+                <td className="py-4 pr-4 text-sm text-[var(--color-text-muted)] whitespace-nowrap">
                   {formatDate(t.transactionDate)}
                 </td>
                 <td className="py-4 pr-4">

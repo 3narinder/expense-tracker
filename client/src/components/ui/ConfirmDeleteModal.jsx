@@ -13,7 +13,7 @@ const ConfirmDeleteModal = ({
   return (
     <Modal open={open} onClose={onClose} title={title} size="sm">
       <div className="space-y-4">
-        <p className="text-sm text-(--color-text-muted)">{message}</p>
+        <p className="text-sm text-[var(--color-text-muted)]">{message}</p>
         <div className="flex gap-2 justify-end pt-2">
           <Button variant="outline" onClick={onClose} disabled={isDeleting}>
             Cancel

@@ -57,10 +57,10 @@ const Categories = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-(--color-text-main) tracking-tight">
+          <h1 className="text-3xl font-bold text-[var(--color-text-main)] tracking-tight">
             Categories
           </h1>
-          <p className="text-sm text-(--color-text-muted) mt-1.5">
+          <p className="text-sm text-[var(--color-text-muted)] mt-1.5">
             Organize transactions by category
           </p>
         </div>

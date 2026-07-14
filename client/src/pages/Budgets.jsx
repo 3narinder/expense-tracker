@@ -26,29 +26,29 @@ const statusStyles = {
   good: {
     Icon: CheckCircle2,
     label: "On Track",
-    bg: "bg-(--color-success)/10 border border-(--color-success)/25",
-    text: "text-(--color-success) font-bold",
-    iconColor: "text-(--color-success)",
-    msgText: "text-(--color-text-main)/90",
-    bar: "bg-(--color-success)",
+    bg: "bg-[var(--color-success)]/10 border border-[var(--color-success)]/25",
+    text: "text-[var(--color-success)] font-bold",
+    iconColor: "text-[var(--color-success)]",
+    msgText: "text-[var(--color-text-main)]/90",
+    bar: "bg-[var(--color-success)]",
   },
   caution: {
     Icon: AlertTriangle,
     label: "Warning",
-    bg: "bg-(--color-warning)/10 border border-(--color-warning)/25",
-    text: "text-(--color-warning) font-bold",
-    iconColor: "text-(--color-warning)",
-    msgText: "text-(--color-text-main)/90",
-    bar: "bg-(--color-warning)",
+    bg: "bg-[var(--color-warning)]/10 border border-[var(--color-warning)]/25",
+    text: "text-[var(--color-warning)] font-bold",
+    iconColor: "text-[var(--color-warning)]",
+    msgText: "text-[var(--color-text-main)]/90",
+    bar: "bg-[var(--color-warning)]",
   },
   concerning: {
     Icon: AlertOctagon,
     label: "Over Budget",
-    bg: "bg-(--color-danger)/10 border border-(--color-danger)/25",
-    text: "text-(--color-danger) font-bold",
-    iconColor: "text-(--color-danger)",
-    msgText: "text-(--color-text-main)/90",
-    bar: "bg-(--color-danger)",
+    bg: "bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/25",
+    text: "text-[var(--color-danger)] font-bold",
+    iconColor: "text-[var(--color-danger)]",
+    msgText: "text-[var(--color-text-main)]/90",
+    bar: "bg-[var(--color-danger)]",
   },
 };
 
@@ -122,12 +122,12 @@ const Budgets = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-(--color-bg-muted)/50 p-6 rounded-3xl border border-(--color-border-main)">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[var(--color-bg-muted)]/50 p-6 rounded-3xl border border-[var(--color-border-main)]">
         <div>
-          <h1 className="text-3xl font-bold text-(--color-text-main) tracking-tight">
+          <h1 className="text-3xl font-bold text-[var(--color-text-main)] tracking-tight">
             Budgets
           </h1>
-          <p className="text-sm text-(--color-text-muted) mt-1">
+          <p className="text-sm text-[var(--color-text-muted)] mt-1">
             Track multi-category limits with automatic health alerts.
           </p>
         </div>
