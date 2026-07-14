@@ -31,12 +31,14 @@ const defaultLocalOrigins =
 
 const fallbackProductionOrigins =
   process.env.NODE_ENV === "production"
-    ? ["https://expense-tracker-seven-pi-3cuyyv3gbu.vercel.app"]
+    ? ["https://expense-tracker-ten-amber-28.vercel.app"]
     : [];
 
-const allowedOrigins = [...defaultLocalOrigins, ...clientOrigins, ...fallbackProductionOrigins].filter(
-  (value, index, self) => self.indexOf(value) === index,
-);
+const allowedOrigins = [
+  ...defaultLocalOrigins,
+  ...clientOrigins,
+  ...fallbackProductionOrigins,
+].filter((value, index, self) => self.indexOf(value) === index);
 
 const originSource = clientOrigins.length > 0 ? "env" : "fallback";
 console.log(
