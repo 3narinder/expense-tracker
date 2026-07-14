@@ -223,7 +223,7 @@ const headerChip = (insight) => {
   }
   if (insight.insight_type === "savings_tips" && c.potential_savings > 0) {
     return (
-      <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-lg bg-[var(--color-success)]/10 text-[var(--color-success)]">
+      <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-lg bg-(--color-success)/10 text-(--color-success)">
         ~${c.potential_savings}/mo
       </span>
     );

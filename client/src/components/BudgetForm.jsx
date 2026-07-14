@@ -43,6 +43,7 @@ const BudgetForm = ({ initial, categories = [], onSaved, onCancel }) => {
     try {
       await onSaved(form);
     } catch (error) {
+      toast.error(error);
       setSaving(false);
     }
   };
@@ -67,11 +68,19 @@ const BudgetForm = ({ initial, categories = [], onSaved, onCancel }) => {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-semibold text-[var(--color-text-main)]">
-          Tracked Categories{" "}
-          <span className="text-[var(--color-danger)]">*</span>
+        <label
+          className="block text-sm font-semibold"
+          style={{ color: "#1a1a1a" }}
+        >
+          Tracked Categories <span style={{ color: "#ef4444" }}>*</span>
         </label>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-42.5 overflow-y-auto p-1 bg-[var(--color-bg-muted)]/50 rounded-lg border border-[var(--color-border-main)]">
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-42.5 overflow-y-auto p-1 rounded-lg border"
+          style={{
+            backgroundColor: "rgba(245, 245, 245, 0.5)",
+            borderColor: "#e5e7eb",
+          }}
+        >
           {categories.map((cat) => {
             const isSelected = form.categoryIds.includes(cat.id);
             return (
@@ -79,11 +88,21 @@ const BudgetForm = ({ initial, categories = [], onSaved, onCancel }) => {
                 key={cat.id}
                 type="button"
                 onClick={() => toggleCategorySelection(cat.id)}
-                className={`flex items-center justify-between px-3 py-2.5 rounded-lg border text-sm font-medium transition-all text-left ${
+                className="flex items-center justify-between px-3 py-2.5 rounded-lg border text-sm font-medium transition-all text-left"
+                style={
                   isSelected
-                    ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-bg-surface)] shadow-sm"
-                    : "border-[var(--color-border-main)] bg-[var(--color-bg-surface)] text-(--color-text-muted) hover:bg-[var(--color-bg-muted)]"
-                }`}
+                    ? {
+                        borderColor: "#4f46e5",
+                        backgroundColor: "#4f46e5",
+                        color: "#ffffff",
+                        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                      }
+                    : {
+                        borderColor: "#e5e7eb",
+                        backgroundColor: "#ffffff",
+                        color: "#6b7280",
+                      }
+                }
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div
@@ -93,10 +112,7 @@ const BudgetForm = ({ initial, categories = [], onSaved, onCancel }) => {
                   <span className="truncate">{cat.name}</span>
                 </div>
                 {isSelected && (
-                  <Check
-                    size={14}
-                    className="text-[var(--color-bg-surface)] shrink-0 ml-1"
-                  />
+                  <Check size={14} color="#ffffff" className="shrink-0 ml-1" />
                 )}
               </button>
             );
@@ -124,12 +140,25 @@ const BudgetForm = ({ initial, categories = [], onSaved, onCancel }) => {
         />
       </div>
 
-      <div className="space-y-3 bg-[var(--color-bg-muted)] p-4 rounded-lg border border-[var(--color-border-main)]">
+      <div
+        className="space-y-3 p-4 rounded-lg border"
+        style={{ backgroundColor: "#f5f5f5", borderColor: "#e5e7eb" }}
+      >
         <div className="flex justify-between items-center">
-          <label className="block text-xs font-bold text-(--color-text-main) uppercase tracking-wide">
+          <label
+            className="block text-xs font-bold uppercase tracking-wide"
+            style={{ color: "#1a1a1a" }}
+          >
             Alert Threshold
           </label>
-          <span className="text-xs font-bold text-(--color-text-main) bg-[var(--color-bg-surface)] px-2 py-0.5 rounded-lg border border-[var(--color-border-main)]">
+          <span
+            className="text-xs font-bold px-2 py-0.5 rounded-lg border"
+            style={{
+              color: "#1a1a1a",
+              backgroundColor: "#ffffff",
+              borderColor: "#e5e7eb",
+            }}
+          >
             {form.alertThreshold}%
           </span>
         </div>
@@ -142,11 +171,15 @@ const BudgetForm = ({ initial, categories = [], onSaved, onCancel }) => {
           onChange={(e) =>
             setForm({ ...form, alertThreshold: parseInt(e.target.value) })
           }
-          className="w-full h-1.5 bg-[var(--color-border-main)] rounded-lg cursor-pointer appearance-none accent-[var(--color-accent)]"
+          className="w-full h-1.5 rounded-lg cursor-pointer appearance-none"
+          style={{ backgroundColor: "#e5e7eb", accentColor: "#4f46e5" }}
         />
       </div>
 
-      <div className="flex gap-3 justify-end pt-3 border-t border-[var(--color-border-main)]">
+      <div
+        className="flex gap-3 justify-end pt-3 border-t"
+        style={{ borderColor: "#e5e7eb" }}
+      >
         <Button
           type="button"
           variant="outline"
