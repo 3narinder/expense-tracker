@@ -125,7 +125,7 @@ const MonthlySummaryView = ({ c }) => (
           {c.recommendations.map((r, i) => (
             <div
               key={i}
-              className="p-4 bg-(--color-bg-surface) border border-[var(--color-border-main)] hover:border-blue-200/50 dark:hover:border-blue-900/50 rounded-lg transition flex items-start gap-3"
+              className="p-4 bg-(--color-bg-surface) border border-(--color-border-main) hover:border-blue-200/50 dark:hover:border-blue-900/50 rounded-lg transition flex items-start gap-3"
             >
               <div className="h-7 w-7 rounded-lg bg-blue-600/20 dark:bg-blue-900/20 flex items-center justify-center text-xs font-bold text-blue-600 dark:text-blue-400 shrink-0">
                 {i + 1}

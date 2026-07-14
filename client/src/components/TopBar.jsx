@@ -21,7 +21,7 @@ const TopBar = () => {
   const firstName = user?.username?.split(" ")[0] || "";
 
   return (
-    <header className="h-16 bg-[var(--color-bg-surface)] border-b border-[var(--color-border-main)] flex items-center justify-between px-6 shrink-0">
+    <header className="h-16 bg-(--color-bg-surface) border-b border-(--color-border-main) flex items-center justify-between px-6 shrink-0">
       <div>
         <div className="text-sm font-semibold text-(--color-text-main) tracking-tight">
           {greeting()}
@@ -33,18 +33,18 @@ const TopBar = () => {
       <div className="flex items-center gap-1">
         <button
           title="Search"
-          className="h-9 w-9 rounded-lg text-(--color-text-muted) hover:bg-[var(--color-bg-muted)] hover:text-(--color-text-main) flex items-center justify-center transition-colors"
+          className="h-9 w-9 rounded-lg text-(--color-text-muted) hover:bg-(--color-bg-muted) hover:text-(--color-text-main) flex items-center justify-center transition-colors"
         >
           <Search size={17} />
         </button>
         <button
           title="Notifications"
-          className="relative h-9 w-9 rounded-lg text-(--color-text-muted) hover:bg-[var(--color-bg-muted)] hover:text-(--color-text-main) flex items-center justify-center transition-colors"
+          className="relative h-9 w-9 rounded-lg text-(--color-text-muted) hover:bg-(--color-bg-muted) hover:text-(--color-text-main) flex items-center justify-center transition-colors"
         >
           <Bell size={17} />
-          <span className="absolute top-2 right-2 h-2 w-2 bg-[var(--color-danger)] rounded-full ring-2 ring-[var(--color-bg-surface)]" />
+          <span className="absolute top-2 right-2 h-2 w-2 bg-(--color-danger) rounded-full ring-2 ring-(--color-bg-surface)" />
         </button>
-        <div className="w-px h-6 bg-[var(--color-border-main)] mx-1" />
+        <div className="w-px h-6 bg-(--color-border-main) mx-1" />
         <ThemeToggle />
       </div>
     </header>

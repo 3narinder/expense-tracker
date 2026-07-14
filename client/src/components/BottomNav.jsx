@@ -6,6 +6,8 @@ import {
   Target,
   Sparkles,
 } from "lucide-react";
+import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
+import { useLogout } from "../features/Authentication/useLogout.js";
 
 const navItems = [
   { to: "/", label: "Home", icon: LayoutDashboard },
@@ -16,6 +18,10 @@ const navItems = [
 ];
 
 const BottomNav = () => {
+  const { user } = useCurrentUser();
+  const { logout } = useLogout();
+  const initial = user?.username?.[0]?.toUpperCase() || "U";
+
   return (
     <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-(--color-bg-surface) border-t border-(--color-border-main) flex items-stretch justify-around pb-[env(safe-area-inset-bottom)]">
       {navItems.map(({ to, label, icon: Icon }) => (
@@ -53,6 +59,17 @@ const BottomNav = () => {
           )}
         </NavLink>
       ))}
+
+      <button
+        onClick={logout}
+        title="Logout"
+        className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-[11px] font-medium text-(--color-text-muted) transition-colors"
+      >
+        <div className="h-7 w-7 rounded-full bg-(--color-accent) flex items-center justify-center text-(--color-accent-foreground) font-semibold text-[11px]">
+          {initial}
+        </div>
+        Logout
+      </button>
     </nav>
   );
 };
