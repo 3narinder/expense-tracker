@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
       unique: true,
       minlength: 3,
-      maxLength: 30,
+      maxlength: 30,
     },
 
     email: {
@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema(
 
     currency: {
       type: String,
-      default: "INR",
+      default: "USD",
       uppercase: true,
       trim: true,
     },

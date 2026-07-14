@@ -7,19 +7,21 @@ export const useRegister = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const { mutate: register, isLoading } = useMutation({
+  const { mutate: register, isPending } = useMutation({
     mutationFn: userRegisterApi,
 
     onSuccess: (data) => {
       toast.success("Profile created successfully!");
-      queryClient.setQueryData(["user"], data.user);
-      navigate("/dashboard");
+      queryClient.setQueryData(["user"], data);
+      navigate("/", { replace: true });
     },
 
     onError: (err) => {
-      toast.error(err.response?.data?.message || "Something went wrong");
+      toast.error(
+        err.response?.data?.message || err.message || "Something went wrong",
+      );
     },
   });
 
-  return { register, isLoading };
+  return { register, isLoading: isPending };
 };

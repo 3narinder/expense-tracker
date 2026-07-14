@@ -18,7 +18,7 @@ const formatToday = () =>
 
 const TopBar = () => {
   const { user } = useCurrentUser();
-  const firstName = user?.name?.split(" ")[0] || "";
+  const firstName = user?.username?.split(" ")[0] || "";
 
   return (
     <header className="h-16 bg-[var(--color-bg-surface)] border-b border-[var(--color-border-main)] flex items-center justify-between px-6 shrink-0">

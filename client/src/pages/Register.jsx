@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { Wallet, Eye, EyeOff } from "lucide-react";
 import Spinner from "../components/Spinner.jsx";
 import AuthHero from "../components/AuthHero.jsx";
+import Input from "../components/ui/Input.jsx";
+import Select from "../components/ui/Select.jsx";
+import Button from "../components/ui/Button.jsx";
 import { useRegister } from "../features/Authentication/useRegister.js";
 
 const Register = () => {
@@ -48,94 +51,66 @@ const Register = () => {
             </p>
 
             <form onSubmit={onSubmit} className="space-y-4">
-              {/* Username field */}
-              <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-slate-700">
-                  Username
-                </label>
-                <input
-                  type="text"
-                  required
-                  disabled={isLoading}
-                  value={form.username}
-                  onChange={(e) =>
-                    setForm({ ...form, username: e.target.value })
-                  }
-                  className="w-full bg-(--color-bg-muted)/80 hover:bg-(--color-bg-muted) focus:bg-(--color-bg-surface) border-2 border-transparent focus:border-violet-500 rounded-2xl px-5 py-3.5 text-(--color-text-main) text-sm focus:outline-none transition disabled:opacity-50"
-                  placeholder="johndoe"
-                />
-              </div>
+              <Input
+                label="Username"
+                type="text"
+                required
+                disabled={isLoading}
+                value={form.username}
+                onChange={(e) => setForm({ ...form, username: e.target.value })}
+                placeholder="johndoe"
+              />
 
-              {/* Email field */}
-              <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-slate-700">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  required
-                  disabled={isLoading}
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full bg-(--color-bg-muted)/80 hover:bg-(--color-bg-muted) focus:bg-(--color-bg-surface) border-2 border-transparent focus:border-violet-500 rounded-2xl px-5 py-3.5 text-(--color-text-main) text-sm focus:outline-none transition disabled:opacity-50"
-                  placeholder="you@example.com"
-                />
-              </div>
+              <Input
+                label="Email"
+                type="email"
+                required
+                disabled={isLoading}
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                placeholder="you@example.com"
+              />
 
-              {/* Password field */}
-              <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-slate-700">
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    required
-                    disabled={isLoading}
-                    value={form.password}
-                    onChange={(e) =>
-                      setForm({ ...form, password: e.target.value })
-                    }
-                    className="w-full bg-(--color-bg-muted)/80 hover:bg-(--color-bg-muted) focus:bg-(--color-bg-surface) border-2 border-transparent focus:border-violet-500 rounded-2xl px-5 py-3.5 pr-12 text-(--color-text-main) text-sm focus:outline-none transition disabled:opacity-50"
-                    placeholder="••••••••"
-                  />
+              <Input
+                label="Password"
+                type={showPassword ? "text" : "password"}
+                required
+                disabled={isLoading}
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                placeholder="••••••••"
+                endAdornment={
                   <button
                     type="button"
                     disabled={isLoading}
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-(--color-text-ghost) hover:text-(--color-text-muted) transition"
-                    tabIndex={-1}
+                    className="text-(--color-text-ghost) hover:text-(--color-text-muted) transition"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
-                </div>
-              </div>
+                }
+              />
 
-              {/* Currency field selection */}
-              <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-slate-700">
-                  Primary Currency
-                </label>
-                <select
-                  disabled={isLoading}
-                  value={form.currency}
-                  onChange={(e) =>
-                    setForm({ ...form, currency: e.target.value })
-                  }
-                  className="w-full bg-(--color-bg-muted)/80 hover:bg-(--color-bg-muted) focus:bg-(--color-bg-surface) border-2 border-transparent focus:border-violet-500 rounded-2xl px-5 py-3.5 text-(--color-text-main) text-sm focus:outline-none transition appearance-none cursor-pointer disabled:opacity-50"
-                >
-                  <option value="USD">USD ($) - US Dollar</option>
-                  <option value="INR">INR (₹) - Indian Rupee</option>
-                  <option value="EUR">EUR (€) - Euro</option>
-                  <option value="GBP">GBP (£) - British Pound</option>
-                </select>
-              </div>
-
-              {/* Form Action Submit Button controlled by isLoading */}
-              <button
-                type="submit"
+              <Select
+                label="Primary Currency"
                 disabled={isLoading}
-                className="w-full mt-2 inline-flex items-center justify-center gap-2 bg-linear-to-br from-violet-400 to-violet-600 active:bg-violet-800 text-white font-semibold py-4 rounded-2xl transition shadow-lg shadow-violet-500/30 disabled:opacity-60 disabled:cursor-not-allowed"
+                value={form.currency}
+                onChange={(e) =>
+                  setForm({ ...form, currency: e.target.value })
+                }
+              >
+                <option value="USD">USD ($) - US Dollar</option>
+                <option value="INR">INR (₹) - Indian Rupee</option>
+                <option value="EUR">EUR (€) - Euro</option>
+                <option value="GBP">GBP (£) - British Pound</option>
+              </Select>
+
+              <Button
+                type="submit"
+                size="lg"
+                disabled={isLoading}
+                className="w-full mt-2"
               >
                 {isLoading ? (
                   <>
@@ -145,7 +120,7 @@ const Register = () => {
                 ) : (
                   "Create Account"
                 )}
-              </button>
+              </Button>
             </form>
 
             <p className="text-center mt-6 text-sm text-(--color-text-muted)">

@@ -35,7 +35,7 @@ const ThemeToggle = () => {
     return (
       <button
         disabled
-        className="p-2 rounded-lg hover:bg-(--color-bg-muted)` transition-colors text-(--color-text-muted)"
+        className="p-2 rounded-lg hover:bg-(--color-bg-muted) transition-colors text-(--color-text-muted)"
       >
         <Sun size={18} />
       </button>

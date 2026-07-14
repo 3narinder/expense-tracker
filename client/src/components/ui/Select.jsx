@@ -7,12 +7,12 @@ const Select = ({ label, error, className = "", children, ...props }) => {
         </label>
       )}
       <select
-        className={`w-full px-4 py-2.5 rounded-lg border border-[var(--color-border-main)] text-sm bg-[var(--color-bg-surface)] text-(--color-text-main) focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent transition-all ${className}`}
+        className={`w-full px-4 py-2.5 rounded-lg border border-(--color-border-main) text-sm bg-(--color-bg-surface) text-(--color-text-main) focus:outline-none focus:ring-2 focus:ring-(--color-accent) focus:border-transparent transition-all ${className}`}
         {...props}
       >
         {children}
       </select>
-      {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
+      {error && <p className="text-xs text-(--color-danger)">{error}</p>}
     </div>
   );
 };

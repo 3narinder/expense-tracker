@@ -30,9 +30,9 @@ router.post("/bulk-delete", bulkDeleteTransactions);
 router.get("/export-csv", exportTransactionsCSV);
 
 //* Route: GET /api/transactions/trends
-router.get("/trend", protect, getTransactionTrend);
+router.get("/trend", getTransactionTrend);
 
-router.get("/recent", protect, getRecentTransactions);
+router.get("/recent", getRecentTransactions);
 
 //* ==========================================
 //* ROOT & PARAMETERIZED ROUTES

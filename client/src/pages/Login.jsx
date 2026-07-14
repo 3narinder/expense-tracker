@@ -1,31 +1,21 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import toast from "react-hot-toast";
 import { Wallet, Eye, EyeOff } from "lucide-react";
 import Spinner from "../components/Spinner.jsx";
 import AuthHero from "../components/AuthHero.jsx";
+import Input from "../components/ui/Input.jsx";
+import Button from "../components/ui/Button.jsx";
 import { useLogin } from "../features/Authentication/useLogin.js";
 
 const Login = () => {
-  const { login } = useLogin();
+  const { login, isLoading } = useLogin();
 
   const [form, setForm] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit = async (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      await login({
-        email: form.email,
-        password: form.password,
-      });
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Login failed");
-    } finally {
-      setLoading(false);
-    }
+    login({ email: form.email, password: form.password });
   };
 
   return (
@@ -50,52 +40,41 @@ const Login = () => {
             </p>
 
             <form onSubmit={onSubmit} className="space-y-5">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full bg-(--color-bg-muted)/80 hover:bg-(--color-bg-muted) focus:bg-(--color-bg-surface) border-2 border-transparent focus:border-violet-500 rounded-2xl px-5 py-4 text-(--color-text-main) text-sm focus:outline-none transition"
-                  placeholder="you@example.com"
-                />
-              </div>
+              <Input
+                label="Email"
+                type="email"
+                required
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                placeholder="you@example.com"
+              />
 
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={form.password}
-                    onChange={(e) =>
-                      setForm({ ...form, password: e.target.value })
-                    }
-                    className="w-full bg-(--color-bg-muted)/80 hover:bg-(--color-bg-muted) focus:bg-(--color-bg-surface) border-2 border-transparent focus:border-violet-500 rounded-2xl px-5 py-4 pr-12 text-(--color-text-main) text-sm focus:outline-none transition"
-                    placeholder="••••••••"
-                  />
+              <Input
+                label="Password"
+                type={showPassword ? "text" : "password"}
+                required
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                placeholder="••••••••"
+                endAdornment={
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-(--color-text-ghost) hover:text-(--color-text-muted) transition"
-                    tabIndex={-1}
+                    className="text-(--color-text-ghost) hover:text-(--color-text-muted) transition"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
-                </div>
-              </div>
+                }
+              />
 
-              <button
+              <Button
                 type="submit"
-                disabled={loading}
-                className="w-full inline-flex items-center justify-center gap-2 bg-linear-to-br from-violet-400 to-violet-600  active:bg-violet-800 text-white font-semibold py-4 rounded-2xl transition shadow-lg shadow-violet-500/30 disabled:opacity-60 disabled:cursor-not-allowed"
+                size="lg"
+                disabled={isLoading}
+                className="w-full"
               >
-                {loading ? (
+                {isLoading ? (
                   <>
                     <Spinner size="sm" />
                     Signing in...
@@ -103,7 +82,7 @@ const Login = () => {
                 ) : (
                   "Login"
                 )}
-              </button>
+              </Button>
             </form>
 
             <p className="text-center mt-8 text-sm text-(--color-text-muted)">

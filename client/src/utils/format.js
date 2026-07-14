@@ -48,5 +48,6 @@ export const timeAgo = (date) => {
 
 export const handleApiError = (error, context) => {
   const message = error.response?.data?.message || `Error in ${context}`;
-  throw new Error(message, { cause: error });
+  error.message = message;
+  throw error;
 };

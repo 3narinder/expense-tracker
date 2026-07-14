@@ -113,13 +113,13 @@ InsightSchema.statics.deleteByUser = async function (userId) {
 // 🚨 MIDDLEWARE
 // ==========================================
 
-InsightSchema.pre("save", function (next) {
+InsightSchema.pre("save", function () {
   this.updated_at = new Date();
 });
 
-InsightSchema.pre("save", async function (next) {
+InsightSchema.pre("save", function () {
   if (this.userId && !this.userId.toString().match(/^[0-9a-fA-F]{24}$/)) {
-    return next(new Error("Invalid userId format"));
+    throw new Error("Invalid userId format");
   }
 });
 

@@ -33,14 +33,14 @@ const transactionSchema = new mongoose.Schema(
     description: {
       type: String,
       trim: true,
-      maxLength: 255,
+      maxlength: 255,
       default: "",
     },
 
     merchant: {
       type: String,
       trim: true,
-      maxLength: 150,
+      maxlength: 150,
       default: "",
     },
 
@@ -54,7 +54,7 @@ const transactionSchema = new mongoose.Schema(
     notes: {
       type: String,
       trim: true,
-      maxLength: 1000,
+      maxlength: 1000,
       default: "",
     },
     transactionDate: {

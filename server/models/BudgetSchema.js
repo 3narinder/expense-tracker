@@ -13,8 +13,8 @@ const budgetSchema = new mongoose.Schema(
       type: String,
       required: [true, "Budget name is required"],
       trim: true,
-      minLength: [3, "Budget name must be at least 3 characters"],
-      maxLength: [100, "Budget name cannot exceed 100 characters"],
+      minlength: [3, "Budget name must be at least 3 characters"],
+      maxlength: [100, "Budget name cannot exceed 100 characters"],
     },
 
     categoryIds: {

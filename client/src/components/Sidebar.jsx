@@ -24,7 +24,7 @@ const Sidebar = () => {
   const { user } = useCurrentUser();
   const { logout } = useLogout();
 
-  const initial = user?.name?.[0]?.toUpperCase() || "U";
+  const initial = user?.username?.[0]?.toUpperCase() || "U";
 
   return (
     <aside className="w-20 lg:w-64 bg-[var(--color-bg-surface)] border-r border-[var(--color-border-main)] hidden md:flex flex-col shrink-0 transition-[width] duration-200">
@@ -66,7 +66,7 @@ const Sidebar = () => {
 
           <div className="flex-1 min-w-0 hidden lg:block">
             <div className="text-sm font-semibold text-(--color-text-main) truncate">
-              {user?.name || "User"}
+              {user?.username || "User"}
             </div>
             <div className="text-xs text-(--color-text-muted) truncate">
               {user?.email}
