@@ -16,6 +16,7 @@ import Button from "../components/ui/Button.jsx";
 import {
   useInsights,
   useGenerateInsight,
+  useInsightEligibility,
 } from "../features/AiInsights/useInsights.js";
 import KpiCard from "../components/KpiCard.jsx";
 
@@ -26,6 +27,8 @@ const ActionStamp = ({
   onClick,
   generating,
   lastGenerated,
+  disabled = false,
+  helperMessage = "",
 }) => (
   <div className="group relative flex-1 min-w-65 overflow-hidden bg-(--color-bg-surface) rounded-2xl border border-(--color-border-main) p-6 hover:border-(--color-emerald)/40 hover:shadow-[0_1px_0_0_var(--color-border-main)] transition">
     <div className="flex items-start justify-between mb-5">
@@ -48,7 +51,7 @@ const ActionStamp = ({
         variant="primary"
         size="sm"
         onClick={onClick}
-        disabled={generating}
+        disabled={generating || disabled}
       >
         {generating ? (
           <>
@@ -65,12 +68,16 @@ const ActionStamp = ({
         </span>
       )}
     </div>
+    {disabled && helperMessage && (
+      <p className="text-xs text-(--color-warning) mt-2">{helperMessage}</p>
+    )}
   </div>
 );
 
 const Insights = () => {
   const { insights, isPending: loading } = useInsights();
   const { generate, isGenerating } = useGenerateInsight();
+  const { eligibility } = useInsightEligibility();
   const [activeType, setActiveType] = useState(null);
 
   const handleGenerate = (type) => {
@@ -137,6 +144,16 @@ const Insights = () => {
             A running analysis of your finances, drawn up on demand and kept on
             file below.
           </p>
+          {eligibility && (
+            <p className="text-xs text-(--color-text-muted) mt-2">
+              Plan:{" "}
+              <span className="capitalize font-semibold text-(--color-text-main)">
+                {eligibility.plan}
+              </span>{" "}
+              · Daily limit: {eligibility.dailyLimit} · Remaining today:{" "}
+              {eligibility.remainingToday}
+            </p>
+          )}
         </div>
       </div>
 
@@ -175,6 +192,7 @@ const Insights = () => {
           onClick={() => handleGenerate("monthly_summary")}
           generating={isGenerating && activeType === "monthly_summary"}
           lastGenerated={latestMonthly?.created_at}
+          helperMessage={eligibility?.canGenerate === false ? eligibility.message : ""}
         />
         <ActionStamp
           title="Savings Tips"
@@ -183,6 +201,7 @@ const Insights = () => {
           onClick={() => handleGenerate("savings_tips")}
           generating={isGenerating && activeType === "savings_tips"}
           lastGenerated={latestTips?.created_at}
+          helperMessage={eligibility?.canGenerate === false ? eligibility.message : ""}
         />
       </div>
 

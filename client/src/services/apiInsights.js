@@ -41,3 +41,12 @@ export const getLatestInsightByType = async (type) => {
     handleApiError(error, "getLatestInsightByType");
   }
 };
+
+export const getInsightEligibility = async () => {
+  try {
+    const { data } = await api.get("/insight/eligibility");
+    return data;
+  } catch (error) {
+    handleApiError(error, "getInsightEligibility");
+  }
+};

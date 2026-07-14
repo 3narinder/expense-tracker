@@ -1,15 +1,22 @@
 import mongoose from "mongoose";
 import Insight from "../models/InsightSchema.js";
+import Transaction from "../models/TransactionSchema.js";
 import { DEVELOPER_PROMPTS } from "../utils/Prompt.js";
 import { getGroqClient } from "../utils/groq.js";
 import {
-  fetchMonthSummaryData,
-  fetchMonthlyTrendsData,
-  fetchCategoryBreakdownData,
   getAIContextData,
 } from "./dashboardController.js";
 
 const MODEL = "llama-3.3-70b-versatile";
+const AI_MIN_TRANSACTION_COUNT = parseInt(
+  process.env.AI_MIN_TRANSACTION_COUNT || "10",
+  10,
+);
+const AI_DAILY_LIMIT_BY_PLAN = {
+  basic: parseInt(process.env.AI_DAILY_LIMIT_BASIC || "2", 10),
+  personal: parseInt(process.env.AI_DAILY_LIMIT_PERSONAL || "10", 10),
+  premium: parseInt(process.env.AI_DAILY_LIMIT_PREMIUM || "100", 10),
+};
 
 // ==========================================
 // 🛠️ UTILITIES
@@ -18,6 +25,74 @@ const MODEL = "llama-3.3-70b-versatile";
 const getMongoUserId = (req) => {
   const id = req.user?.id || req.user?._id;
   return id ? new mongoose.Types.ObjectId(id) : null;
+};
+
+const getPlanDetails = (user) => {
+  const plan = user?.aiInsightPlan || "basic";
+  const dailyLimit =
+    AI_DAILY_LIMIT_BY_PLAN[plan] ?? AI_DAILY_LIMIT_BY_PLAN.basic ?? 2;
+  return { plan, dailyLimit };
+};
+
+const getUtcDayBounds = (date = new Date()) => {
+  const start = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+  );
+  const end = new Date(start);
+  end.setUTCDate(end.getUTCDate() + 1);
+  return { start, end };
+};
+
+const getAIEligibility = async (mongoUserId, user) => {
+  const { start, end } = getUtcDayBounds();
+  const { plan, dailyLimit } = getPlanDetails(user);
+  const [transactionCount, generatedToday] = await Promise.all([
+    Transaction.countDocuments({ userId: mongoUserId }),
+    Insight.countDocuments({
+      userId: mongoUserId,
+      created_at: { $gte: start, $lt: end },
+    }),
+  ]);
+
+  if (transactionCount < AI_MIN_TRANSACTION_COUNT) {
+    return {
+      canGenerate: false,
+      plan,
+      transactionCount,
+      minimumRequired: AI_MIN_TRANSACTION_COUNT,
+      generatedToday,
+      dailyLimit,
+      remainingToday: Math.max(0, dailyLimit - generatedToday),
+      message: `Add at least ${AI_MIN_TRANSACTION_COUNT} transactions before using AI insights. You currently have ${transactionCount}.`,
+      reason: "insufficient_data",
+    };
+  }
+
+  if (generatedToday >= dailyLimit) {
+    return {
+      canGenerate: false,
+      plan,
+      transactionCount,
+      minimumRequired: AI_MIN_TRANSACTION_COUNT,
+      generatedToday,
+      dailyLimit,
+      remainingToday: 0,
+      message: `You have reached today's AI insight limit (${dailyLimit}/${dailyLimit}) for your ${plan} plan. Please try again tomorrow.`,
+      reason: "daily_limit_reached",
+    };
+  }
+
+  return {
+    canGenerate: true,
+    plan,
+    transactionCount,
+    minimumRequired: AI_MIN_TRANSACTION_COUNT,
+    generatedToday,
+    dailyLimit,
+    remainingToday: Math.max(0, dailyLimit - generatedToday),
+    message: `You can generate ${Math.max(0, dailyLimit - generatedToday)} more AI insight${dailyLimit - generatedToday === 1 ? "" : "s"} today.`,
+    reason: null,
+  };
 };
 
 /**
@@ -95,6 +170,15 @@ export const generateInsightExtended = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
+    const eligibility = await getAIEligibility(mongoUserId, req.user);
+    if (!eligibility.canGenerate) {
+      return res.status(403).json({
+        error: "AI insight generation unavailable",
+        message: eligibility.message,
+        eligibility,
+      });
+    }
+
     // 2️⃣ FETCH REAL USER FINANCIAL DATA
     const dashboardData = await getAIContextData(mongoUserId);
 
@@ -150,6 +234,24 @@ export const generateInsightExtended = async (req, res) => {
     console.error("🔴 AI Pipeline Error:", error);
     res.status(500).json({
       error: "AI pipeline processing failed.",
+      details: error.message,
+    });
+  }
+};
+
+export const getInsightEligibility = async (req, res) => {
+  try {
+    const mongoUserId = getMongoUserId(req);
+    if (!mongoUserId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const eligibility = await getAIEligibility(mongoUserId, req.user);
+    res.status(200).json(eligibility);
+  } catch (error) {
+    console.error("❌ Error fetching AI eligibility:", error.message);
+    res.status(500).json({
+      error: "Failed to fetch AI eligibility.",
       details: error.message,
     });
   }

@@ -3,6 +3,7 @@ import {
   getRecentAnalyses,
   generateInsightExtended,
   getLatestInsightByType,
+  getInsightEligibility,
 } from "../controllers/aiInsightController.js";
 import { protect } from "../middleware/auth.middleware.js";
 import { aiRateLimiter } from "../middleware/rateLimiter.middleware.js";
@@ -18,5 +19,6 @@ router.get("/recent", protect, getRecentAnalyses);
 router.post("/generate", protect, aiRateLimiter, generateInsightExtended);
 
 router.get("/latest/:type", protect, getLatestInsightByType);
+router.get("/eligibility", protect, getInsightEligibility);
 
 export default router;

@@ -4,6 +4,7 @@ import {
   getInsights,
   generateInsight,
   getLatestInsightByType,
+  getInsightEligibility,
 } from "../../services/apiInsights";
 
 export const useInsights = () => {
@@ -27,14 +28,41 @@ export const useGenerateInsight = () => {
     isPending: isGenerating,
     error,
   } = useMutation({
-    mutationFn: (type) => generateInsight(type),
+    mutationFn: async (type) => {
+      const eligibility = await getInsightEligibility();
+      if (!eligibility?.canGenerate) {
+        throw Object.assign(
+          new Error(
+            eligibility?.message ||
+              "AI insight generation is currently unavailable for your account.",
+          ),
+          {
+            reason: eligibility?.reason,
+          },
+        );
+      }
+      return generateInsight(type);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["insights"] });
       queryClient.invalidateQueries({ queryKey: ["insight-latest"] });
+      queryClient.invalidateQueries({ queryKey: ["insight-eligibility"] });
       toast.success("Insight generated successfully!");
     },
     onError: (err) => {
-      toast.error(err?.response?.data?.error || "Failed to generate insight.");
+      const message =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        err?.message ||
+        "Failed to generate insight.";
+      const reason = err?.response?.data?.eligibility?.reason || err?.reason;
+
+      if (reason === "daily_limit_reached" || reason === "insufficient_data") {
+        toast(message, { icon: "🤖" });
+        return;
+      }
+
+      toast.error(message);
     },
   });
 
@@ -53,4 +81,17 @@ export const useLatestInsightByType = (type) => {
   });
 
   return { insight, isPending, error };
+};
+
+export const useInsightEligibility = () => {
+  const {
+    data: eligibility,
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ["insight-eligibility"],
+    queryFn: getInsightEligibility,
+  });
+
+  return { eligibility, isPending, error };
 };

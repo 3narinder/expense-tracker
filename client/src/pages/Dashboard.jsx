@@ -29,6 +29,7 @@ import { useAccounts } from "../features/Accounts/useAccounts.js";
 import {
   useGenerateInsight,
   useLatestInsightByType,
+  useInsightEligibility,
 } from "../features/AiInsights/useInsights.js";
 
 import KpiCard from "../components/KpiCard.jsx";
@@ -48,7 +49,12 @@ const scoreTone = (score) =>
       ? "text-[var(--color-warning)]"
       : "text-[var(--color-danger)]";
 
-const DashboardAIInsightCard = ({ insight, onGenerate, isGenerating }) => {
+const DashboardAIInsightCard = ({
+  insight,
+  onGenerate,
+  isGenerating,
+  eligibilityMessage = "",
+}) => {
   if (!insight) {
     return (
       <div className="bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) p-6">
@@ -69,6 +75,9 @@ const DashboardAIInsightCard = ({ insight, onGenerate, isGenerating }) => {
           <Sparkles size={16} />
           {isGenerating ? "Generating..." : "Create Insight"}
         </Button>
+        {eligibilityMessage && (
+          <p className="text-xs text-(--color-warning) mt-2">{eligibilityMessage}</p>
+        )}
       </div>
     );
   }
@@ -167,6 +176,7 @@ const Dashboard = () => {
   const { accounts = [] } = useAccounts();
   const { addBudget } = useBudgetActions();
   const { generate, isGenerating } = useGenerateInsight();
+  const { eligibility } = useInsightEligibility();
   const { insight: latestMonthlyInsight } =
     useLatestInsightByType("monthly_summary");
   const currency = user?.currency || "USD";
@@ -259,6 +269,11 @@ const Dashboard = () => {
           generate your first AI monthly summary.
         </p>
         {quickActions}
+        {eligibility?.canGenerate && (
+          <p className="text-xs text-(--color-text-muted) mt-3">
+            AI usage left today: {eligibility.remainingToday}/{eligibility.dailyLimit}
+          </p>
+        )}
 
         <Modal
           open={transactionModalOpen}
@@ -314,7 +329,14 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className="mt-4">{quickActions}</div>
+        <div className="mt-4">
+          {quickActions}
+          {eligibility?.canGenerate && (
+            <p className="text-xs text-(--color-text-muted) mt-2">
+              AI usage left today: {eligibility.remainingToday}/{eligibility.dailyLimit}
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -348,6 +370,9 @@ const Dashboard = () => {
         insight={latestMonthlyInsight}
         onGenerate={() => generate("monthly_summary")}
         isGenerating={isGenerating}
+        eligibilityMessage={
+          eligibility?.canGenerate === false ? eligibility.message : ""
+        }
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
