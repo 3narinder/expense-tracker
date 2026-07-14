@@ -1,17 +1,16 @@
 import dotenv from "dotenv";
 import Groq from "groq-sdk";
 
-dotenv.config();
+dotenv.config({ path: new URL("../.env", import.meta.url).pathname });
 
 let groqInstance = null;
 
 export const getGroqClient = () => {
   if (!groqInstance) {
-    // Fixed the typo here from GORQ to GROQ
     const apiKey = process.env.GROQ_API_KEY;
 
     if (!apiKey) {
-      throw new Error("❌ GROQ_API_KEY is missing or empty in your .env file.");
+      throw new Error("❌ GROQ_API_KEY is missing or empty. Set GROQ_API_KEY in server/.env or your deployment environment.");
     }
 
     groqInstance = new Groq({ apiKey });

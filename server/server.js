@@ -1,9 +1,11 @@
 import dotenv from "dotenv";
-dotenv.config(); // MUST be first
+dotenv.config();
 
 import app from "./app.js";
 import connectDB from "./config/db.js";
 import { ensureDefaultCategories } from "./utils/defaultCategories.js";
+
+dotenv.config({ path: new URL("./.env", import.meta.url).pathname });
 
 const PORT = process.env.PORT || 8000;
 
