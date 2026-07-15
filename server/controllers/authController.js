@@ -71,7 +71,7 @@ export const register = async (req, res) => {
     const token = generateToken(user._id);
     sendToken(res, token);
 
-    return res.status(201).json({ success: true, user });
+    return res.status(201).json({ success: true, user, token });
   } catch (error) {
     if (error.code === 11000) {
       const field = Object.keys(error.keyPattern || {})[0] || "field";
@@ -122,6 +122,7 @@ export const login = async (req, res) => {
     return res.status(200).json({
       success: true,
       user,
+      token,
     });
   } catch (error) {
     console.error(error);

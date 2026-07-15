@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getAuthToken } from "../services/apiAuth";
 
 const defaultApiUrl = import.meta.env.PROD
   ? "https://expense-tracker-api-mkt0.onrender.com/api"
@@ -9,6 +10,14 @@ const API_URL = import.meta.env.VITE_API_URL || defaultApiUrl;
 const api = axios.create({
   baseURL: API_URL,
   withCredentials: true,
+});
+
+api.interceptors.request.use((config) => {
+  const token = getAuthToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 api.interceptors.response.use(
