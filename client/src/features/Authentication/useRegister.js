@@ -1,10 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import {
-  register as userRegisterApi,
-  setAuthToken,
-} from "../../services/apiAuth.js";
+import { register as userRegisterApi } from "../../services/apiAuth.js";
+import { setAuthToken } from "../../utils/authToken";
 
 export const useRegister = () => {
   const queryClient = useQueryClient();

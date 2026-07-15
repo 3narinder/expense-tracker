@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getAuthToken } from "../services/apiAuth";
+import { getAuthToken } from "./authToken";
 
 const defaultApiUrl = import.meta.env.PROD
   ? "https://expense-tracker-api-mkt0.onrender.com/api"
@@ -28,7 +28,7 @@ api.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       window.location.pathname !== "/login" &&
-      !originalRequest.url.includes("/auth/me")
+      !originalRequest?.url?.includes("/auth/me")
     ) {
       window.location.href = "/login";
     }

@@ -1,18 +1,6 @@
 import api from "../utils/axios";
 import { handleApiError } from "../utils/format";
-
-const AUTH_TOKEN_KEY = "expenseai_access_token";
-
-export const setAuthToken = (token) => {
-  if (!token) return;
-  localStorage.setItem(AUTH_TOKEN_KEY, token);
-};
-
-export const getAuthToken = () => localStorage.getItem(AUTH_TOKEN_KEY);
-
-export const clearAuthToken = () => {
-  localStorage.removeItem(AUTH_TOKEN_KEY);
-};
+import { clearAuthToken } from "../utils/authToken";
 
 export const register = async (formData) => {
   try {
