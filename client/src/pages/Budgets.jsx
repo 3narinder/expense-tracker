@@ -122,18 +122,21 @@ const Budgets = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[var(--color-bg-muted)]/50 p-6 rounded-3xl border border-[var(--color-border-main)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-[var(--color-text-main)] tracking-tight">
             Budgets
           </h1>
-          <p className="text-sm text-[var(--color-text-muted)] mt-1">
+          <p className="text-sm text-[var(--color-text-muted)] mt-1.5">
             Track multi-category limits with automatic health alerts.
           </p>
         </div>
-        <Button onClick={onCreate} className="shrink-0 self-start sm:self-auto">
-          <Plus size={16} className="mr-1.5" /> Add Budget
-        </Button>
+
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto mt-1 sm:mt-0">
+          <Button onClick={onCreate}>
+            <Plus size={16} /> Add Budget
+          </Button>
+        </div>
       </div>
 
       {isPending ? (

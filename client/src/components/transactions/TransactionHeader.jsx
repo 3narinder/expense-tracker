@@ -1,5 +1,4 @@
 import { Download, Plus, Trash2 } from "lucide-react";
-
 import Button from "../ui/Button.jsx";
 
 const TransactionsHeader = ({
@@ -10,7 +9,7 @@ const TransactionsHeader = ({
   isBulkDeleting = false,
   isExporting = false,
 }) => (
-  <div className="flex items-center justify-between">
+  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
     <div>
       <h1 className="text-3xl font-bold text-(--color-text-main) tracking-tight">
         Transactions
@@ -19,7 +18,8 @@ const TransactionsHeader = ({
         All your income and expenses
       </p>
     </div>
-    <div className="flex items-center gap-2">
+
+    <div className="flex flex-col sm:flex-row md:items-center gap-2">
       <Button variant="outline" onClick={onExport} disabled={isExporting}>
         <Download size={16} />
         {isExporting ? "Exporting..." : "Export CSV"}

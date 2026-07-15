@@ -11,6 +11,8 @@ import {
   Receipt,
   Sparkles,
   Bot,
+  Crown,
+  Zap,
 } from "lucide-react";
 import {
   RadialBarChart,
@@ -49,6 +51,52 @@ const scoreTone = (score) =>
       ? "text-[var(--color-warning)]"
       : "text-[var(--color-danger)]";
 
+const PlanBadge = ({ eligibility }) => {
+  if (!eligibility) return null;
+
+  const isPremium = eligibility.plan?.toLowerCase() === "premium";
+  const Icon = isPremium ? Crown : Zap;
+
+  const badgeClasses = isPremium
+    ? "bg-gradient-to-r from-amber-50 to-amber-100/50 border-amber-200 text-amber-900"
+    : "bg-[var(--color-bg-muted)] border-[var(--color-border-main)] text-[var(--color-text-main)]";
+
+  const iconClasses = isPremium
+    ? "text-amber-600"
+    : "text-[var(--color-text-muted)]";
+  const statClasses = isPremium
+    ? "text-amber-700/80"
+    : "text-[var(--color-text-muted)]";
+
+  return (
+    <div
+      className={`inline-flex items-center gap-3 px-3 py-1.5 rounded-lg border shadow-sm ${badgeClasses} transition-all`}
+    >
+      <div className="flex items-center gap-1.5">
+        <Icon size={14} className={iconClasses} />
+        <span className="text-xs font-semibold capitalize tracking-wide">
+          {eligibility.plan}
+        </span>
+      </div>
+
+      <div
+        className={`w-px h-3 ${isPremium ? "bg-amber-300" : "bg-[var(--color-border-main)]"}`}
+      />
+
+      <div
+        className={`flex items-center gap-1.5 text-[11px] font-medium ${statClasses}`}
+      >
+        <span>AI uses left today:</span>
+        <span
+          className={`font-mono-tab px-1.5 py-0.5 rounded-md ${isPremium ? "bg-amber-200/50" : "bg-[var(--color-bg-surface)] border border-[var(--color-border-main)]"}`}
+        >
+          {eligibility.remainingToday} / {eligibility.dailyLimit}
+        </span>
+      </div>
+    </div>
+  );
+};
+
 const DashboardAIInsightCard = ({
   insight,
   onGenerate,
@@ -76,7 +124,9 @@ const DashboardAIInsightCard = ({
           {isGenerating ? "Generating..." : "Create Insight"}
         </Button>
         {eligibilityMessage && (
-          <p className="text-xs text-(--color-warning) mt-2">{eligibilityMessage}</p>
+          <p className="text-xs text-(--color-warning) mt-2">
+            {eligibilityMessage}
+          </p>
         )}
       </div>
     );
@@ -269,11 +319,10 @@ const Dashboard = () => {
           generate your first AI monthly summary.
         </p>
         {quickActions}
-        {eligibility?.canGenerate && (
-          <p className="text-xs text-(--color-text-muted) mt-3">
-            AI usage left today: {eligibility.remainingToday}/{eligibility.dailyLimit}
-          </p>
-        )}
+
+        <div className="mt-5 flex justify-center">
+          <PlanBadge eligibility={eligibility} />
+        </div>
 
         <Modal
           open={transactionModalOpen}
@@ -331,11 +380,9 @@ const Dashboard = () => {
         </div>
         <div className="mt-4">
           {quickActions}
-          {eligibility?.canGenerate && (
-            <p className="text-xs text-(--color-text-muted) mt-2">
-              AI usage left today: {eligibility.remainingToday}/{eligibility.dailyLimit}
-            </p>
-          )}
+          <div className="mt-5 flex md:justify-start sm:justify-center">
+            <PlanBadge eligibility={eligibility} />
+          </div>
         </div>
       </div>
 

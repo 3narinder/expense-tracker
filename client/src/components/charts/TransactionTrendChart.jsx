@@ -107,108 +107,110 @@ const TransactionTrendChart = ({ data, currency, isLoading }) => {
   const interval = Math.max(0, Math.ceil(data.length / 7) - 1);
 
   return (
-    <div className="h-64 w-full mt-4">
-      <ResponsiveContainer width="100%" height="100%">
-        <AreaChart
-          data={data}
-          margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-        >
-          <defs>
-            <linearGradient id="incomeArea" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#A78BFA" stopOpacity={0.45} />
-              <stop offset="100%" stopColor="#A78BFA" stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="expenseArea" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#FB923C" stopOpacity={0.45} />
-              <stop offset="100%" stopColor="#FB923C" stopOpacity={0} />
-            </linearGradient>
-          </defs>
+    <div className="h-64 w-full mt-4 overflow-x-auto">
+      <div className="h-full min-w-[600px] w-full pr-4 pb-2">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart
+            data={data}
+            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+          >
+            <defs>
+              <linearGradient id="incomeArea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#A78BFA" stopOpacity={0.45} />
+                <stop offset="100%" stopColor="#A78BFA" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="expenseArea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#FB923C" stopOpacity={0.45} />
+                <stop offset="100%" stopColor="#FB923C" stopOpacity={0} />
+              </linearGradient>
+            </defs>
 
-          <CartesianGrid
-            strokeDasharray="4 4"
-            stroke="#f1f5f9"
-            vertical={false}
-          />
+            <CartesianGrid
+              strokeDasharray="4 4"
+              stroke="#f1f5f9"
+              vertical={false}
+            />
 
-          <XAxis
-            dataKey="label"
-            tickFormatter={formatLabel}
-            tick={{ fill: "#94a3b8", fontSize: 11 }}
-            tickLine={false}
-            axisLine={false}
-            interval={interval}
-            dy={10} // Pushes labels down slightly
-          />
+            <XAxis
+              dataKey="label"
+              tickFormatter={formatLabel}
+              tick={{ fill: "#94a3b8", fontSize: 11 }}
+              tickLine={false}
+              axisLine={false}
+              interval={interval}
+              dy={10}
+            />
 
-          <YAxis
-            yAxisId="income"
-            tick={{ fill: "#7C3AED", fontSize: 11 }}
-            tickLine={false}
-            axisLine={false}
-            width={50}
-            dx={-10}
-          />
+            <YAxis
+              yAxisId="income"
+              tick={{ fill: "#7C3AED", fontSize: 11 }}
+              tickLine={false}
+              axisLine={false}
+              width={50}
+              dx={-10}
+            />
 
-          <YAxis
-            yAxisId="expense"
-            orientation="right"
-            tick={{ fill: "#EA580C", fontSize: 11 }}
-            tickLine={false}
-            axisLine={false}
-            width={50}
-            dx={10}
-          />
+            <YAxis
+              yAxisId="expense"
+              orientation="right"
+              tick={{ fill: "#EA580C", fontSize: 11 }}
+              tickLine={false}
+              axisLine={false}
+              width={50}
+              dx={10}
+            />
 
-          <Tooltip
-            cursor={{
-              stroke: "#e2e8f0",
-              strokeWidth: 2,
-              strokeDasharray: "4 4",
-            }}
-            content={<CustomTooltip currency={currency} />}
-            wrapperStyle={{ outline: "none" }} // Removes default recharts focus ring
-          />
+            <Tooltip
+              cursor={{
+                stroke: "#e2e8f0",
+                strokeWidth: 2,
+                strokeDasharray: "4 4",
+              }}
+              content={<CustomTooltip currency={currency} />}
+              wrapperStyle={{ outline: "none" }}
+            />
 
-          <Legend
-            wrapperStyle={{ fontSize: 12, paddingTop: 20 }}
-            iconType="circle"
-            payload={[
-              { value: "Income", type: "circle", color: "#7C3AED" },
-              { value: "Expense", type: "circle", color: "#EA580C" },
-            ]}
-          />
+            <Legend
+              wrapperStyle={{ fontSize: 12, paddingTop: 20 }}
+              iconType="circle"
+              payload={[
+                { value: "Income", type: "circle", color: "#7C3AED" },
+                { value: "Expense", type: "circle", color: "#EA580C" },
+              ]}
+            />
 
-          <Area
-            yAxisId="income"
-            type="monotone"
-            dataKey="income"
-            stroke="#7C3AED"
-            strokeWidth={3}
-            fill="url(#incomeArea)"
-            activeDot={{
-              r: 6,
-              fill: "#7C3AED",
-              stroke: "#fff",
-              strokeWidth: 2,
-            }}
-          />
+            <Area
+              yAxisId="income"
+              type="monotone"
+              dataKey="income"
+              stroke="#7C3AED"
+              strokeWidth={3}
+              fill="url(#incomeArea)"
+              activeDot={{
+                r: 6,
+                fill: "#7C3AED",
+                stroke: "#fff",
+                strokeWidth: 2,
+              }}
+            />
 
-          <Area
-            yAxisId="expense"
-            type="monotone"
-            dataKey="expense"
-            stroke="#EA580C"
-            strokeWidth={3}
-            fill="url(#expenseArea)"
-            activeDot={{
-              r: 6,
-              fill: "#EA580C",
-              stroke: "#fff",
-              strokeWidth: 2,
-            }}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+            <Area
+              yAxisId="expense"
+              type="monotone"
+              dataKey="expense"
+              stroke="#EA580C"
+              strokeWidth={3}
+              fill="url(#expenseArea)"
+              activeDot={{
+                r: 6,
+                fill: "#EA580C",
+                stroke: "#fff",
+                strokeWidth: 2,
+              }}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };

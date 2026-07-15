@@ -6,6 +6,8 @@ import {
   Activity,
   Wallet,
   Clock,
+  Crown,
+  Zap,
 } from "lucide-react";
 
 import { timeAgo } from "../utils/format.js";
@@ -19,6 +21,66 @@ import {
   useInsightEligibility,
 } from "../features/AiInsights/useInsights.js";
 import KpiCard from "../components/KpiCard.jsx";
+
+const PlanBadge = ({ eligibility }) => {
+  if (!eligibility) return null;
+
+  const isPremium = eligibility.plan?.toLowerCase() === "premium";
+  const Icon = isPremium ? Crown : Zap;
+
+  // Conditional styling based on plan to give premium a subtle gold/violet glow,
+  // and free/basic a standard neutral look.
+  const badgeClasses = isPremium
+    ? "bg-gradient-to-r from-amber-50 to-amber-100/50 border-amber-200 text-amber-900"
+    : "bg-[var(--color-bg-muted)] border-[var(--color-border-main)] text-[var(--color-text-main)]";
+
+  const iconClasses = isPremium
+    ? "text-amber-600"
+    : "text-[var(--color-text-muted)]";
+  const statClasses = isPremium
+    ? "text-amber-700/80"
+    : "text-[var(--color-text-muted)]";
+
+  return (
+    <div
+      className={`inline-flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 px-4 py-3 sm:py-2 rounded-xl border shadow-sm ${badgeClasses} transition-all`}
+    >
+      <div className="flex items-center gap-2">
+        <Icon size={16} className={iconClasses} />
+        <span className="text-sm font-semibold capitalize tracking-wide">
+          {eligibility.plan} Plan
+        </span>
+      </div>
+
+      {/* Divider - hidden on mobile, visible on sm+ */}
+      <div
+        className={`hidden sm:block w-px h-4 ${isPremium ? "bg-amber-300" : "bg-[var(--color-border-main)]"}`}
+      />
+
+      <div
+        className={`flex items-center gap-4 text-xs font-medium ${statClasses}`}
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-1.5">
+          <span>Daily Limit:</span>
+          <span
+            className={`font-mono-tab px-1.5 py-0.5 rounded-md ${isPremium ? "bg-amber-200/50" : "bg-[var(--color-bg-surface)] border border-[var(--color-border-main)]"}`}
+          >
+            {eligibility.dailyLimit}
+          </span>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-1.5">
+          <span>Remaining:</span>
+          <span
+            className={`font-mono-tab px-1.5 py-0.5 rounded-md ${isPremium ? "bg-amber-200/50" : "bg-[var(--color-bg-surface)] border border-[var(--color-border-main)]"}`}
+          >
+            {eligibility.remainingToday}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ActionStamp = ({
   title,
@@ -132,7 +194,7 @@ const Insights = () => {
   return (
     <div className="space-y-8">
       {/* Statement header */}
-      <div className="flex items-start justify-between flex-wrap gap-4">
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
         <div>
           <div className="text-[11px] uppercase tracking-[0.16em] font-semibold text-(--color-gold) mb-2">
             Statement · {today}
@@ -144,16 +206,11 @@ const Insights = () => {
             A running analysis of your finances, drawn up on demand and kept on
             file below.
           </p>
-          {eligibility && (
-            <p className="text-xs text-(--color-text-muted) mt-2">
-              Plan:{" "}
-              <span className="capitalize font-semibold text-(--color-text-main)">
-                {eligibility.plan}
-              </span>{" "}
-              · Daily limit: {eligibility.dailyLimit} · Remaining today:{" "}
-              {eligibility.remainingToday}
-            </p>
-          )}
+        </div>
+
+        {/* Replaced old text paragraph with new elegant badge */}
+        <div className="shrink-0">
+          <PlanBadge eligibility={eligibility} />
         </div>
       </div>
 
@@ -192,7 +249,9 @@ const Insights = () => {
           onClick={() => handleGenerate("monthly_summary")}
           generating={isGenerating && activeType === "monthly_summary"}
           lastGenerated={latestMonthly?.created_at}
-          helperMessage={eligibility?.canGenerate === false ? eligibility.message : ""}
+          helperMessage={
+            eligibility?.canGenerate === false ? eligibility.message : ""
+          }
         />
         <ActionStamp
           title="Savings Tips"
@@ -201,7 +260,9 @@ const Insights = () => {
           onClick={() => handleGenerate("savings_tips")}
           generating={isGenerating && activeType === "savings_tips"}
           lastGenerated={latestTips?.created_at}
-          helperMessage={eligibility?.canGenerate === false ? eligibility.message : ""}
+          helperMessage={
+            eligibility?.canGenerate === false ? eligibility.message : ""
+          }
         />
       </div>
 

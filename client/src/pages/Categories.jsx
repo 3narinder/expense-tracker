@@ -55,7 +55,7 @@ const Categories = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-[var(--color-text-main)] tracking-tight">
             Categories
@@ -64,9 +64,14 @@ const Categories = () => {
             Organize transactions by category
           </p>
         </div>
-        <Button onClick={onCreate}>
-          <Plus size={16} /> Add Category
-        </Button>
+
+        {/* Changed this wrapper to match your Transactions header logic */}
+        {/* 'w-full' ensures it spans the screen on mobile, 'sm:w-auto' shrinks it on desktop */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto mt-1 sm:mt-0">
+          <Button onClick={onCreate}>
+            <Plus size={16} /> Add Category
+          </Button>
+        </div>
       </div>
 
       {categories?.length === 0 ? (
