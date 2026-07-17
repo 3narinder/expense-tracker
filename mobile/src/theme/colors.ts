@@ -3,10 +3,10 @@
 // (no theming library) to keep the bundle light.
 
 export const lightColors = {
-  bgApp: "#fafafa",
+  bgApp: "#f6f7fb",
   bgSurface: "#ffffff",
-  bgMuted: "#f5f5f5",
-  bgHover: "#f0f0f0",
+  bgMuted: "#eef1f8",
+  bgHover: "#e8ecf7",
 
   textMain: "#1a1a1a",
   textMuted: "#6b7280",
@@ -17,9 +17,9 @@ export const lightColors = {
   borderMuted: "#f3f4f6",
   divider: "#e5e7eb",
 
-  primary: "#4f46e5",
-  primaryHover: "#4338ca",
-  primarySoft: "#eef2ff",
+  primary: "#5b4cf0",
+  primaryHover: "#4b3ee0",
+  primarySoft: "#ecebff",
   primaryForeground: "#ffffff",
 
   secondary: "#64748b",
@@ -29,7 +29,7 @@ export const lightColors = {
   successSoft: "#ecfdf5",
   warning: "#f59e0b",
   warningSoft: "#fffbeb",
-  danger: "#ef4444",
+  danger: "#dc2626",
   dangerSoft: "#fef2f2",
   info: "#3b82f6",
   infoSoft: "#eff6ff",
@@ -38,10 +38,10 @@ export const lightColors = {
 };
 
 export const darkColors = {
-  bgApp: "#0a0a0b",
-  bgSurface: "#141416",
-  bgMuted: "#1f1f23",
-  bgHover: "#2a2a2e",
+  bgApp: "#0a0d16",
+  bgSurface: "#131826",
+  bgMuted: "#1d2435",
+  bgHover: "#283149",
 
   textMain: "#f4f4f5",
   textMuted: "#a1a1aa",
@@ -52,9 +52,9 @@ export const darkColors = {
   borderMuted: "#1f1f23",
   divider: "#27272a",
 
-  primary: "#6366f1",
-  primaryHover: "#818cf8",
-  primarySoft: "rgba(99, 102, 241, 0.15)",
+  primary: "#7a7dff",
+  primaryHover: "#9498ff",
+  primarySoft: "rgba(122, 125, 255, 0.18)",
   primaryForeground: "#ffffff",
 
   secondary: "#94a3b8",
@@ -64,8 +64,8 @@ export const darkColors = {
   successSoft: "rgba(52, 211, 153, 0.15)",
   warning: "#fbbf24",
   warningSoft: "rgba(251, 191, 36, 0.15)",
-  danger: "#f87171",
-  dangerSoft: "rgba(248, 113, 113, 0.15)",
+  danger: "#ef4444",
+  dangerSoft: "rgba(239, 68, 68, 0.15)",
   info: "#60a5fa",
   infoSoft: "rgba(96, 165, 250, 0.15)",
 

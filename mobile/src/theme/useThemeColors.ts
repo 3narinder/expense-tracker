@@ -1,5 +1,5 @@
-import { useColorScheme } from "react-native";
 import { darkColors, lightColors } from "./colors";
+import { useAppShell } from "../state/appShell";
 
 /**
  * Returns the active color palette based on the device's system setting,
@@ -7,7 +7,7 @@ import { darkColors, lightColors } from "./colors";
  * in app.json. No provider/context needed — keeps things light.
  */
 export function useThemeColors() {
-  const scheme = useColorScheme();
-  const isDark = scheme === "dark";
+  const { resolvedTheme } = useAppShell();
+  const isDark = resolvedTheme === "dark";
   return { colors: isDark ? darkColors : lightColors, isDark };
 }
