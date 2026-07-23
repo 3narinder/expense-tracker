@@ -80,7 +80,7 @@ const PlanBadge = ({ eligibility }) => {
       </div>
 
       <div
-        className={`w-px h-3 ${isPremium ? "bg-amber-300" : "bg-[var(--color-border-main)]"}`}
+        className={`w-px h-3 ${isPremium ? "bg-amber-300" : "bg-(--color-border-main)"}`}
       />
 
       <div
@@ -88,7 +88,7 @@ const PlanBadge = ({ eligibility }) => {
       >
         <span>AI uses left today:</span>
         <span
-          className={`font-mono-tab px-1.5 py-0.5 rounded-md ${isPremium ? "bg-amber-200/50" : "bg-[var(--color-bg-surface)] border border-[var(--color-border-main)]"}`}
+          className={`font-mono-tab px-1.5 py-0.5 rounded-md ${isPremium ? "bg-amber-200/50" : "bg-(--color-bg-surface) border border-(--color-border-main)"}`}
         >
           {eligibility.remainingToday} / {eligibility.dailyLimit}
         </span>

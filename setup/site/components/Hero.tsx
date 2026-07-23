@@ -1,8 +1,8 @@
 import { ArrowUpRight, Sparkles } from "lucide-react";
 import { APP_URL, GITHUB_URL } from "@/lib/config";
+import DashboardMock from "./mocks/DashboardMock";
 import Reveal from "./Reveal";
 import GithubIcon from "./GithubIcon";
-import Image from "next/image";
 
 export default function Hero() {
   return (
@@ -12,11 +12,11 @@ export default function Hero() {
     >
       <div
         aria-hidden
-        className="absolute -top-32 right-0 h-96 w-96 rounded-full bg-color-primary/10 blur-3xl"
+        className="absolute -top-32 right-0 h-96 w-96 rounded-full bg-(--color-primary)/10 blur-3xl"
       />
       <div
         aria-hidden
-        className="absolute top-40 -left-24 h-72 w-72 rounded-full bg-gold/10 blur-3xl"
+        className="absolute top-40 -left-24 h-72 w-72 rounded-full bg-(--color-gold)/10 blur-3xl"
       />
 
       <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
@@ -35,8 +35,9 @@ export default function Hero() {
 
             <p className="mt-6 max-w-lg text-lg text-(--color-text-muted) leading-relaxed">
               ExpenseAI turns raw transactions into a clear picture of your
-              finances — budgets that track themselves, categories you control,
-              and AI summaries that tell you what actually matters each month.
+              finances — budgets that track themselves, categories you
+              control, and AI summaries that tell you what actually matters
+              each month.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -57,8 +58,6 @@ export default function Hero() {
                 View on GitHub
               </a>
             </div>
-
-            {/* Add numbers that start from zero and count to that 4 or 3 in animation*/}
 
             <dl className="mt-12 grid grid-cols-3 gap-6 max-w-md">
               <div>
@@ -89,13 +88,9 @@ export default function Hero() {
           </Reveal>
 
           <Reveal delay={0.1} className="relative">
-            <div className="animate-float absolute -top-16 -right-16 h-96 w-96 rounded-full bg-color-primary/10 blur-3xl" />
-            <Image
-              src="/hero_img.png"
-              alt="Hero Image"
-              width={500}
-              height={500}
-            />
+            <div className="animate-float">
+              <DashboardMock />
+            </div>
           </Reveal>
         </div>
       </div>
