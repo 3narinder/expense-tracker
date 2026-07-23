@@ -26,7 +26,7 @@ export default function BudgetSection() {
                 </span>
               </div>
               <div className="space-y-5">
-                {budgets.map((b, i) => (
+                {budgets.map((b) => (
                   <div key={b.label} className="group">
                     <div className="flex justify-between items-baseline text-sm mb-1.5">
                       <span className="font-medium text-(--color-text-main) group-hover:text-(--color-primary) transition-colors">

@@ -10,7 +10,6 @@ const categoryBreakdown = [
 
 export default function AnalyticsSection() {
   const circumference = 2 * Math.PI * 32;
-  let cumulative = 0;
 
   return (
     <section id="analytics" className="py-24 sm:py-32 relative overflow-hidden">
@@ -78,10 +77,15 @@ export default function AnalyticsSection() {
               </div>
               <div className="flex items-center gap-8">
                 <svg viewBox="0 0 80 80" className="h-32 w-32 -rotate-90 shrink-0">
-                  {categoryBreakdown.map((c) => {
+                  {categoryBreakdown.map((c, index) => {
                     const dash = (c.value / 100) * circumference;
-                    const offset = cumulative;
-                    cumulative += dash;
+                    const offset = categoryBreakdown
+                      .slice(0, index)
+                      .reduce(
+                        (sum, item) =>
+                          sum + (item.value / 100) * circumference,
+                        0
+                      );
                     return (
                       <circle
                         key={c.name}

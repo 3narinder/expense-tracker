@@ -53,7 +53,7 @@ export default function TransactionsSection() {
 
         <div className="mt-16 grid gap-12 lg:grid-cols-5 lg:gap-16 items-start">
           <Reveal className="lg:col-span-2 space-y-6">
-            {points.map((p, i) => (
+            {points.map((p) => (
               <div key={p.title} className="flex gap-4 group">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-(--color-bg-surface) border border-(--color-border-main) group-hover:bg-(--color-primary-soft) group-hover:border-(--color-primary)/30 group-hover:shadow-lg group-hover:shadow-(--color-primary)/10 transition-all duration-300">
                   <p.icon size={17} className="text-(--color-primary)" />
