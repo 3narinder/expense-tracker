@@ -3,11 +3,14 @@ import Reveal from "./Reveal";
 
 export default function AISection() {
   return (
-    <section id="ai" className="py-24 sm:py-32 bg-(--color-bg-muted)">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <section id="ai" className="py-24 sm:py-32 bg-(--color-bg-muted) relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-96 h-96 bg-(--color-primary)/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-72 h-72 bg-(--color-gold)/5 rounded-full blur-3xl" />
+      
+      <div className="mx-auto max-w-7xl px-6 lg:px-8 relative">
         <div className="grid items-center gap-16 lg:grid-cols-2">
           <Reveal>
-            <div className="inline-flex items-center gap-2 rounded-full bg-(--color-primary-soft) px-3.5 py-1.5 text-xs font-semibold text-(--color-primary)">
+            <div className="inline-flex items-center gap-2 rounded-full bg-(--color-primary-soft) px-3.5 py-1.5 text-xs font-semibold text-(--color-primary) animate-pulse-glow">
               <Sparkles size={13} />
               AI Insights
             </div>
@@ -22,8 +25,8 @@ export default function AISection() {
             </p>
 
             <ul className="mt-8 space-y-5">
-              <li className="flex gap-4">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-(--color-bg-surface) border border-(--color-border-main)">
+              <li className="flex gap-4 group">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-(--color-bg-surface) border border-(--color-border-main) group-hover:border-(--color-primary)/50 group-hover:shadow-lg group-hover:shadow-(--color-primary)/10 transition-all duration-300">
                   <TrendingUp size={16} className="text-(--color-primary)" />
                 </span>
                 <div>
@@ -36,8 +39,8 @@ export default function AISection() {
                   </p>
                 </div>
               </li>
-              <li className="flex gap-4">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-(--color-bg-surface) border border-(--color-border-main)">
+              <li className="flex gap-4 group">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-(--color-bg-surface) border border-(--color-border-main) group-hover:border-(--color-gold)/50 group-hover:shadow-lg group-hover:shadow-(--color-gold)/10 transition-all duration-300">
                   <Lightbulb size={16} className="text-(--color-gold)" />
                 </span>
                 <div>
@@ -50,8 +53,8 @@ export default function AISection() {
                   </p>
                 </div>
               </li>
-              <li className="flex gap-4">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-(--color-bg-surface) border border-(--color-border-main)">
+              <li className="flex gap-4 group">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-(--color-bg-surface) border border-(--color-border-main) group-hover:border-(--color-success)/50 group-hover:shadow-lg group-hover:shadow-(--color-success)/10 transition-all duration-300">
                   <Gauge size={16} className="text-(--color-success)" />
                 </span>
                 <div>
@@ -69,10 +72,10 @@ export default function AISection() {
           </Reveal>
 
           <Reveal delay={0.1}>
-            <div className="rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-6 shadow-xl">
+            <div className="rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-6 shadow-xl hover:shadow-2xl hover:shadow-(--color-primary)/10 transition-all duration-500 animate-scale-in">
               <div className="flex items-start justify-between gap-4 mb-5">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-(--color-primary-soft)">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-(--color-primary-soft) animate-pulse-glow">
                     <Sparkles size={18} className="text-(--color-primary)" />
                   </span>
                   <div>
@@ -93,6 +96,7 @@ export default function AISection() {
                     cx="40" cy="40" r="32" fill="none"
                     stroke="var(--color-success)" strokeWidth="9"
                     strokeLinecap="round" strokeDasharray="201" strokeDashoffset="42"
+                    className="animate-[gaugeSpin_2s_ease-out_forwards]"
                   />
                 </svg>
                 <div className="col-span-2">
@@ -106,7 +110,7 @@ export default function AISection() {
                 </div>
               </div>
 
-              <div className="mt-5 rounded-xl border border-dashed border-(--color-border-main) p-4">
+              <div className="mt-5 rounded-xl border border-dashed border-(--color-border-main) p-4 bg-(--color-bg-muted)/30">
                 <p className="text-xs font-semibold text-(--color-text-muted) uppercase tracking-wide mb-1">
                   Next step
                 </p>

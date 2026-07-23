@@ -63,8 +63,9 @@ const features = [
 
 export default function Features() {
   return (
-    <section id="features" className="py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <section id="features" className="py-24 sm:py-32 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-(--color-bg-muted)/30 to-transparent" />
+      <div className="mx-auto max-w-7xl px-6 lg:px-8 relative">
         <Reveal className="mx-auto max-w-2xl text-center">
           <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-(--color-text-main)">
             Everything you need, nothing you don&apos;t
@@ -78,9 +79,9 @@ export default function Features() {
         <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((f, i) => (
             <Reveal key={f.title} delay={(i % 4) * 0.06}>
-              <div className="h-full rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-6 hover:border-(--color-primary)/40 hover:shadow-lg hover:shadow-black/5 transition-all">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-(--color-primary-soft)">
-                  <f.icon size={20} className="text-(--color-primary)" />
+              <div className="h-full rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-6 hover:border-(--color-primary)/40 hover:shadow-xl hover:shadow-(--color-primary)/10 hover:-translate-y-1 transition-all duration-300 group">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-(--color-primary-soft) group-hover:bg-(--color-primary) transition-colors duration-300">
+                  <f.icon size={20} className="text-(--color-primary) group-hover:text-(--color-primary-foreground) transition-colors duration-300" />
                 </div>
                 <h3 className="mt-4 text-base font-bold text-(--color-text-main)">
                   {f.title}

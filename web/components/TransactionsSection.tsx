@@ -37,8 +37,10 @@ const points = [
 
 export default function TransactionsSection() {
   return (
-    <section className="py-24 sm:py-32 bg-(--color-bg-muted)">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <section className="py-24 sm:py-32 bg-(--color-bg-muted) relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-96 h-96 bg-(--color-info)/5 rounded-full blur-3xl" />
+      
+      <div className="mx-auto max-w-7xl px-6 lg:px-8 relative">
         <Reveal className="mx-auto max-w-2xl text-center">
           <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-(--color-text-main)">
             Transaction management that stays out of your way
@@ -51,13 +53,13 @@ export default function TransactionsSection() {
 
         <div className="mt-16 grid gap-12 lg:grid-cols-5 lg:gap-16 items-start">
           <Reveal className="lg:col-span-2 space-y-6">
-            {points.map((p) => (
-              <div key={p.title} className="flex gap-4">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-(--color-bg-surface) border border-(--color-border-main)">
+            {points.map((p, i) => (
+              <div key={p.title} className="flex gap-4 group">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-(--color-bg-surface) border border-(--color-border-main) group-hover:bg-(--color-primary-soft) group-hover:border-(--color-primary)/30 group-hover:shadow-lg group-hover:shadow-(--color-primary)/10 transition-all duration-300">
                   <p.icon size={17} className="text-(--color-primary)" />
                 </span>
                 <div>
-                  <p className="font-semibold text-(--color-text-main)">
+                  <p className="font-semibold text-(--color-text-main) group-hover:text-(--color-primary) transition-colors">
                     {p.title}
                   </p>
                   <p className="text-sm text-(--color-text-muted) mt-0.5">
@@ -69,19 +71,19 @@ export default function TransactionsSection() {
           </Reveal>
 
           <Reveal delay={0.1} className="lg:col-span-3">
-            <div className="rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) shadow-xl overflow-hidden">
+            <div className="rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) shadow-xl hover:shadow-2xl hover:shadow-(--color-info)/10 transition-all duration-500 overflow-hidden animate-scale-in">
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-(--color-border-main) p-4">
                 <div className="flex gap-2 flex-wrap">
                   {["This month", "Expense", "Groceries"].map((chip) => (
                     <span
                       key={chip}
-                      className="rounded-full bg-(--color-bg-muted) px-3 py-1 text-xs font-medium text-(--color-text-muted)"
+                      className="rounded-full bg-(--color-bg-muted) px-3 py-1 text-xs font-medium text-(--color-text-muted) hover:bg-(--color-primary-soft) hover:text-(--color-primary) transition-colors cursor-pointer"
                     >
                       {chip}
                     </span>
                   ))}
                 </div>
-                <span className="rounded-lg bg-(--color-primary) px-3 py-1.5 text-xs font-semibold text-(--color-primary-foreground)">
+                <span className="rounded-lg bg-(--color-primary) px-3 py-1.5 text-xs font-semibold text-(--color-primary-foreground) hover:bg-(--color-primary-hover) transition-colors cursor-pointer">
                   + New
                 </span>
               </div>
@@ -92,9 +94,9 @@ export default function TransactionsSection() {
                   { name: "Salary deposit", cat: "Income", date: "Jul 1", amt: "+$5,500.00", positive: true },
                   { name: "Costco", cat: "Groceries", date: "Jun 28", amt: "-$142.65" },
                 ].map((t) => (
-                  <div key={t.name} className="flex items-center justify-between px-4 py-3.5">
+                  <div key={t.name} className="flex items-center justify-between px-4 py-3.5 hover:bg-(--color-bg-hover) transition-colors group cursor-pointer">
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-(--color-text-main) truncate">
+                      <p className="text-sm font-medium text-(--color-text-main) truncate group-hover:text-(--color-primary) transition-colors">
                         {t.name}
                       </p>
                       <p className="text-xs text-(--color-text-muted)">

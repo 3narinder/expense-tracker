@@ -13,8 +13,10 @@ export default function AnalyticsSection() {
   let cumulative = 0;
 
   return (
-    <section id="analytics" className="py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <section id="analytics" className="py-24 sm:py-32 relative overflow-hidden">
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-(--color-warning)/5 rounded-full blur-3xl" />
+      
+      <div className="mx-auto max-w-7xl px-6 lg:px-8 relative">
         <Reveal className="mx-auto max-w-2xl text-center">
           <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-(--color-text-main)">
             See your spending, not just your statements
@@ -27,7 +29,7 @@ export default function AnalyticsSection() {
 
         <div className="mt-16 grid gap-6 lg:grid-cols-2">
           <Reveal>
-            <div className="h-full rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-6">
+            <div className="h-full rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-6 hover:shadow-xl hover:shadow-(--color-primary)/10 transition-all duration-500">
               <div className="flex items-center gap-2 mb-6">
                 <BarChart3 size={18} className="text-(--color-primary)" />
                 <p className="font-bold text-(--color-text-main)">
@@ -43,13 +45,13 @@ export default function AnalyticsSection() {
                   { income: 75, expense: 65 },
                   { income: 100, expense: 45 },
                 ].map((m, i) => (
-                  <div key={i} className="flex-1 flex items-end gap-1 h-full">
+                  <div key={i} className="flex-1 flex items-end gap-1 h-full group">
                     <div
-                      className="flex-1 rounded-t-md bg-(--color-success)/70"
+                      className="flex-1 rounded-t-md bg-(--color-success)/70 hover:bg-(--color-success) transition-all duration-300 group-hover:scale-105"
                       style={{ height: `${m.income}%` }}
                     />
                     <div
-                      className="flex-1 rounded-t-md bg-(--color-danger)/60"
+                      className="flex-1 rounded-t-md bg-(--color-danger)/60 hover:bg-(--color-danger) transition-all duration-300 group-hover:scale-105"
                       style={{ height: `${m.expense}%` }}
                     />
                   </div>
@@ -67,7 +69,7 @@ export default function AnalyticsSection() {
           </Reveal>
 
           <Reveal delay={0.1}>
-            <div className="h-full rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-6">
+            <div className="h-full rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-6 hover:shadow-xl hover:shadow-(--color-warning)/10 transition-all duration-500">
               <div className="flex items-center gap-2 mb-6">
                 <PieChart size={18} className="text-(--color-primary)" />
                 <p className="font-bold text-(--color-text-main)">
@@ -91,15 +93,16 @@ export default function AnalyticsSection() {
                         strokeWidth="12"
                         strokeDasharray={`${dash} ${circumference - dash}`}
                         strokeDashoffset={-offset}
+                        className="hover:opacity-80 transition-opacity cursor-pointer"
                       />
                     );
                   })}
                 </svg>
                 <div className="space-y-2.5 flex-1">
                   {categoryBreakdown.map((c) => (
-                    <div key={c.name} className="flex items-center justify-between text-sm">
-                      <span className="flex items-center gap-2 text-(--color-text-main) font-medium">
-                        <span className="h-2 w-2 rounded-full" style={{ backgroundColor: c.color }} />
+                    <div key={c.name} className="flex items-center justify-between text-sm group cursor-pointer">
+                      <span className="flex items-center gap-2 text-(--color-text-main) font-medium group-hover:text-(--color-primary) transition-colors">
+                        <span className="h-2 w-2 rounded-full group-hover:scale-125 transition-transform" style={{ backgroundColor: c.color }} />
                         {c.name}
                       </span>
                       <span className="text-(--color-text-muted)">{c.value}%</span>
