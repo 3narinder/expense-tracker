@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
+    "dev:turbo": "next dev --turbopack",
+    "dev:turbo:clean": "node -e \"require('node:fs').rmSync('.next/dev/cache/turbopack', { recursive: true, force: true })\" && next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

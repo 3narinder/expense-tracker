@@ -14,6 +14,16 @@ pnpm dev
 bun dev
 ```
 
+### Turbopack cache recovery
+
+If Turbopack crashes with missing `.sst` files under `.next/dev/cache/turbopack`, run:
+
+```bash
+npm run dev:turbo:clean
+```
+
+This clears the Turbopack dev cache before starting the server.
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.

@@ -10,13 +10,11 @@ const budgets = [
 
 export default function BudgetSection() {
   return (
-    <section className="py-24 sm:py-32 relative overflow-hidden">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-(--color-success)/5 rounded-full blur-3xl" />
-      
-      <div className="mx-auto max-w-7xl px-6 lg:px-8 relative">
+    <section className="py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid items-center gap-16 lg:grid-cols-2">
           <Reveal className="order-2 lg:order-1">
-            <div className="rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-6 shadow-xl hover:shadow-2xl hover:shadow-(--color-success)/10 transition-all duration-500">
+            <div className="rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-6 shadow-xl">
               <div className="flex items-center justify-between mb-5">
                 <p className="font-bold text-(--color-text-main)">
                   Budget status
@@ -27,9 +25,9 @@ export default function BudgetSection() {
               </div>
               <div className="space-y-5">
                 {budgets.map((b) => (
-                  <div key={b.label} className="group">
+                  <div key={b.label}>
                     <div className="flex justify-between items-baseline text-sm mb-1.5">
-                      <span className="font-medium text-(--color-text-main) group-hover:text-(--color-primary) transition-colors">
+                      <span className="font-medium text-(--color-text-main)">
                         {b.label}
                       </span>
                       <span className="text-xs text-(--color-text-muted)">
@@ -38,7 +36,7 @@ export default function BudgetSection() {
                     </div>
                     <div className="h-2 rounded-full bg-(--color-bg-muted) overflow-hidden">
                       <div
-                        className="h-full rounded-full transition-all duration-1000 ease-out group-hover:brightness-110"
+                        className="h-full rounded-full transition-all"
                         style={{ width: `${Math.min(b.pct, 100)}%`, backgroundColor: b.color }}
                       />
                     </div>
@@ -49,7 +47,7 @@ export default function BudgetSection() {
           </Reveal>
 
           <Reveal delay={0.1} className="order-1 lg:order-2">
-            <div className="inline-flex items-center gap-2 rounded-full bg-(--color-success-soft) px-3.5 py-1.5 text-xs font-semibold text-(--color-success-foreground) animate-pulse-glow">
+            <div className="inline-flex items-center gap-2 rounded-full bg-(--color-success-soft) px-3.5 py-1.5 text-xs font-semibold text-(--color-success-foreground)">
               <Target size={13} />
               Budgets
             </div>
@@ -63,8 +61,8 @@ export default function BudgetSection() {
             </p>
 
             <ul className="mt-8 space-y-5">
-              <li className="flex gap-4 group">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-(--color-bg-muted) group-hover:bg-(--color-primary-soft) group-hover:shadow-lg group-hover:shadow-(--color-primary)/10 transition-all duration-300">
+              <li className="flex gap-4">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-(--color-bg-muted)">
                   <CalendarClock size={16} className="text-(--color-primary)" />
                 </span>
                 <div>
@@ -77,8 +75,8 @@ export default function BudgetSection() {
                   </p>
                 </div>
               </li>
-              <li className="flex gap-4 group">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-(--color-bg-muted) group-hover:bg-(--color-warning-soft) group-hover:shadow-lg group-hover:shadow-(--color-warning)/10 transition-all duration-300">
+              <li className="flex gap-4">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-(--color-bg-muted)">
                   <BellRing size={16} className="text-(--color-warning)" />
                 </span>
                 <div>
