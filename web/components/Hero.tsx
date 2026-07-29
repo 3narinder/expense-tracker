@@ -1,9 +1,10 @@
 import { ArrowUpRight, Sparkles, ShieldCheck } from "lucide-react";
-import { APP_URL, GITHUB_URL } from "@/lib/config";
+import { GITHUB_URL } from "@/lib/config";
 import Reveal from "./Reveal";
 import GithubIcon from "./GithubIcon";
 import AnimatedNumber from "./AnimatedNumber";
-import Image from "next/image";
+import LaunchAppLink from "./LaunchAppLink";
+import ResponsiveImageFrame from "./ResponsiveImageFrame";
 
 export default function Hero() {
   return (
@@ -13,25 +14,26 @@ export default function Hero() {
     >
       <div
         aria-hidden
-        className="absolute -top-32 right-0 h-96 w-96 rounded-full bg-color-primary/10 blur-3xl"
+        className="absolute -top-32 right-0 h-96 w-96 rounded-full bg-primary/10 blur-3xl"
       />
       <div
         aria-hidden
-        className="animate-float absolute top-40 -left-24 h-72 w-72 rounded-full bg-(--color-gold)/10 blur-3xl"
+        className="animate-float absolute top-40 -left-24 h-72 w-72 rounded-full bg-gold/10 blur-3xl"
       />
 
       <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid items-center gap-16 lg:grid-cols-[1.618fr_1fr]">
+        <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-6">
           <Reveal>
-            <div className="inline-flex items-center gap-2 rounded-full border border-(--color-border-main) bg-(--color-bg-surface) px-3.5 py-1.5 text-xs font-semibold text-(--color-text-muted) shadow-sm">
-              <Sparkles size={13} className="text-(--color-gold)" />
-              AI-powered expense tracking
-            </div>
+            <div className="relative z-20 lg:mr-[-1rem] lg:pr-7">
+              <div className="inline-flex items-center gap-2 rounded-full border border-(--color-border-main) bg-(--color-bg-surface) px-3.5 py-1.5 text-xs font-semibold text-(--color-text-muted) shadow-sm">
+                <Sparkles size={13} className="text-(--color-gold)" />
+                AI-powered expense tracking
+              </div>
 
             <h1 className="mt-6 font-display text-4xl sm:text-5xl lg:text-[3.4rem] font-semibold tracking-tight text-(--color-text-main) leading-[1.08]">
               Know exactly where
               <br />
-              <span className="bg-gradient-to-r from-(--color-primary) via-(--color-info) to-(--color-gold) bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-(--color-primary) via-(--color-info) to-(--color-gold) bg-clip-text text-transparent">
                 your money goes.
               </span>
             </h1>
@@ -43,13 +45,10 @@ export default function Hero() {
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <a
-                href={APP_URL}
-                className="inline-flex items-center gap-2 rounded-lg bg-(--color-primary) px-6 py-3.5 text-sm font-semibold text-(--color-primary-foreground) shadow-lg shadow-(--color-primary)/25 hover:bg-(--color-primary-hover) transition-all hover:-translate-y-0.5"
-              >
+              <LaunchAppLink className="inline-flex items-center gap-2 rounded-lg bg-(--color-primary) px-6 py-3.5 text-sm font-semibold text-(--color-primary-foreground) shadow-lg shadow-(--color-primary)/25 hover:bg-(--color-primary-hover) transition-all hover:-translate-y-0.5">
                 Launch the app
                 <ArrowUpRight size={16} />
-              </a>
+              </LaunchAppLink>
               <a
                 href={GITHUB_URL}
                 target="_blank"
@@ -100,26 +99,27 @@ export default function Hero() {
                 </div>
               </dl>
             </div>
+            </div>
           </Reveal>
-
-          <Reveal delay={0.1} className="relative">
-            <div className="animate-float absolute -top-16 -right-16 h-96 w-96 rounded-full bg-(--color-gold)/10 blur-3xl" />
-            <div className="relative overflow-hidden rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-3 shadow-2xl shadow-(--color-gold)/10 ring-1 ring-(--color-gold)/20">
-              <div className="rounded-xl bg-linear-to-br from-(--color-bg-surface) via-(--color-primary-soft)/35 to-(--color-info-soft)/35 p-3">
-                <div className="mb-3 flex items-center justify-between rounded-lg border border-(--color-border-main) bg-white/80 px-3 py-2 backdrop-blur-sm">
+          {/* //The class `bg-(--color-gold)/10` can be written as `bg-gold/10` */}
+          <Reveal delay={0.1} className="relative lg:-ml-4">
+            <div className="animate-float absolute -top-16 -right-16 h-96 w-96 rounded-full bg-gold/10 blur-3xl" />
+            <div className="relative overflow-hidden rounded-[1.75rem] border border-(--color-border-main)/70 bg-(--color-bg-surface) p-2 shadow-[0_30px_90px_-45px_rgba(91,76,240,0.35)] sm:p-3 lg:p-4">
+              <div className="rounded-[1.25rem] border border-(--color-border-main)/60 bg-(--color-bg-app) p-2 sm:p-3">
+                <div className="mb-3 flex items-center justify-between rounded-full border border-(--color-border-main) bg-(--color-bg-surface) px-3 py-2 shadow-sm">
                   <span className="text-xs font-semibold text-(--color-text-muted)">
                     Live dashboard preview
                   </span>
-                  <span className="rounded-full bg-gradient-to-r from-(--color-gold) to-(--color-warning) px-2 py-0.5 text-[10px] font-bold tracking-wide text-white shadow-sm">
+                  <span className="rounded-full bg-linear-to-r from-gold to-warning px-2 py-0.5 text-[10px] font-bold tracking-wide text-white shadow-sm">
                     PRO
                   </span>
                 </div>
-                <Image
+                <ResponsiveImageFrame
                   src="/hero_img.png"
-                  alt="ExpenseAI Dashboard"
-                  width={500}
-                  height={500}
-                  className="rounded-xl"
+                  alt="ExpenseAI dashboard preview"
+                  aspectClassName="aspect-[0.88/1] sm:aspect-[0.95/1] lg:aspect-[1.02/1]"
+                  wrapperClassName="w-full border-0 bg-transparent shadow-none"
+                  imageClassName="rounded-[1.05rem] object-contain"
                   priority
                 />
               </div>

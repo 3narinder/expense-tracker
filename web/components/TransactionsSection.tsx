@@ -6,6 +6,7 @@ import {
   FileDown,
 } from "lucide-react";
 import Reveal from "./Reveal";
+import ResponsiveImageFrame from "./ResponsiveImageFrame";
 
 const points = [
   {
@@ -21,17 +22,20 @@ const points = [
   {
     icon: SlidersHorizontal,
     title: "Search & filter",
-    description: "Filter by type, category, account, date range, or free-text search.",
+    description:
+      "Filter by type, category, account, date range, or free-text search.",
   },
   {
     icon: Trash2,
     title: "Bulk delete",
-    description: "Select multiple transactions and remove them in a single action.",
+    description:
+      "Select multiple transactions and remove them in a single action.",
   },
   {
     icon: FileDown,
     title: "Export CSV",
-    description: "Export your filtered results as a CSV file whenever you need it.",
+    description:
+      "Export your filtered results as a CSV file whenever you need it.",
   },
 ];
 
@@ -44,8 +48,8 @@ export default function TransactionsSection() {
             Transaction management that stays out of your way
           </h2>
           <p className="mt-4 text-lg text-(--color-text-muted)">
-            Every entry, edit, and export lives in one clean table — built
-            to handle a handful of transactions or several years of them.
+            Every entry, edit, and export lives in one clean table — built to
+            handle a handful of transactions or several years of them.
           </p>
         </Reveal>
 
@@ -69,48 +73,14 @@ export default function TransactionsSection() {
           </Reveal>
 
           <Reveal delay={0.1} className="lg:col-span-3">
-            <div className="rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) shadow-xl overflow-hidden">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-(--color-border-main) p-4">
-                <div className="flex gap-2 flex-wrap">
-                  {["This month", "Expense", "Groceries"].map((chip) => (
-                    <span
-                      key={chip}
-                      className="rounded-full bg-(--color-bg-muted) px-3 py-1 text-xs font-medium text-(--color-text-muted)"
-                    >
-                      {chip}
-                    </span>
-                  ))}
-                </div>
-                <span className="rounded-lg bg-(--color-primary) px-3 py-1.5 text-xs font-semibold text-(--color-primary-foreground)">
-                  + New
-                </span>
-              </div>
-              <div className="divide-y divide-(--color-border-muted)">
-                {[
-                  { name: "Whole Foods Market", cat: "Groceries", date: "Jul 12", amt: "-$87.20" },
-                  { name: "Trader Joe's", cat: "Groceries", date: "Jul 9", amt: "-$54.10" },
-                  { name: "Salary deposit", cat: "Income", date: "Jul 1", amt: "+$5,500.00", positive: true },
-                  { name: "Costco", cat: "Groceries", date: "Jun 28", amt: "-$142.65" },
-                ].map((t) => (
-                  <div key={t.name} className="flex items-center justify-between px-4 py-3.5">
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-(--color-text-main) truncate">
-                        {t.name}
-                      </p>
-                      <p className="text-xs text-(--color-text-muted)">
-                        {t.cat} · {t.date}
-                      </p>
-                    </div>
-                    <span
-                      className={`text-sm font-bold shrink-0 ${
-                        t.positive ? "text-(--color-success)" : "text-(--color-danger)"
-                      }`}
-                    >
-                      {t.amt}
-                    </span>
-                  </div>
-                ))}
-              </div>
+            <div className="h-full rounded-[1.5rem] border border-(--color-border-main) bg-linear-to-br from-(--color-bg-surface) via-(--color-bg-subtle) to-(--color-bg-muted) p-4 sm:p-6 shadow-[0_22px_70px_-34px_rgba(15,23,42,0.28)] transition-all duration-500 hover:shadow-[0_30px_80px_-28px_rgba(245,158,11,0.28)]">
+              <ResponsiveImageFrame
+                src="/transaction_image.png"
+                alt="Transaction management experience"
+                aspectClassName="aspect-[16/7]"
+                wrapperClassName="w-full border-0 bg-transparent p-0 shadow-none"
+                imageClassName="rounded-[0.95rem]"
+              />
             </div>
           </Reveal>
         </div>

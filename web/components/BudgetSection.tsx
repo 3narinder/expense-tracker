@@ -1,12 +1,6 @@
 import { Target, CalendarClock, BellRing } from "lucide-react";
 import Reveal from "./Reveal";
-
-const budgets = [
-  { label: "Food & Dining", spent: 248, total: 400, pct: 62, color: "var(--color-success)" },
-  { label: "Transport", spent: 176, total: 200, pct: 88, color: "var(--color-warning)" },
-  { label: "Shopping", spent: 315, total: 300, pct: 105, color: "var(--color-danger)" },
-  { label: "Entertainment", spent: 40, total: 150, pct: 27, color: "var(--color-success)" },
-];
+import ResponsiveImageFrame from "./ResponsiveImageFrame";
 
 export default function BudgetSection() {
   return (
@@ -14,35 +8,15 @@ export default function BudgetSection() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid items-center gap-16 lg:grid-cols-2">
           <Reveal className="order-2 lg:order-1">
-            <div className="rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-6 shadow-xl">
-              <div className="flex items-center justify-between mb-5">
-                <p className="font-bold text-(--color-text-main)">
-                  Budget status
-                </p>
-                <span className="text-xs font-semibold text-(--color-text-muted)">
-                  This month
-                </span>
-              </div>
-              <div className="space-y-5">
-                {budgets.map((b) => (
-                  <div key={b.label}>
-                    <div className="flex justify-between items-baseline text-sm mb-1.5">
-                      <span className="font-medium text-(--color-text-main)">
-                        {b.label}
-                      </span>
-                      <span className="text-xs text-(--color-text-muted)">
-                        ${b.spent} / ${b.total}
-                      </span>
-                    </div>
-                    <div className="h-2 rounded-full bg-(--color-bg-muted) overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all"
-                        style={{ width: `${Math.min(b.pct, 100)}%`, backgroundColor: b.color }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="h-full rounded-[1.5rem] border border-(--color-border-main) bg-linear-to-br from-(--color-bg-surface) via-(--color-bg-subtle) to-(--color-bg-muted) p-4 sm:p-6 shadow-[0_22px_70px_-34px_rgba(15,23,42,0.28)] transition-all duration-500 hover:shadow-[0_30px_80px_-28px_rgba(16,185,129,0.28)]">
+              <ResponsiveImageFrame
+                src="/budget_image.png"
+                alt="Budget planning dashboard"
+                aspectClassName="aspect-[1.7/1]"
+                wrapperClassName="w-full border-0 bg-transparent p-0 shadow-none"
+                imageClassName="rounded-[0.95rem]"
+                priority
+              />
             </div>
           </Reveal>
 
@@ -56,8 +30,8 @@ export default function BudgetSection() {
             </h2>
             <p className="mt-5 text-lg text-(--color-text-muted) leading-relaxed">
               Create a budget for one category or a group of them, choose how
-              often it resets, and every new transaction updates your
-              progress automatically.
+              often it resets, and every new transaction updates your progress
+              automatically.
             </p>
 
             <ul className="mt-8 space-y-5">
@@ -84,9 +58,8 @@ export default function BudgetSection() {
                     Color-coded before you overspend
                   </p>
                   <p className="text-sm text-(--color-text-muted) mt-0.5">
-                    Progress bars shift from green to amber at 70% used, and
-                    to red once you go over — a glance tells you where you
-                    stand.
+                    Progress bars shift from green to amber at 70% used, and to
+                    red once you go over — a glance tells you where you stand.
                   </p>
                 </div>
               </li>
