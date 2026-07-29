@@ -66,7 +66,7 @@ export default function AnimatedNumber({
   return (
     <span
       ref={ref}
-      className="relative inline-flex items-baseline tabular-nums font-display bg-gradient-to-br from-(--color-gold) via-[#f4d999] to-(--color-gold) bg-clip-text text-transparent drop-shadow-[0_0_16px_rgba(212,175,90,0.35)]"
+      className="relative inline-flex items-baseline tabular-nums font-display bg-linear-to-br from-(--color-gold) via-[#f4d999] to-(--color-gold) bg-clip-text text-transparent drop-shadow-[0_0_16px_rgba(212,175,90,0.35)]"
       style={{
         backgroundSize: "200% auto",
         animation: "expenseai-gold-shimmer 3.5s ease-in-out infinite",

@@ -65,7 +65,7 @@ const features = [
 export default function Features() {
   return (
     <section id="features" className="py-24 sm:py-32 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-(--color-bg-muted)/30 to-transparent" />
+      <div className="absolute inset-0 bg-linear-to-b from-transparent via-(--color-bg-muted)/30 to-transparent" />
       <div className="mx-auto max-w-7xl px-6 lg:px-8 relative">
         <Reveal className="mx-auto max-w-2xl text-center">
           <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-(--color-text-main)">
@@ -83,12 +83,12 @@ export default function Features() {
               <div
                 className={`relative h-full rounded-2xl border p-6 transition-all duration-300 group hover:-translate-y-1 ${
                   f.highlight
-                    ? "border-(--color-gold)/40 bg-gradient-to-b from-(--color-gold-soft)/60 to-(--color-bg-surface) shadow-lg shadow-(--color-gold)/10 hover:shadow-xl hover:shadow-(--color-gold)/20"
+                    ? "border-(--color-gold)/40 bg-linear-to-b from-(--color-gold-soft)/60 to-(--color-bg-surface) shadow-lg shadow-(--color-gold)/10 hover:shadow-xl hover:shadow-(--color-gold)/20"
                     : "border-(--color-border-main) bg-(--color-bg-surface) hover:border-(--color-primary)/40 hover:shadow-xl hover:shadow-(--color-primary)/10"
                 }`}
               >
                 {f.highlight && (
-                  <span className="absolute -top-2.5 right-5 rounded-full bg-gradient-to-r from-(--color-gold) to-(--color-warning) px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-white shadow-sm">
+                  <span className="absolute -top-2.5 right-5 rounded-full bg-linear-to-r from-(--color-gold) to-(--color-warning) px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-white shadow-sm">
                     Most loved
                   </span>
                 )}

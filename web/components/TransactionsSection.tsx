@@ -73,7 +73,7 @@ export default function TransactionsSection() {
           </Reveal>
 
           <Reveal delay={0.1} className="lg:col-span-3">
-            <div className="h-full rounded-[1.5rem] border border-(--color-border-main) bg-linear-to-br from-(--color-bg-surface) via-(--color-bg-subtle) to-(--color-bg-muted) p-4 sm:p-6 shadow-[0_22px_70px_-34px_rgba(15,23,42,0.28)] transition-all duration-500 hover:shadow-[0_30px_80px_-28px_rgba(245,158,11,0.28)]">
+            <div className="h-full rounded-[1.5rem] border border-(--color-border-main) bg-linear-to-br from-(--color-bg-surface) via-(--color-bg-subtle) to-(--color-bg-muted) p-3 sm:p-4 lg:p-5 shadow-[0_20px_60px_-35px_rgba(15,23,42,0.25)] transition-all duration-500 hover:shadow-[0_30px_80px_-28px_rgba(245,158,11,0.28)]">
               <ResponsiveImageFrame
                 src="/transaction_image.png"
                 alt="Transaction management experience"

@@ -67,7 +67,7 @@ export default function Hero() {
 
             <div className="mt-10 max-w-md">
               <div className="mb-5 flex items-center gap-3">
-                <span className="h-px flex-1 bg-linear-to-r from-gold/60 to-transparent" />
+                <span className="h-px flex-1 bg-linear-to-r from-(--color-gold)/60 to-transparent" />
                 <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-(--color-text-muted)">
                   Tracked by our members
                 </span>
@@ -101,23 +101,22 @@ export default function Hero() {
             </div>
             </div>
           </Reveal>
-          {/* //The class `bg-(--color-gold)/10` can be written as `bg-gold/10` */}
           <Reveal delay={0.1} className="relative lg:-ml-4">
-            <div className="animate-float absolute -top-16 -right-16 h-96 w-96 rounded-full bg-gold/10 blur-3xl" />
+            <div className="animate-float absolute -top-16 -right-16 h-96 w-96 rounded-full bg-(--color-gold)/10 blur-3xl" />
             <div className="relative overflow-hidden rounded-[1.75rem] border border-(--color-border-main)/70 bg-(--color-bg-surface) p-2 shadow-[0_30px_90px_-45px_rgba(91,76,240,0.35)] sm:p-3 lg:p-4">
               <div className="rounded-[1.25rem] border border-(--color-border-main)/60 bg-(--color-bg-app) p-2 sm:p-3">
                 <div className="mb-3 flex items-center justify-between rounded-full border border-(--color-border-main) bg-(--color-bg-surface) px-3 py-2 shadow-sm">
                   <span className="text-xs font-semibold text-(--color-text-muted)">
                     Live dashboard preview
                   </span>
-                  <span className="rounded-full bg-linear-to-r from-gold to-warning px-2 py-0.5 text-[10px] font-bold tracking-wide text-white shadow-sm">
+                  <span className="rounded-full bg-linear-to-r from-(--color-gold) to-(--color-warning) px-2 py-0.5 text-[10px] font-bold tracking-wide text-white shadow-sm">
                     PRO
                   </span>
                 </div>
                 <ResponsiveImageFrame
                   src="/hero_img.png"
                   alt="ExpenseAI dashboard preview"
-                  aspectClassName="aspect-[0.88/1] sm:aspect-[0.95/1] lg:aspect-[1.02/1]"
+                  aspectClassName="aspect-[10/7] sm:aspect-[10/7] lg:aspect-[10/7]"
                   wrapperClassName="w-full border-0 bg-transparent shadow-none"
                   imageClassName="rounded-[1.05rem] object-contain"
                   priority

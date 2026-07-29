@@ -76,9 +76,9 @@ export default function AISection() {
           </Reveal>
 
           <Reveal delay={0.1}>
-            <div className="h-full rounded-[1.5rem] border border-(--color-border-main) bg-linear-to-br from-(--color-bg-surface) via-(--color-bg-subtle) to-(--color-bg-muted) p-4 sm:p-6 shadow-[0_22px_70px_-34px_rgba(15,23,42,0.28)] transition-all duration-500 hover:shadow-[0_30px_80px_-28px_rgba(91,76,240,0.28)]">
+            <div className="h-full rounded-[1.5rem] border border-(--color-border-main) bg-linear-to-br from-(--color-bg-surface) via-(--color-bg-subtle) to-(--color-bg-muted) p-3 sm:p-4 lg:p-5 shadow-[0_20px_60px_-35px_rgba(15,23,42,0.25)] transition-all duration-500 hover:shadow-[0_30px_80px_-28px_rgba(91,76,240,0.28)]">
               <ResponsiveImageFrame
-                src="/Ai_image.png"
+                src="/Ai_Image.png"
                 alt="AI insights experience"
                 aspectClassName="aspect-[16/7]"
                 wrapperClassName="w-full border-0 bg-transparent p-0 shadow-none"
