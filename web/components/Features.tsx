@@ -28,6 +28,7 @@ const features = [
     title: "AI monthly summaries",
     description:
       "Generate a plain-English breakdown of your month, complete with a 0–100 financial health score and next-step recommendations.",
+    highlight: true,
   },
   {
     icon: Folder,
@@ -63,24 +64,49 @@ const features = [
 
 export default function Features() {
   return (
-    <section id="features" className="py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <section id="features" className="py-24 sm:py-32 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-(--color-bg-muted)/30 to-transparent" />
+      <div className="mx-auto max-w-7xl px-6 lg:px-8 relative">
         <Reveal className="mx-auto max-w-2xl text-center">
           <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-(--color-text-main)">
             Everything you need, nothing you don&apos;t
           </h2>
           <p className="mt-4 text-lg text-(--color-text-muted)">
-            ExpenseAI keeps personal finance simple: track what happened,
-            budget what&apos;s next, and let AI handle the analysis.
+            ExpenseAI keeps personal finance simple: track what happened, budget
+            what&apos;s next, and let AI handle the analysis.
           </p>
         </Reveal>
 
         <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((f, i) => (
             <Reveal key={f.title} delay={(i % 4) * 0.06}>
-              <div className="h-full rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-6 hover:border-(--color-primary)/40 hover:shadow-lg hover:shadow-black/5 transition-all">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-(--color-primary-soft)">
-                  <f.icon size={20} className="text-(--color-primary)" />
+              <div
+                className={`relative h-full rounded-2xl border p-6 transition-all duration-300 group hover:-translate-y-1 ${
+                  f.highlight
+                    ? "border-(--color-gold)/40 bg-gradient-to-b from-(--color-gold-soft)/60 to-(--color-bg-surface) shadow-lg shadow-(--color-gold)/10 hover:shadow-xl hover:shadow-(--color-gold)/20"
+                    : "border-(--color-border-main) bg-(--color-bg-surface) hover:border-(--color-primary)/40 hover:shadow-xl hover:shadow-(--color-primary)/10"
+                }`}
+              >
+                {f.highlight && (
+                  <span className="absolute -top-2.5 right-5 rounded-full bg-gradient-to-r from-(--color-gold) to-(--color-warning) px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-white shadow-sm">
+                    Most loved
+                  </span>
+                )}
+                <div
+                  className={`flex h-11 w-11 items-center justify-center rounded-xl transition-colors duration-300 ${
+                    f.highlight
+                      ? "bg-(--color-gold)/15 group-hover:bg-(--color-gold)"
+                      : "bg-(--color-primary-soft) group-hover:bg-(--color-primary)"
+                  }`}
+                >
+                  <f.icon
+                    size={20}
+                    className={`transition-colors duration-300 ${
+                      f.highlight
+                        ? "text-(--color-gold) group-hover:text-white"
+                        : "text-(--color-primary) group-hover:text-(--color-primary-foreground)"
+                    }`}
+                  />
                 </div>
                 <h3 className="mt-4 text-base font-bold text-(--color-text-main)">
                   {f.title}
