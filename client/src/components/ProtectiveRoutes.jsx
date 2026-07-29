@@ -1,26 +1,29 @@
 import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
-import { getAuthToken } from "../utils/authToken";
 import { Navigate } from "react-router-dom";
-import Spinner from "./Spinner.jsx";
 
-const ProtectedRoute = ({ children }) => {
-  const { user, isLoading } = useCurrentUser();
-  const hasToken = !!getAuthToken();
+const ProtectedRoute = ({ children, fallback = null }) => {
+  const { user, isLoading, hasSessionToken } = useCurrentUser();
 
-  if (!hasToken) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Spinner size="lg" />
-      </div>
-    );
+  if (hasSessionToken && isLoading) {
+    return fallback;
   }
 
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
+
+export const PublicRoute = ({ children, fallback = null }) => {
+  const { user, isLoading, hasSessionToken } = useCurrentUser();
+
+  if (hasSessionToken && isLoading) {
+    return fallback;
+  }
+
+  if (user) {
+    return <Navigate to="/" replace />;
   }
 
   return children;
