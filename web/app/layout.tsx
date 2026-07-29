@@ -32,9 +32,9 @@ export const metadata: Metadata = {
     description,
     images: [
       {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
+        url: "/hero_img.png",
+        width: 1553,
+        height: 1097,
         alt: "ExpenseAI — AI-powered expense tracking and budgeting",
       },
     ],
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title,
     description,
-    images: ["/og-image.png"],
+    images: ["/hero_img.png"],
   },
   robots: {
     index: true,

@@ -19,7 +19,7 @@ const faqs = [
   },
   {
     q: "Can I export my data?",
-    a: "Yes. From the Transactions page you can filter your data by date, category, account, or type, then export exactly what you're viewing as a CSV file.",
+    a: "Yes. From the Transactions page you can filter your data by date, category, account, or type, then export exactly what you’re viewing as a CSV file.",
   },
   {
     q: "How do budgets work?",
@@ -34,30 +34,22 @@ const faqs = [
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border-b border-(--color-border-main) py-5">
+    <div className="border-b border-(--color-border-main)/70 py-5 last:border-b-0">
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         className="flex w-full items-center justify-between gap-4 text-left"
       >
         <span className="font-semibold text-(--color-text-main)">{q}</span>
         <ChevronDown
           size={18}
-          className={`shrink-0 text-(--color-text-muted) transition-transform duration-300 ${
-            open ? "rotate-180" : ""
-          }`}
+          className={`shrink-0 text-(--color-text-muted) transition-transform duration-300 ${open ? "rotate-180" : ""}`}
         />
       </button>
-      <div
-        className={`grid transition-all duration-300 ease-out ${
-          open ? "grid-rows-[1fr] mt-3 opacity-100" : "grid-rows-[0fr] opacity-0"
-        }`}
-      >
+      <div className={`grid overflow-hidden transition-all duration-300 ease-out ${open ? "mt-3 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
         <div className="overflow-hidden">
-          <p className="text-sm leading-relaxed text-(--color-text-muted) pr-8">
-            {a}
-          </p>
+          <p className="pr-8 text-sm leading-8 text-(--color-text-muted)">{a}</p>
         </div>
       </div>
     </div>
@@ -66,17 +58,17 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 export default function FAQ() {
   return (
-    <section id="faq" className="py-24 sm:py-32 bg-(--color-bg-muted)">
+    <section id="faq" className="bg-(--color-bg-muted) py-24 sm:py-32">
       <div className="mx-auto max-w-3xl px-6 lg:px-8">
         <Reveal className="text-center">
-          <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-(--color-text-main)">
+          <h2 className="font-display text-3xl font-semibold tracking-tight text-(--color-text-main) sm:text-4xl">
             Frequently asked questions
           </h2>
         </Reveal>
 
-        <Reveal delay={0.1} className="mt-12 rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) px-6">
-          {faqs.map((f) => (
-            <FaqItem key={f.q} q={f.q} a={f.a} />
+        <Reveal delay={0.08} className="mt-12 rounded-[2rem] border border-(--color-border-main)/70 bg-(--color-bg-surface)/90 px-6 shadow-[0_20px_70px_-38px_rgba(15,23,42,0.2)]">
+          {faqs.map((faq) => (
+            <FaqItem key={faq.q} q={faq.q} a={faq.a} />
           ))}
         </Reveal>
       </div>

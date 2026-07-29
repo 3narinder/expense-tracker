@@ -47,7 +47,6 @@ export default function AnimatedNumber({
     const animate = (currentTime: number) => {
       if (!startTime) startTime = currentTime;
       const progress = Math.min((currentTime - startTime) / duration, 1);
-      // Easing function for smoother animation
       const easeOutQuart = 1 - Math.pow(1 - progress, 4);
       setCount(easeOutQuart * end);
       if (progress < 1) {
@@ -66,7 +65,7 @@ export default function AnimatedNumber({
   return (
     <span
       ref={ref}
-      className="relative inline-flex items-baseline tabular-nums font-display bg-gradient-to-br from-(--color-gold) via-[#f4d999] to-(--color-gold) bg-clip-text text-transparent drop-shadow-[0_0_16px_rgba(212,175,90,0.35)]"
+      className="relative inline-flex items-baseline tabular-nums font-display bg-linear-to-br from-(--color-gold) via-[#f4d999] to-(--color-gold) bg-clip-text text-transparent drop-shadow-[0_0_16px_rgba(212,175,90,0.35)]"
       style={{
         backgroundSize: "200% auto",
         animation: "expenseai-gold-shimmer 3.5s ease-in-out infinite",
