@@ -1,7 +1,8 @@
 import { ArrowUpRight, BookOpen } from "lucide-react";
-import { APP_URL, GITHUB_URL } from "@/lib/config";
+import { GITHUB_URL } from "@/lib/config";
 import Reveal from "./Reveal";
 import GithubIcon from "./GithubIcon";
+import LaunchAppLink from "./LaunchAppLink";
 
 export default function FinalCTA() {
   return (
@@ -28,15 +29,13 @@ export default function FinalCTA() {
             No spreadsheets. No guesswork. Just a clear, AI-assisted view of
             your money.
           </p>
-
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-            <a
-              href={APP_URL}
+            <LaunchAppLink
               className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3.5 text-sm font-semibold text-(--color-primary) shadow-lg hover:bg-white/90 transition-colors"
             >
               Launch App
               <ArrowUpRight size={16} />
-            </a>
+            </LaunchAppLink>
             <a
               href={GITHUB_URL}
               target="_blank"

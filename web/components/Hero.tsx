@@ -1,9 +1,10 @@
 import { ArrowUpRight, Sparkles, ShieldCheck } from "lucide-react";
-import { APP_URL, GITHUB_URL } from "@/lib/config";
+import { GITHUB_URL } from "@/lib/config";
 import Reveal from "./Reveal";
 import GithubIcon from "./GithubIcon";
 import AnimatedNumber from "./AnimatedNumber";
 import Image from "next/image";
+import LaunchAppLink from "./LaunchAppLink";
 
 export default function Hero() {
   return (
@@ -13,11 +14,11 @@ export default function Hero() {
     >
       <div
         aria-hidden
-        className="absolute -top-32 right-0 h-96 w-96 rounded-full bg-color-primary/10 blur-3xl"
+        className="absolute -top-32 right-0 h-96 w-96 rounded-full bg-primary/10 blur-3xl"
       />
       <div
         aria-hidden
-        className="animate-float absolute top-40 -left-24 h-72 w-72 rounded-full bg-(--color-gold)/10 blur-3xl"
+        className="animate-float absolute top-40 -left-24 h-72 w-72 rounded-full bg-gold/10 blur-3xl"
       />
 
       <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
@@ -31,7 +32,7 @@ export default function Hero() {
             <h1 className="mt-6 font-display text-4xl sm:text-5xl lg:text-[3.4rem] font-semibold tracking-tight text-(--color-text-main) leading-[1.08]">
               Know exactly where
               <br />
-              <span className="bg-gradient-to-r from-(--color-primary) via-(--color-info) to-(--color-gold) bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-(--color-primary) via-(--color-info) to-(--color-gold) bg-clip-text text-transparent">
                 your money goes.
               </span>
             </h1>
@@ -43,13 +44,10 @@ export default function Hero() {
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <a
-                href={APP_URL}
-                className="inline-flex items-center gap-2 rounded-lg bg-(--color-primary) px-6 py-3.5 text-sm font-semibold text-(--color-primary-foreground) shadow-lg shadow-(--color-primary)/25 hover:bg-(--color-primary-hover) transition-all hover:-translate-y-0.5"
-              >
+              <LaunchAppLink className="inline-flex items-center gap-2 rounded-lg bg-(--color-primary) px-6 py-3.5 text-sm font-semibold text-(--color-primary-foreground) shadow-lg shadow-(--color-primary)/25 hover:bg-(--color-primary-hover) transition-all hover:-translate-y-0.5">
                 Launch the app
                 <ArrowUpRight size={16} />
-              </a>
+              </LaunchAppLink>
               <a
                 href={GITHUB_URL}
                 target="_blank"
@@ -101,16 +99,16 @@ export default function Hero() {
               </dl>
             </div>
           </Reveal>
-
+          {/* //The class `bg-(--color-gold)/10` can be written as `bg-gold/10` */}
           <Reveal delay={0.1} className="relative">
-            <div className="animate-float absolute -top-16 -right-16 h-96 w-96 rounded-full bg-(--color-gold)/10 blur-3xl" />
-            <div className="relative overflow-hidden rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-3 shadow-2xl shadow-(--color-gold)/10 ring-1 ring-(--color-gold)/20">
-              <div className="rounded-xl bg-linear-to-br from-(--color-bg-surface) via-(--color-primary-soft)/35 to-(--color-info-soft)/35 p-3">
+            <div className="animate-float absolute -top-16 -right-16 h-96 w-96 rounded-full bg-gold/10 blur-3xl" />
+            <div className="relative overflow-hidden rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-3 shadow-2xl shadow-(--color-gold)/10 ring-1 ring-gold/20">
+              <div className="rounded-xl bg-linear-to-br from-(--color-bg-surface) via-primary-soft/35 to-info-soft/35 p-3">
                 <div className="mb-3 flex items-center justify-between rounded-lg border border-(--color-border-main) bg-white/80 px-3 py-2 backdrop-blur-sm">
                   <span className="text-xs font-semibold text-(--color-text-muted)">
                     Live dashboard preview
                   </span>
-                  <span className="rounded-full bg-gradient-to-r from-(--color-gold) to-(--color-warning) px-2 py-0.5 text-[10px] font-bold tracking-wide text-white shadow-sm">
+                  <span className="rounded-full bg-linear-to-r from-gold to-warning px-2 py-0.5 text-[10px] font-bold tracking-wide text-white shadow-sm">
                     PRO
                   </span>
                 </div>

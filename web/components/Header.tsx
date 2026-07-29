@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 import Logo from "./Logo";
-import { APP_URL, GITHUB_URL } from "@/lib/config";
+import { GITHUB_URL } from "@/lib/config";
+import LaunchAppLink from "./LaunchAppLink";
 
 const navItems = [
   { href: "#features", label: "Features" },
@@ -62,13 +63,12 @@ export default function Header() {
           >
             GitHub
           </a>
-          <a
-            href={APP_URL}
+          <LaunchAppLink
             className="inline-flex items-center gap-1.5 rounded-lg bg-(--color-primary) px-4 py-2.5 text-sm font-semibold text-(--color-primary-foreground) shadow-sm hover:bg-(--color-primary-hover) transition-colors"
           >
             Launch App
             <ArrowUpRight size={15} />
-          </a>
+          </LaunchAppLink>
         </div>
 
         <button
@@ -107,12 +107,11 @@ export default function Header() {
               </a>
             </li>
             <li className="pt-2">
-              <a
-                href={APP_URL}
+              <LaunchAppLink
                 className="flex items-center justify-center gap-1.5 rounded-lg bg-(--color-primary) px-4 py-3 text-sm font-semibold text-(--color-primary-foreground)"
               >
                 Launch App <ArrowUpRight size={15} />
-              </a>
+              </LaunchAppLink>
             </li>
           </ul>
         </div>

@@ -1,5 +1,6 @@
 import { Sparkles, TrendingUp, Lightbulb, Gauge } from "lucide-react";
 import Reveal from "./Reveal";
+import Image from "next/image";
 
 export default function AISection() {
   return (
@@ -75,66 +76,15 @@ export default function AISection() {
           </Reveal>
 
           <Reveal delay={0.1}>
-            <div className="rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-6 shadow-xl hover:shadow-2xl hover:shadow-(--color-primary)/10 transition-all duration-500 animate-scale-in">
-              <div className="flex items-start justify-between gap-4 mb-5">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-(--color-primary-soft) animate-pulse-glow">
-                    <Sparkles size={18} className="text-(--color-primary)" />
-                  </span>
-                  <div>
-                    <p className="font-bold text-(--color-text-main)">
-                      AI Monthly Snapshot
-                    </p>
-                    <p className="text-xs text-(--color-text-muted)">
-                      Updated 2 hours ago
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 items-center gap-4">
-                <svg viewBox="0 0 80 80" className="h-20 w-20 -rotate-90">
-                  <circle
-                    cx="40"
-                    cy="40"
-                    r="32"
-                    fill="none"
-                    stroke="var(--color-bg-muted)"
-                    strokeWidth="9"
-                  />
-                  <circle
-                    cx="40"
-                    cy="40"
-                    r="32"
-                    fill="none"
-                    stroke="var(--color-success)"
-                    strokeWidth="9"
-                    strokeLinecap="round"
-                    strokeDasharray="201"
-                    strokeDashoffset="42"
-                    className="animate-[gaugeSpin_2s_ease-out_forwards]"
-                  />
-                </svg>
-                <div className="col-span-2">
-                  <div className="text-3xl font-bold text-(--color-success)">
-                    79/100
-                  </div>
-                  <p className="text-sm text-(--color-text-main) mt-1 leading-relaxed">
-                    Spending stayed within budget across most categories this
-                    month, with a healthy savings rate.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-5 rounded-xl border border-dashed border-(--color-border-main) p-4 bg-(--color-bg-muted)/30">
-                <p className="text-xs font-semibold text-(--color-text-muted) uppercase tracking-wide mb-1">
-                  Next step
-                </p>
-                <p className="text-sm text-(--color-text-main)">
-                  Dining out is trending 18% above last month — consider setting
-                  a dedicated budget for it.
-                </p>
-              </div>
+            <div className="h-full rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-6 hover:shadow-xl hover:shadow-(--color-warning)/10 transition-all duration-500">
+              <Image
+                src="/Ai_image.png"
+                alt="AI Illustration"
+                width={1000}
+                height={800}
+                className="rounded-xl"
+                priority
+              />
             </div>
           </Reveal>
         </div>
