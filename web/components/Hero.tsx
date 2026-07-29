@@ -21,10 +21,22 @@ const quickPoints = [
 
 export default function Hero() {
   return (
-    <section id="home" className="relative overflow-hidden pb-24 pt-16 sm:pb-32 sm:pt-24">
-      <div aria-hidden className="absolute inset-x-0 top-0 h-[38rem] bg-linear-to-b from-(--color-primary)/10 via-transparent to-transparent" />
-      <div aria-hidden className="animate-float absolute -top-24 right-0 h-96 w-96 rounded-full bg-(--color-primary)/10 blur-3xl" />
-      <div aria-hidden className="animate-float absolute bottom-0 left-0 h-80 w-80 rounded-full bg-(--color-gold)/10 blur-3xl" />
+    <section
+      id="home"
+      className="relative overflow-hidden pb-24 pt-16 sm:pb-32 sm:pt-24"
+    >
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-[38rem] bg-linear-to-b from-(--color-primary)/10 via-transparent to-transparent"
+      />
+      <div
+        aria-hidden
+        className="animate-float absolute -top-24 right-0 h-96 w-96 rounded-full bg-(--color-primary)/10 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="animate-float absolute bottom-0 left-0 h-80 w-80 rounded-full bg-(--color-gold)/10 blur-3xl"
+      />
 
       <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid items-center gap-14 lg:grid-cols-[1.02fr_0.98fr] lg:gap-10">
@@ -44,7 +56,10 @@ export default function Hero() {
               </h1>
 
               <p className="mt-6 max-w-xl text-lg leading-8 text-(--color-text-muted)">
-                ExpenseAI turns raw transactions into a clear picture of your finances — budgets that track themselves, categories you control, and AI summaries that tell you what actually matters each month.
+                ExpenseAI turns raw transactions into a clear picture of your
+                finances — budgets that track themselves, categories you
+                control, and AI summaries that tell you what actually matters
+                each month.
               </p>
 
               <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -72,7 +87,10 @@ export default function Hero() {
                 {quickPoints.map((point) => {
                   const Icon = point.icon;
                   return (
-                    <div key={point.title} className="inline-flex items-center gap-2 rounded-full border border-(--color-border-main)/70 bg-(--color-bg-surface)/80 px-3 py-2 text-sm font-medium text-(--color-text-main)">
+                    <div
+                      key={point.title}
+                      className="inline-flex items-center gap-2 rounded-full border border-(--color-border-main)/70 bg-(--color-bg-surface)/80 px-3 py-2 text-sm font-medium text-(--color-text-main)"
+                    >
                       <Icon size={16} className="text-(--color-primary)" />
                       {point.title}
                     </div>
@@ -80,29 +98,35 @@ export default function Hero() {
                 })}
               </div>
 
-              <div className="mt-10 rounded-[1.75rem] border border-(--color-border-main)/70 bg-(--color-bg-surface)/90 p-6 shadow-[0_25px_90px_-45px_rgba(15,23,42,0.35)]">
+              <div className="mt-10 rounded-[1.75rem] border border-border-main/70 bg-bg-surface/90 p-6 shadow-[0_25px_90px_-45px_rgba(15,23,42,0.35)]">
                 <div className="mb-5 flex items-center gap-3">
-                  <span className="h-px flex-1 bg-linear-to-r from-(--color-primary)/50 to-transparent" />
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-(--color-text-muted)">
+                  <span className="h-px flex-1 bg-linear-to-r from-primary/50 to-transparent" />
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-text-muted">
                     Tracked by our members
                   </span>
                 </div>
                 <dl className="grid gap-6 sm:grid-cols-3">
                   <div>
-                    <dt className="text-xs font-medium uppercase tracking-[0.2em] text-(--color-text-muted)">Spend tracked</dt>
-                    <dd className="mt-2 font-display text-2xl font-semibold text-(--color-text-main) sm:text-3xl">
+                    <dt className="text-xs font-medium uppercase tracking-[0.2em] text-text-muted">
+                      Spend tracked
+                    </dt>
+                    <dd className="mt-2 font-display text-2xl font-semibold text-text-main sm:text-3xl">
                       <AnimatedNumber end={284900} prefix="$" />
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs font-medium uppercase tracking-[0.2em] text-(--color-text-muted)">Saved automatically</dt>
-                    <dd className="mt-2 font-display text-2xl font-semibold text-(--color-text-main) sm:text-3xl">
+                    <dt className="text-xs font-medium uppercase tracking-[0.2em] text-text-muted">
+                      Saved automatically
+                    </dt>
+                    <dd className="mt-2 font-display text-2xl font-semibold text-text-main sm:text-3xl">
                       <AnimatedNumber end={18240} prefix="$" />
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs font-medium uppercase tracking-[0.2em] text-(--color-text-muted)">Avg. monthly growth</dt>
-                    <dd className="mt-2 font-display text-2xl font-semibold text-(--color-text-main) sm:text-3xl">
+                    <dt className="text-xs font-medium uppercase tracking-[0.2em] text-text-muted">
+                      Avg. monthly growth
+                    </dt>
+                    <dd className="mt-2 font-display text-2xl font-semibold text-text-main sm:text-3xl">
                       <AnimatedNumber end={12.4} decimals={1} suffix="%" />
                     </dd>
                   </div>
@@ -113,13 +137,15 @@ export default function Hero() {
 
           <Reveal delay={0.08}>
             <div className="relative">
-              <div aria-hidden className="absolute inset-x-8 top-0 h-20 rounded-full bg-(--color-primary)/15 blur-3xl" />
+              <div
+                aria-hidden
+                className="absolute inset-x-8 top-0 h-20 rounded-full bg-primary/15 blur-3xl"
+              />
               <ResponsiveImageFrame
-                src="/hero_img.png"
+                src="/hero_image.png"
                 alt="ExpenseAI dashboard preview"
-                aspectClassName="aspect-[1553/1097]"
-                wrapperClassName="w-full"
-                imageClassName="rounded-[1.15rem]"
+                aspectClassName="aspect-[1553/1900]"
+                wrapperClassName="rounded-2xl"
                 priority
               />
             </div>
