@@ -29,24 +29,24 @@ export default function Header() {
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         scrolled
-          ? "bg-(--color-bg-surface)/85 backdrop-blur-md border-b border-(--color-border-main) shadow-[0_1px_0_0_var(--color-border-main)]"
-          : "bg-transparent border-b border-transparent"
+          ? "border-b border-(--color-border-main)/80 bg-(--color-bg-surface)/90 backdrop-blur-xl"
+          : "border-b border-transparent bg-transparent"
       }`}
     >
       <nav
         aria-label="Primary"
         className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8"
       >
-        <Link href="#home" aria-label="ExpenseAI home">
+        <Link href="#home" aria-label="ExpenseAI home" className="transition-transform hover:-translate-y-0.5">
           <Logo />
         </Link>
 
-        <ul className="hidden md:flex items-center gap-8">
+        <ul className="hidden items-center gap-8 md:flex">
           {navItems.map((item) => (
             <li key={item.href}>
               <a
                 href={item.href}
-                className="text-sm font-medium text-(--color-text-muted) hover:text-(--color-text-main) transition-colors"
+                className="text-sm font-medium text-(--color-text-muted) transition-colors hover:text-(--color-text-main)"
               >
                 {item.label}
               </a>
@@ -54,18 +54,16 @@ export default function Header() {
           ))}
         </ul>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden items-center gap-3 md:flex">
           <a
             href={GITHUB_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm font-medium text-(--color-text-muted) hover:text-(--color-text-main) transition-colors"
+            className="text-sm font-medium text-(--color-text-muted) transition-colors hover:text-(--color-text-main)"
           >
             GitHub
           </a>
-          <LaunchAppLink
-            className="inline-flex items-center gap-1.5 rounded-lg bg-(--color-primary) px-4 py-2.5 text-sm font-semibold text-(--color-primary-foreground) shadow-sm hover:bg-(--color-primary-hover) transition-colors"
-          >
+          <LaunchAppLink className="inline-flex items-center gap-1.5 rounded-full bg-(--color-primary) px-4 py-2.5 text-sm font-semibold text-(--color-primary-foreground) shadow-[0_12px_30px_-18px_var(--color-primary)] transition-all hover:-translate-y-0.5 hover:bg-(--color-primary-hover)">
             Launch App
             <ArrowUpRight size={15} />
           </LaunchAppLink>
@@ -73,7 +71,7 @@ export default function Header() {
 
         <button
           type="button"
-          className="md:hidden p-2 -mr-2 text-(--color-text-main)"
+          className="-mr-2 rounded-full p-2 text-(--color-text-main) md:hidden"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
@@ -83,7 +81,7 @@ export default function Header() {
       </nav>
 
       {open && (
-        <div className="md:hidden border-t border-(--color-border-main) bg-(--color-bg-surface) px-6 py-4">
+        <div className="border-t border-(--color-border-main)/80 bg-(--color-bg-surface) px-6 py-4 md:hidden">
           <ul className="flex flex-col gap-1">
             {navItems.map((item) => (
               <li key={item.href}>
@@ -107,9 +105,7 @@ export default function Header() {
               </a>
             </li>
             <li className="pt-2">
-              <LaunchAppLink
-                className="flex items-center justify-center gap-1.5 rounded-lg bg-(--color-primary) px-4 py-3 text-sm font-semibold text-(--color-primary-foreground)"
-              >
+              <LaunchAppLink className="flex items-center justify-center gap-1.5 rounded-full bg-(--color-primary) px-4 py-3 text-sm font-semibold text-(--color-primary-foreground)">
                 Launch App <ArrowUpRight size={15} />
               </LaunchAppLink>
             </li>

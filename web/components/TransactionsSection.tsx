@@ -1,10 +1,4 @@
-import {
-  PlusCircle,
-  Tags,
-  SlidersHorizontal,
-  Trash2,
-  FileDown,
-} from "lucide-react";
+import { PlusCircle, Tags, SlidersHorizontal, Trash2, FileDown } from "lucide-react";
 import Reveal from "./Reveal";
 import ResponsiveImageFrame from "./ResponsiveImageFrame";
 
@@ -22,66 +16,65 @@ const points = [
   {
     icon: SlidersHorizontal,
     title: "Search & filter",
-    description:
-      "Filter by type, category, account, date range, or free-text search.",
+    description: "Filter by type, category, account, date range, or free-text search.",
   },
   {
     icon: Trash2,
     title: "Bulk delete",
-    description:
-      "Select multiple transactions and remove them in a single action.",
+    description: "Select multiple transactions and remove them in a single action.",
   },
   {
     icon: FileDown,
     title: "Export CSV",
-    description:
-      "Export your filtered results as a CSV file whenever you need it.",
+    description: "Export your filtered results as a CSV file whenever you need it.",
   },
 ];
 
 export default function TransactionsSection() {
   return (
-    <section className="py-24 sm:py-32 bg-(--color-bg-muted)">
+    <section className="bg-(--color-bg-muted) py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <Reveal className="mx-auto max-w-2xl text-center">
-          <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-(--color-text-main)">
+        <Reveal className="mx-auto max-w-3xl text-center">
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-(--color-border-main)/70 bg-(--color-bg-surface)/90 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-(--color-text-muted)">
+            Transactions
+          </div>
+          <h2 className="mt-6 font-display text-3xl font-semibold tracking-tight text-(--color-text-main) sm:text-4xl">
             Transaction management that stays out of your way
           </h2>
-          <p className="mt-4 text-lg text-(--color-text-muted)">
-            Every entry, edit, and export lives in one clean table — built to
-            handle a handful of transactions or several years of them.
+          <p className="mt-4 text-lg leading-8 text-(--color-text-muted)">
+            Every entry, edit, and export lives in one clean table — built to handle a handful of transactions or several years of them.
           </p>
         </Reveal>
 
-        <div className="mt-16 grid gap-12 lg:grid-cols-5 lg:gap-16 items-start">
-          <Reveal className="lg:col-span-2 space-y-6">
-            {points.map((p) => (
-              <div key={p.title} className="flex gap-4">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-(--color-bg-surface) border border-(--color-border-main)">
-                  <p.icon size={17} className="text-(--color-primary)" />
-                </span>
-                <div>
-                  <p className="font-semibold text-(--color-text-main)">
-                    {p.title}
-                  </p>
-                  <p className="text-sm text-(--color-text-muted) mt-0.5">
-                    {p.description}
-                  </p>
-                </div>
-              </div>
-            ))}
+        <div className="mt-16 grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+          <Reveal>
+            <div className="space-y-4">
+              {points.map((point) => {
+                const Icon = point.icon;
+                return (
+                  <div key={point.title} className="flex gap-4 rounded-[1.25rem] border border-(--color-border-main)/70 bg-(--color-bg-surface)/90 p-4">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-(--color-bg-muted)">
+                      <Icon size={16} className="text-(--color-primary)" />
+                    </span>
+                    <div>
+                      <p className="font-semibold text-(--color-text-main)">{point.title}</p>
+                      <p className="mt-1 text-sm leading-7 text-(--color-text-muted)">{point.description}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </Reveal>
 
-          <Reveal delay={0.1} className="lg:col-span-3">
-            <div className="h-full rounded-[1.5rem] border border-(--color-border-main) bg-linear-to-br from-(--color-bg-surface) via-(--color-bg-subtle) to-(--color-bg-muted) p-3 sm:p-4 lg:p-5 shadow-[0_20px_60px_-35px_rgba(15,23,42,0.25)] transition-all duration-500 hover:shadow-[0_30px_80px_-28px_rgba(245,158,11,0.28)]">
-              <ResponsiveImageFrame
-                src="/transaction_image.png"
-                alt="Transaction management experience"
-                aspectClassName="aspect-[16/7]"
-                wrapperClassName="w-full border-0 bg-transparent p-0 shadow-none"
-                imageClassName="rounded-[0.95rem]"
-              />
-            </div>
+          <Reveal delay={0.08}>
+            <ResponsiveImageFrame
+              src="/transaction_image.png"
+              alt="Transaction management experience"
+              aspectClassName="aspect-[2280/1008]"
+              wrapperClassName="w-full"
+              imageClassName="rounded-[1.15rem]"
+              priority
+            />
           </Reveal>
         </div>
       </div>
