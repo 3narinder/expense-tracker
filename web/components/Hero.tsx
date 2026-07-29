@@ -142,7 +142,7 @@ export default function Hero() {
                 className="absolute inset-x-8 top-0 h-20 rounded-full bg-primary/15 blur-3xl"
               />
               <ResponsiveImageFrame
-                src="/hero_image.png"
+                src="/Dashboard_Hero.png"
                 alt="ExpenseAI dashboard preview"
                 aspectClassName="aspect-[1553/1900]"
                 wrapperClassName="rounded-2xl"
