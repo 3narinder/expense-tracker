@@ -14,12 +14,6 @@ import {
   Crown,
   Zap,
 } from "lucide-react";
-import {
-  RadialBarChart,
-  RadialBar,
-  PolarAngleAxis,
-  ResponsiveContainer,
-} from "recharts";
 
 import { formatCurrency, formatDate, timeAgo } from "../utils/format.js";
 import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
@@ -80,7 +74,7 @@ const PlanBadge = ({ eligibility }) => {
       </div>
 
       <div
-        className={`w-px h-3 ${isPremium ? "bg-amber-300" : "bg-[var(--color-border-main)]"}`}
+        className={`w-px h-3 ${isPremium ? "bg-amber-300" : "bg-(--color-border-main)"}`}
       />
 
       <div
@@ -88,10 +82,57 @@ const PlanBadge = ({ eligibility }) => {
       >
         <span>AI uses left today:</span>
         <span
-          className={`font-mono-tab px-1.5 py-0.5 rounded-md ${isPremium ? "bg-amber-200/50" : "bg-[var(--color-bg-surface)] border border-[var(--color-border-main)]"}`}
+          className={`font-mono-tab px-1.5 py-0.5 rounded-md ${isPremium ? "bg-amber-200/50" : "bg-(--color-bg-surface) border border-(--color-border-main)"}`}
         >
           {eligibility.remainingToday} / {eligibility.dailyLimit}
         </span>
+      </div>
+    </div>
+  );
+};
+
+const HealthScoreGauge = ({ score = 0 }) => {
+  const safe = Math.max(0, Math.min(100, Number(score) || 0));
+  const radius = 52;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (safe / 100) * circumference;
+  const color = safe >= 70 ? "#22c55e" : safe >= 40 ? "#eab308" : "#ef4444";
+  const label = safe >= 70 ? "Healthy" : safe >= 40 ? "Watch" : "Risky";
+
+  return (
+    <div className="relative h-36 w-36 shrink-0">
+      <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
+        <circle
+          cx="60"
+          cy="60"
+          r={radius}
+          stroke="var(--color-border-main)"
+          strokeWidth="10"
+          fill="none"
+        />
+        <circle
+          cx="60"
+          cy="60"
+          r={radius}
+          stroke={color}
+          strokeWidth="10"
+          fill="none"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          style={{ transition: "stroke-dashoffset 1s ease-out" }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <div className="text-4xl font-bold tracking-tight text-(--color-text-main)">
+          {safe}
+        </div>
+        <div
+          className="text-[10px] uppercase tracking-wider font-semibold"
+          style={{ color }}
+        >
+          {label}
+        </div>
       </div>
     </div>
   );
@@ -105,9 +146,9 @@ const DashboardAIInsightCard = ({
 }) => {
   if (!insight) {
     return (
-      <div className="bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) p-6">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="h-10 w-10 rounded-xl bg-(--color-primary-soft) flex items-center justify-center">
+      <div className="bg-(--color-bg-surface) rounded-2xl border border-(--color-border-main) p-6 hover:border-(--color-primary)/40 hover:shadow-lg hover:shadow-black/5 transition-all">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="h-11 w-11 rounded-xl bg-(--color-primary-soft) flex items-center justify-center">
             <Bot size={18} className="text-(--color-primary)" />
           </div>
           <div>
@@ -134,12 +175,11 @@ const DashboardAIInsightCard = ({
 
   const c = insight.content_json || {};
   const score = Number(c.health_score) || 0;
-  const gaugeData = [{ value: Math.max(0, Math.min(100, score)) }];
   const summary = c.summary || "Your monthly AI summary is ready.";
 
   return (
-    <div className="bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) p-6">
-      <div className="flex items-start justify-between gap-4 mb-4">
+    <div className="bg-(--color-bg-surface) rounded-2xl border border-(--color-border-main) p-6 hover:border-(--color-primary)/40 hover:shadow-lg hover:shadow-black/5 transition-all">
+      <div className="flex items-start justify-between gap-4 mb-6">
         <div>
           <h2 className="text-lg font-bold text-(--color-text-main)">
             AI Monthly Snapshot
@@ -159,55 +199,35 @@ const DashboardAIInsightCard = ({
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
-        <div className="h-36">
-          <ResponsiveContainer width="100%" height="100%">
-            <RadialBarChart
-              data={gaugeData}
-              innerRadius="70%"
-              outerRadius="100%"
-              startAngle={90}
-              endAngle={-270}
-              barSize={14}
-            >
-              <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
-              <RadialBar
-                dataKey="value"
-                cornerRadius={10}
-                fill={
-                  score >= 70
-                    ? "var(--color-success)"
-                    : score >= 40
-                      ? "var(--color-warning)"
-                      : "var(--color-danger)"
-                }
-                background={{ fill: "var(--color-bg-muted)" }}
-              />
-            </RadialBarChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="sm:col-span-2">
-          <div
-            className={`text-3xl font-bold tracking-tight mb-1 ${scoreTone(score)}`}
-          >
-            {score}/100
+      <div className="flex flex-col md:flex-row gap-6 items-center bg-(--color-bg-muted) rounded-xl p-6 border border-(--color-border-main)">
+        <HealthScoreGauge score={score} />
+        <div className="flex-1 min-w-0">
+          <div className="text-[11px] uppercase tracking-wider font-semibold text-(--color-text-muted) mb-2">
+            AI Summary
           </div>
-          <p className="text-sm text-(--color-text-main) leading-relaxed">
-            {summary}
-          </p>
+          <p className="text-(--color-text-main) leading-relaxed">{summary}</p>
           {c.recommendations?.length > 0 && (
-            <p className="text-xs text-(--color-text-muted) mt-2">
-              Next step: {c.recommendations[0]}
-            </p>
+            <div className="mt-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles size={14} className="text-(--color-primary)" />
+                <h4 className="text-xs font-semibold text-(--color-text-main) uppercase tracking-wider">
+                  Recommendation
+                </h4>
+              </div>
+              <p className="text-sm text-(--color-text-muted) leading-relaxed">
+                {c.recommendations[0]}
+              </p>
+            </div>
           )}
-          <Link
-            to="/insights"
-            className="inline-flex items-center gap-1 text-sm font-medium text-(--color-primary) hover:text-(--color-primary-hover) mt-3"
-          >
-            Open full insights <ArrowRight size={14} />
-          </Link>
         </div>
       </div>
+
+      <Link
+        to="/insights"
+        className="inline-flex items-center gap-1 text-sm font-medium text-(--color-primary) hover:text-(--color-primary-hover) mt-4"
+      >
+        Open full insights <ArrowRight size={14} />
+      </Link>
     </div>
   );
 };
