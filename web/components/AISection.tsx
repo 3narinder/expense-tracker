@@ -1,6 +1,6 @@
 import { Sparkles, TrendingUp, Lightbulb, Gauge } from "lucide-react";
 import Reveal from "./Reveal";
-import Image from "next/image";
+import ResponsiveImageFrame from "./ResponsiveImageFrame";
 
 export default function AISection() {
   return (
@@ -76,13 +76,13 @@ export default function AISection() {
           </Reveal>
 
           <Reveal delay={0.1}>
-            <div className="h-full rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-6 hover:shadow-xl hover:shadow-(--color-warning)/10 transition-all duration-500">
-              <Image
+            <div className="h-full rounded-[1.5rem] border border-(--color-border-main) bg-linear-to-br from-(--color-bg-surface) via-(--color-bg-subtle) to-(--color-bg-muted) p-4 sm:p-6 shadow-[0_22px_70px_-34px_rgba(15,23,42,0.28)] transition-all duration-500 hover:shadow-[0_30px_80px_-28px_rgba(91,76,240,0.28)]">
+              <ResponsiveImageFrame
                 src="/Ai_image.png"
-                alt="AI Illustration"
-                width={1000}
-                height={800}
-                className="rounded-xl"
+                alt="AI insights experience"
+                aspectClassName="aspect-[16/7]"
+                wrapperClassName="w-full border-0 bg-transparent p-0 shadow-none"
+                imageClassName="rounded-[0.95rem]"
                 priority
               />
             </div>

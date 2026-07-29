@@ -3,8 +3,8 @@ import { GITHUB_URL } from "@/lib/config";
 import Reveal from "./Reveal";
 import GithubIcon from "./GithubIcon";
 import AnimatedNumber from "./AnimatedNumber";
-import Image from "next/image";
 import LaunchAppLink from "./LaunchAppLink";
+import ResponsiveImageFrame from "./ResponsiveImageFrame";
 
 export default function Hero() {
   return (
@@ -22,12 +22,13 @@ export default function Hero() {
       />
 
       <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid items-center gap-16 lg:grid-cols-[1.618fr_1fr]">
+        <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-6">
           <Reveal>
-            <div className="inline-flex items-center gap-2 rounded-full border border-(--color-border-main) bg-(--color-bg-surface) px-3.5 py-1.5 text-xs font-semibold text-(--color-text-muted) shadow-sm">
-              <Sparkles size={13} className="text-(--color-gold)" />
-              AI-powered expense tracking
-            </div>
+            <div className="relative z-20 lg:mr-[-1rem] lg:pr-7">
+              <div className="inline-flex items-center gap-2 rounded-full border border-(--color-border-main) bg-(--color-bg-surface) px-3.5 py-1.5 text-xs font-semibold text-(--color-text-muted) shadow-sm">
+                <Sparkles size={13} className="text-(--color-gold)" />
+                AI-powered expense tracking
+              </div>
 
             <h1 className="mt-6 font-display text-4xl sm:text-5xl lg:text-[3.4rem] font-semibold tracking-tight text-(--color-text-main) leading-[1.08]">
               Know exactly where
@@ -98,13 +99,14 @@ export default function Hero() {
                 </div>
               </dl>
             </div>
+            </div>
           </Reveal>
           {/* //The class `bg-(--color-gold)/10` can be written as `bg-gold/10` */}
-          <Reveal delay={0.1} className="relative">
+          <Reveal delay={0.1} className="relative lg:-ml-4">
             <div className="animate-float absolute -top-16 -right-16 h-96 w-96 rounded-full bg-gold/10 blur-3xl" />
-            <div className="relative overflow-hidden rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-3 shadow-2xl shadow-(--color-gold)/10 ring-1 ring-gold/20">
-              <div className="rounded-xl bg-linear-to-br from-(--color-bg-surface) via-primary-soft/35 to-info-soft/35 p-3">
-                <div className="mb-3 flex items-center justify-between rounded-lg border border-(--color-border-main) bg-white/80 px-3 py-2 backdrop-blur-sm">
+            <div className="relative overflow-hidden rounded-[1.75rem] border border-(--color-border-main)/70 bg-(--color-bg-surface) p-2 shadow-[0_30px_90px_-45px_rgba(91,76,240,0.35)] sm:p-3 lg:p-4">
+              <div className="rounded-[1.25rem] border border-(--color-border-main)/60 bg-(--color-bg-app) p-2 sm:p-3">
+                <div className="mb-3 flex items-center justify-between rounded-full border border-(--color-border-main) bg-(--color-bg-surface) px-3 py-2 shadow-sm">
                   <span className="text-xs font-semibold text-(--color-text-muted)">
                     Live dashboard preview
                   </span>
@@ -112,12 +114,12 @@ export default function Hero() {
                     PRO
                   </span>
                 </div>
-                <Image
+                <ResponsiveImageFrame
                   src="/hero_img.png"
-                  alt="ExpenseAI Dashboard"
-                  width={500}
-                  height={500}
-                  className="rounded-xl"
+                  alt="ExpenseAI dashboard preview"
+                  aspectClassName="aspect-[0.88/1] sm:aspect-[0.95/1] lg:aspect-[1.02/1]"
+                  wrapperClassName="w-full border-0 bg-transparent shadow-none"
+                  imageClassName="rounded-[1.05rem] object-contain"
                   priority
                 />
               </div>

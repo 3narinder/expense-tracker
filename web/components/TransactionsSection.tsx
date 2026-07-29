@@ -6,7 +6,7 @@ import {
   FileDown,
 } from "lucide-react";
 import Reveal from "./Reveal";
-import Image from "next/image";
+import ResponsiveImageFrame from "./ResponsiveImageFrame";
 
 const points = [
   {
@@ -73,13 +73,13 @@ export default function TransactionsSection() {
           </Reveal>
 
           <Reveal delay={0.1} className="lg:col-span-3">
-            <div className="h-full rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-6 hover:shadow-xl hover:shadow-(--color-warning)/10 transition-all duration-500">
-              <Image
+            <div className="h-full rounded-[1.5rem] border border-(--color-border-main) bg-linear-to-br from-(--color-bg-surface) via-(--color-bg-subtle) to-(--color-bg-muted) p-4 sm:p-6 shadow-[0_22px_70px_-34px_rgba(15,23,42,0.28)] transition-all duration-500 hover:shadow-[0_30px_80px_-28px_rgba(245,158,11,0.28)]">
+              <ResponsiveImageFrame
                 src="/transaction_image.png"
-                alt=""
-                width={1000}
-                height={1000}
-                className="rounded-lg bg-(--color-bg-surface) border border-(--color-border-main)"
+                alt="Transaction management experience"
+                aspectClassName="aspect-[16/7]"
+                wrapperClassName="w-full border-0 bg-transparent p-0 shadow-none"
+                imageClassName="rounded-[0.95rem]"
               />
             </div>
           </Reveal>

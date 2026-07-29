@@ -1,6 +1,6 @@
 import { Target, CalendarClock, BellRing } from "lucide-react";
-import Image from "next/image";
 import Reveal from "./Reveal";
+import ResponsiveImageFrame from "./ResponsiveImageFrame";
 
 export default function BudgetSection() {
   return (
@@ -8,13 +8,13 @@ export default function BudgetSection() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid items-center gap-16 lg:grid-cols-2">
           <Reveal className="order-2 lg:order-1">
-            <div className="h-full rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-6 hover:shadow-xl hover:shadow-(--color-warning)/10 transition-all duration-500">
-              <Image
+            <div className="h-full rounded-[1.5rem] border border-(--color-border-main) bg-linear-to-br from-(--color-bg-surface) via-(--color-bg-subtle) to-(--color-bg-muted) p-4 sm:p-6 shadow-[0_22px_70px_-34px_rgba(15,23,42,0.28)] transition-all duration-500 hover:shadow-[0_30px_80px_-28px_rgba(16,185,129,0.28)]">
+              <ResponsiveImageFrame
                 src="/budget_image.png"
-                alt="Budget Illustration"
-                width={1000}
-                height={800}
-                className="rounded-xl"
+                alt="Budget planning dashboard"
+                aspectClassName="aspect-[1.7/1]"
+                wrapperClassName="w-full border-0 bg-transparent p-0 shadow-none"
+                imageClassName="rounded-[0.95rem]"
                 priority
               />
             </div>
