@@ -141,6 +141,72 @@ All colors are defined as CSS custom properties in `web/app/globals.css`:
 </button>
 ```
 
+### Tab Switcher (Account Tabs)
+
+The account switcher pattern is used on the Dashboard to switch between financial accounts.
+
+```tsx
+{/* Active tab — primary fill */}
+<button className="h-9 px-4 rounded-xl text-sm font-medium flex items-center gap-2 border bg-(--color-primary) text-white border-(--color-primary) shadow-sm">
+  <Icon size={14} />
+  Account Name
+  <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-md bg-white/20 text-white">
+    ₹ balance
+  </span>
+</button>
+
+{/* Inactive tab */}
+<button className="h-9 px-4 rounded-xl text-sm font-medium flex items-center gap-2 border bg-(--color-bg-surface) text-(--color-text-muted) border-(--color-border-main) hover:text-(--color-text-main)">
+  {/* ... */}
+</button>
+
+{/* Add Account — dashed premium button */}
+<button className="h-9 px-3 rounded-xl text-sm font-medium flex items-center gap-1.5 border border-dashed border-(--color-border-main) text-(--color-text-muted) hover:border-(--color-primary) hover:text-(--color-primary) bg-(--color-bg-surface)">
+  <Plus size={14} /> Add Account
+</button>
+
+{/* Add Account — locked (basic plan) */}
+<button disabled className="h-9 px-3 rounded-xl text-sm font-medium flex items-center gap-1.5 border border-dashed border-(--color-border-muted) text-(--color-text-ghost) bg-(--color-bg-surface) opacity-60 cursor-not-allowed">
+  <Lock size={14} /> Premium
+</button>
+```
+
+### Premium Gate Pattern
+
+Premium-only features should follow this pattern consistently: show the feature but visually lock it for non-premium users (opacity + lock icon + tooltip), rather than hiding it entirely. This makes the premium tier discoverable.
+
+```tsx
+const isPremium = user?.aiInsightPlan === "premium" || user?.aiInsightPlan === "personal";
+
+<button
+  onClick={isPremium ? onAction : undefined}
+  title={isPremium ? "Action label" : "Upgrade to Premium to use this feature"}
+  className={isPremium ? "...active styles..." : "...locked styles... cursor-not-allowed opacity-60"}
+>
+  {isPremium ? <PlusIcon /> : <LockIcon />}
+  {isPremium ? "Feature Name" : "Premium"}
+</button>
+```
+
+### Filter Toggle Button (Recurring / Active State)
+
+Used for boolean filter toggles in the Transactions filter bar.
+
+```tsx
+{/* Active */}
+<button className="h-10 px-4 rounded-xl border text-sm font-medium flex items-center gap-2 bg-(--color-primary) text-white border-(--color-primary) shadow-sm">
+  <Repeat size={14} />
+  Recurring
+  <span onClick={clearFilter}><X size={12} /></span>
+</button>
+
+{/* Inactive */}
+<button className="h-10 px-4 rounded-xl border text-sm font-medium flex items-center gap-2 bg-(--color-bg-surface) border-(--color-border-main) text-(--color-text-muted) hover:text-(--color-text-main)">
+  <Repeat size={14} />
+  Recurring
+</button>
+```
+
 ### Image Frames
 
 **Standard Image Frame:**
@@ -383,3 +449,6 @@ web/
 - Maintain the existing section structure and content - this is a visual polish, not a rewrite
 - Use the `Reveal` component for scroll animations with staggered delays
 - Keep animations subtle and professional - no flashy or jarring effects
+- **Premium gate pattern**: show locked features (opacity-60 + Lock icon) rather than hiding them. See the Tab Switcher section for the reference implementation.
+- **Account tabs**: horizontal scrollable tab strip; use `overflow-x-auto` on the wrapper to handle many accounts on mobile.
+- **Recurring filter toggle**: use the Filter Toggle Button pattern above; active = primary fill, inactive = surface border.

@@ -28,17 +28,24 @@ const sumByType = (type) => ({
 //** 📦 PURE DATA FETCHING FUNCTIONS (Reusable)
 //** ==========================================
 
-export const fetchMonthSummaryData = async (mongoUserId) => {
+export const fetchMonthSummaryData = async (mongoUserId, accountId) => {
   const { now, startOfThisMonth } = getDateBoundaries();
 
+  const accountFilter = accountId
+    ? { userId: mongoUserId, _id: accountId }
+    : { userId: mongoUserId };
+
+  const txMatch = {
+    userId: mongoUserId,
+    transactionDate: { $gte: startOfThisMonth, $lte: now },
+  };
+  if (accountId) txMatch.accountId = accountId;
+
   const [accounts, transactionMetrics] = await Promise.all([
-    Account.find({ userId: mongoUserId }),
+    Account.find(accountFilter),
     Transaction.aggregate([
       {
-        $match: {
-          userId: mongoUserId,
-          transactionDate: { $gte: startOfThisMonth, $lte: now },
-        },
+        $match: txMatch,
       },
       {
         $group: {
@@ -69,15 +76,15 @@ export const fetchMonthSummaryData = async (mongoUserId) => {
   };
 };
 
-export const fetchMonthlyTrendsData = async (mongoUserId) => {
+export const fetchMonthlyTrendsData = async (mongoUserId, accountId) => {
   const { sixMonthsAgo } = getDateBoundaries();
+
+  const txMatch = { userId: mongoUserId, transactionDate: { $gte: sixMonthsAgo } };
+  if (accountId) txMatch.accountId = accountId;
 
   const trends = await Transaction.aggregate([
     {
-      $match: {
-        userId: mongoUserId,
-        transactionDate: { $gte: sixMonthsAgo },
-      },
+      $match: txMatch,
     },
     {
       $group: {
@@ -104,16 +111,19 @@ export const fetchMonthlyTrendsData = async (mongoUserId) => {
   }));
 };
 
-export const fetchCategoryBreakdownData = async (mongoUserId) => {
+export const fetchCategoryBreakdownData = async (mongoUserId, accountId) => {
   const { now, startOfThisMonth } = getDateBoundaries();
+
+  const txMatch = {
+    userId: mongoUserId,
+    type: "expense",
+    transactionDate: { $gte: startOfThisMonth, $lte: now },
+  };
+  if (accountId) txMatch.accountId = accountId;
 
   const breakdown = await Transaction.aggregate([
     {
-      $match: {
-        userId: mongoUserId,
-        type: "expense",
-        transactionDate: { $gte: startOfThisMonth, $lte: now },
-      },
+      $match: txMatch,
     },
     {
       $group: {
@@ -179,7 +189,12 @@ export const getMonthSummary = async (req, res) => {
     const mongoUserId = getMongoUserId(req);
     if (!mongoUserId) return res.status(401).json({ message: "Unauthorized" });
 
-    const data = await fetchMonthSummaryData(mongoUserId);
+    const accountId =
+      req.query.accountId && mongoose.Types.ObjectId.isValid(req.query.accountId)
+        ? new mongoose.Types.ObjectId(req.query.accountId)
+        : null;
+
+    const data = await fetchMonthSummaryData(mongoUserId, accountId);
     res.status(200).json(data);
   } catch (error) {
     res
@@ -193,7 +208,12 @@ export const getMonthlyTrends = async (req, res) => {
     const mongoUserId = getMongoUserId(req);
     if (!mongoUserId) return res.status(401).json({ message: "Unauthorized" });
 
-    const data = await fetchMonthlyTrendsData(mongoUserId);
+    const accountId =
+      req.query.accountId && mongoose.Types.ObjectId.isValid(req.query.accountId)
+        ? new mongoose.Types.ObjectId(req.query.accountId)
+        : null;
+
+    const data = await fetchMonthlyTrendsData(mongoUserId, accountId);
     res.status(200).json(data);
   } catch (error) {
     res
@@ -207,7 +227,12 @@ export const getCategoryBreakdown = async (req, res) => {
     const mongoUserId = getMongoUserId(req);
     if (!mongoUserId) return res.status(401).json({ message: "Unauthorized" });
 
-    const data = await fetchCategoryBreakdownData(mongoUserId);
+    const accountId =
+      req.query.accountId && mongoose.Types.ObjectId.isValid(req.query.accountId)
+        ? new mongoose.Types.ObjectId(req.query.accountId)
+        : null;
+
+    const data = await fetchCategoryBreakdownData(mongoUserId, accountId);
     res.status(200).json(data);
   } catch (error) {
     res.status(500).json({

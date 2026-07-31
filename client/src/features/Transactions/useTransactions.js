@@ -17,9 +17,10 @@ export const useTransactions = ({
   search: searchArg,
   type: typeArg,
   categoryId: categoryIdArg,
-  sort: sortArg, // Add sort
-  startDate: startDateArg, // Add startDate
+  sort: sortArg,
+  startDate: startDateArg,
   endDate: endDateArg,
+  recurring: recurringArg,
 } = {}) => {
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
@@ -32,6 +33,7 @@ export const useTransactions = ({
   const sort = sortArg ?? searchParams.get("sort") ?? "";
   const startDate = startDateArg ?? searchParams.get("startDate") ?? "";
   const endDate = endDateArg ?? searchParams.get("endDate") ?? "";
+  const recurring = recurringArg ?? searchParams.get("recurring") ?? "";
 
   const filters = {
     search,
@@ -43,6 +45,7 @@ export const useTransactions = ({
     sort,
     startDate,
     endDate,
+    recurring,
   };
 
   const { data, isPending, error } = useQuery({

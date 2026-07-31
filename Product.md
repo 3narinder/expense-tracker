@@ -10,30 +10,33 @@ Individuals who want a lightweight, fast expense tracker with AI-assisted insigh
 
 ## Product surface
 
-- **`client/`** — the web app itself: auth, dashboard, transactions, budgets, categories, accounts, AI insights.
+- **`client/`** — the web app itself: auth, dashboard (with per-account tabs), transactions, budgets, categories, accounts, AI insights.
 - **`mobile/`** — companion mobile app (Expo) mirroring core dashboard/transaction/budget views.
 - **`web/`** — public marketing/landing site.
 - **`server/`** — shared API and data layer behind all of the above.
 
 ---
 
-## Phase 1 — Core expense tracking (current)
+## Phase 1 — Core expense tracking ✅ Done
 
 This is the feature set already implemented in this repo.
 
 **Auth**
 
 - Email/username + password registration and login, JWT (cookie-based) sessions, `GET /me`, logout.
+- On registration, a default "Personal Wallet" account is automatically created for the user.
 
 **Accounts** (financial accounts, not user profiles — see naming note below)
 
 - Users can create named accounts of type bank / credit / cash / investment, each with its own balance and currency, and attach transactions to a specific account.
+- **Account creation is plan-gated**: `basic` plan users are limited to 1 account (their default Personal Wallet). `personal` and `premium` plan users can create unlimited accounts.
 
 **Transactions**
 
 - Income/expense entries with amount, category, account, merchant, tags, notes, date.
 - Recurring transactions (daily/weekly/monthly/yearly) with a `nextOccurrence` field.
 - Bulk delete, CSV export, trend and "recent" views.
+- Filtering: type (income/expense), category, account, date range, text search, sort, **recurring toggle**.
 
 **Categories**
 
@@ -47,6 +50,8 @@ This is the feature set already implemented in this repo.
 **Dashboard**
 
 - Month summary, month-over-month trends, category breakdown.
+- **Account switcher tabs**: switch between "All Accounts" and any individual account; all KPI cards, charts, and recent transactions re-scope to the selected account.
+- **Add Account** button in the tab bar (premium users only; locked for basic).
 
 **AI Insights**
 
@@ -66,15 +71,16 @@ This is the feature set already implemented in this repo.
 
 **1. Payment integration**
 
-- Add paid subscription tiers (the `User.aiInsightPlan` field — `basic`/`personal`/`premium` — already anticipates this; there's no billing behind it yet).
+- Add paid subscription tiers (the `User.aiInsightPlan` field — `basic`/`personal`/`premium` — already anticipates this; there's no billing behind it yet). The Phase 1 account-creation gate (`PREMIUM_REQUIRED`) is the first live enforcement of this field.
 - Payment provider integration (e.g. Stripe): checkout, subscription lifecycle (upgrade/downgrade/cancel), invoices, webhook handling for payment events.
 - Plan-gated features should key off the same `aiInsightPlan`-style field rather than inventing a second flag.
+- Add a Pricing page to the marketing site.
 
 **2. Personal vs. business accounts (user-level, not the existing `Account` model)**
 
 - This is a **workspace/profile-type** concept — e.g. "I use ExpenseAI for my personal spending and separately for my small business" — distinct from the existing `Account` model (which represents a bank/credit/cash account for transaction attribution).
 - Needs its own concept, e.g. a `profileType` on `User` (`personal` / `business`) or a separate `Workspace`/`Organization` model if a business profile should support more than one member later.
-- Decide before building: does a user switch between two fully separate transaction/budget/category spaces, or is it a tag on shared data? This changes the data model significantly — see `ARCHITECTURE.md` open question.
+- Decide before building: does a user switch between two fully separate transaction/budget/category spaces, or is it a tag on shared data? This changes the data model significantly — see `Architecture.md` open question.
 
 ## Phase 3 — Not yet decided
 

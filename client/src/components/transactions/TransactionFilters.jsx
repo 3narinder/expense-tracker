@@ -1,4 +1,4 @@
-import { Search, Calendar, ArrowUpDown, X, ChevronDown } from "lucide-react";
+import { Search, Calendar, ArrowUpDown, X, ChevronDown, Repeat } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
@@ -185,7 +185,7 @@ const TransactionFilters = ({
         </div>
       </div>
 
-      {/* ROW 2: Sort, Category, Date range — one aligned toolbar */}
+      {/* ROW 2: Sort, Category, Recurring, Date range — one aligned toolbar */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-3 border-t border-[var(--color-border-muted)]">
         <div className="relative w-full sm:w-auto sm:min-w-42.5">
           <label htmlFor="sort-select" className="sr-only">
@@ -235,6 +235,50 @@ const TransactionFilters = ({
             className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-text-muted)]"
           />
         </div>
+
+        {/* Recurring toggle */}
+        <button
+          type="button"
+          onClick={() => {
+            const next =
+              filters.recurring === "true"
+                ? ""
+                : filters.recurring === "false"
+                  ? ""
+                  : "true";
+            onChange({ ...filters, recurring: next });
+          }}
+          aria-pressed={filters.recurring === "true"}
+          title="Filter recurring transactions"
+          className={`h-10 px-4 rounded-xl border text-sm font-medium flex items-center gap-2 transition-all shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] ${
+            filters.recurring === "true"
+              ? "bg-[var(--color-primary)] text-white border-[var(--color-primary)] shadow-sm"
+              : "bg-[var(--color-bg-surface)] border-[var(--color-border-main)] text-[var(--color-text-muted)] hover:text-[var(--color-text-main)]"
+          }`}
+        >
+          <Repeat size={14} />
+          Recurring
+          {filters.recurring === "true" && (
+            <span
+              role="button"
+              tabIndex={0}
+              aria-label="Clear recurring filter"
+              onClick={(e) => {
+                e.stopPropagation();
+                onChange({ ...filters, recurring: "" });
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.stopPropagation();
+                  onChange({ ...filters, recurring: "" });
+                }
+              }}
+              className="ml-0.5 p-0.5 rounded hover:bg-white/20"
+            >
+              <X size={12} />
+            </span>
+          )}
+        </button>
 
         {/* Date range popover trigger */}
         <div className="relative w-full sm:w-auto sm:ml-auto" ref={calendarRef}>
