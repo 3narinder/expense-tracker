@@ -6,25 +6,25 @@ import {
   getRecentTransactions,
 } from "../../services/apiDashboard";
 
-export const useDashboardData = () => {
+export const useDashboardData = (accountId = null) => {
   const summaryQuery = useQuery({
-    queryKey: ["summary"],
-    queryFn: getMonthlySummary,
+    queryKey: ["summary", accountId],
+    queryFn: () => getMonthlySummary(accountId),
   });
 
   const trendsQuery = useQuery({
-    queryKey: ["trends"],
-    queryFn: getMonthlyTrends,
+    queryKey: ["trends", accountId],
+    queryFn: () => getMonthlyTrends(accountId),
   });
 
   const categoryBreakDownQuery = useQuery({
-    queryKey: ["category-breakdown"],
-    queryFn: getCategoryBreakDown,
+    queryKey: ["category-breakdown", accountId],
+    queryFn: () => getCategoryBreakDown(accountId),
   });
 
   const getRecentTransactionsQuery = useQuery({
-    queryKey: ["transaction"],
-    queryFn: getRecentTransactions,
+    queryKey: ["transaction", accountId],
+    queryFn: () => getRecentTransactions(accountId),
   });
 
   const isPending = summaryQuery.isPending || trendsQuery.isPending;

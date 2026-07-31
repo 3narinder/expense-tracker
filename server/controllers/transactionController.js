@@ -179,7 +179,15 @@ export const getRecentTransactions = async (req, res) => {
 
     const mongoUserId = new mongoose.Types.ObjectId(userId);
 
-    const transactions = await Transaction.find({ userId: mongoUserId })
+    const filter = { userId: mongoUserId };
+    if (
+      req.query.accountId &&
+      mongoose.Types.ObjectId.isValid(req.query.accountId)
+    ) {
+      filter.accountId = new mongoose.Types.ObjectId(req.query.accountId);
+    }
+
+    const transactions = await Transaction.find(filter)
       .sort({ transactionDate: -1 })
       .limit(5)
       .populate("categoryId", "name icon color");
@@ -236,11 +244,13 @@ export const getTransactionTrend = async (req, res) => {
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
     const userObjectId = new mongoose.Types.ObjectId(userId);
-    const { type, categoryId, accountId, search, range, startDate, endDate } =
+    const { type, categoryId, accountId, search, range, startDate, endDate, recurring } =
       req.query;
 
     const filter = { userId: userObjectId };
     if (type === "income" || type === "expense") filter.type = type;
+    if (recurring === "true" || recurring === "false")
+      filter.recurring = recurring === "true";
     if (categoryId && mongoose.Types.ObjectId.isValid(categoryId)) {
       filter.categoryId = new mongoose.Types.ObjectId(categoryId);
     }

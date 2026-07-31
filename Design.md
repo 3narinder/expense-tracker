@@ -1,5 +1,7 @@
 # ExpenseAI Design System
 
+> **Scope**: this is the shared design system used by both `client/` (the product) and `web/` (the marketing site) — the CSS variables and patterns below are duplicated in each app's own stylesheet (`client/src/index.css`, `web/app/globals.css`). For rules specific to the marketing landing page only (copy tone, section-by-section guidance), see `web/docs/DESIGN.md`. Log notable design changes to the marketing site in `web/docs/CHANGELOG.md`.
+
 ## Overview
 
 ExpenseAI is a modern, AI-powered expense tracking application with a clean, professional design aesthetic inspired by top-tier SaaS products like Linear, Stripe, and Mercury. The design emphasizes clarity, consistency, and subtle motion to create a premium user experience.
@@ -19,6 +21,7 @@ ExpenseAI is a modern, AI-powered expense tracking application with a clean, pro
 All colors are defined as CSS custom properties in `web/app/globals.css`:
 
 #### Background Colors
+
 - `--bg-app`: #f6f7fb (Main application background)
 - `--bg-surface`: #ffffff (Card/surface backgrounds)
 - `--bg-muted`: #eef1f8 (Section alternation backgrounds)
@@ -26,18 +29,21 @@ All colors are defined as CSS custom properties in `web/app/globals.css`:
 - `--bg-subtle`: #fafafa (Subtle backgrounds)
 
 #### Text Colors
+
 - `--text-main`: #1a1a1a (Primary text)
 - `--text-muted`: #6b7280 (Secondary text)
 - `--text-ghost`: #9ca3af (Tertiary text)
 - `--text-inverse`: #ffffff (Text on dark backgrounds)
 
 #### Border Colors
+
 - `--border-main`: #e5e7eb (Primary borders)
 - `--border-muted`: #f3f4f6 (Subtle borders)
 - `--border-focus`: #d1d5db (Focus states)
 - `--divider`: #e5e7eb (Section dividers)
 
 #### Semantic Colors
+
 - `--primary`: #5b4cf0 (Primary brand color - purple)
 - `--success`: #10b981 (Success states - green)
 - `--warning`: #f59e0b (Warning states - amber)
@@ -63,12 +69,14 @@ All colors are defined as CSS custom properties in `web/app/globals.css`:
 ### Type Scale
 
 #### Headings (Display Font - Lora)
+
 - `text-3xl`: Section headings (mobile)
 - `text-4xl`: Section headings (tablet+)
 - `text-5xl`: Hero subheadings (desktop)
 - `text-[3.4rem]`: Hero main heading (desktop)
 
 #### Body Text (Sans-serif - Urbanist)
+
 - `text-xs`: Labels, badges, metadata
 - `text-sm`: Secondary text, descriptions
 - `text-base`: Body text
@@ -84,11 +92,13 @@ All colors are defined as CSS custom properties in `web/app/globals.css`:
 ## Spacing System
 
 ### Section Padding
+
 - **Vertical rhythm**: `py-24 sm:py-32` for all major sections
 - **Container padding**: `px-6 lg:px-8` for content containers
 - **Max width**: `max-w-7xl` for full-width sections, `max-w-2xl` for centered text
 
 ### Component Spacing
+
 - **Card padding**: `p-6` for feature cards, `p-3 sm:p-4 lg:p-5` for image frames
 - **Gap between items**: `gap-6` for grids, `gap-3` for button groups
 - **Margin between sections**: `mt-16` between content blocks
@@ -98,6 +108,7 @@ All colors are defined as CSS custom properties in `web/app/globals.css`:
 ### Cards
 
 **Standard Card Pattern:**
+
 ```tsx
 <div className="rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface) p-6">
   {/* Content */}
@@ -105,6 +116,7 @@ All colors are defined as CSS custom properties in `web/app/globals.css`:
 ```
 
 **Highlighted Card Pattern:**
+
 ```tsx
 <div className="rounded-2xl border border-(--color-gold)/40 bg-linear-to-b from-(--color-gold-soft)/60 to-(--color-bg-surface) shadow-lg shadow-(--color-gold)/10">
   {/* Content */}
@@ -114,6 +126,7 @@ All colors are defined as CSS custom properties in `web/app/globals.css`:
 ### Buttons
 
 **Primary Button:**
+
 ```tsx
 <button className="rounded-lg bg-(--color-primary) px-6 py-3.5 text-sm font-semibold text-(--color-primary-foreground) shadow-lg shadow-(--color-primary)/25 hover:bg-(--color-primary-hover) transition-all hover:-translate-y-0.5">
   {/* Label */}
@@ -121,15 +134,83 @@ All colors are defined as CSS custom properties in `web/app/globals.css`:
 ```
 
 **Secondary Button:**
+
 ```tsx
 <button className="rounded-lg border border-(--color-border-main) bg-(--color-bg-surface) px-6 py-3.5 text-sm font-semibold text-(--color-text-main) hover:bg-(--color-bg-hover) transition-all hover:-translate-y-0.5">
   {/* Label */}
 </button>
 ```
 
+### Tab Switcher (Account Tabs)
+
+The account switcher pattern is used on the Dashboard to switch between financial accounts.
+
+```tsx
+{/* Active tab — primary fill */}
+<button className="h-9 px-4 rounded-xl text-sm font-medium flex items-center gap-2 border bg-(--color-primary) text-white border-(--color-primary) shadow-sm">
+  <Icon size={14} />
+  Account Name
+  <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-md bg-white/20 text-white">
+    ₹ balance
+  </span>
+</button>
+
+{/* Inactive tab */}
+<button className="h-9 px-4 rounded-xl text-sm font-medium flex items-center gap-2 border bg-(--color-bg-surface) text-(--color-text-muted) border-(--color-border-main) hover:text-(--color-text-main)">
+  {/* ... */}
+</button>
+
+{/* Add Account — dashed premium button */}
+<button className="h-9 px-3 rounded-xl text-sm font-medium flex items-center gap-1.5 border border-dashed border-(--color-border-main) text-(--color-text-muted) hover:border-(--color-primary) hover:text-(--color-primary) bg-(--color-bg-surface)">
+  <Plus size={14} /> Add Account
+</button>
+
+{/* Add Account — locked (basic plan) */}
+<button disabled className="h-9 px-3 rounded-xl text-sm font-medium flex items-center gap-1.5 border border-dashed border-(--color-border-muted) text-(--color-text-ghost) bg-(--color-bg-surface) opacity-60 cursor-not-allowed">
+  <Lock size={14} /> Premium
+</button>
+```
+
+### Premium Gate Pattern
+
+Premium-only features should follow this pattern consistently: show the feature but visually lock it for non-premium users (opacity + lock icon + tooltip), rather than hiding it entirely. This makes the premium tier discoverable.
+
+```tsx
+const isPremium = user?.aiInsightPlan === "premium" || user?.aiInsightPlan === "personal";
+
+<button
+  onClick={isPremium ? onAction : undefined}
+  title={isPremium ? "Action label" : "Upgrade to Premium to use this feature"}
+  className={isPremium ? "...active styles..." : "...locked styles... cursor-not-allowed opacity-60"}
+>
+  {isPremium ? <PlusIcon /> : <LockIcon />}
+  {isPremium ? "Feature Name" : "Premium"}
+</button>
+```
+
+### Filter Toggle Button (Recurring / Active State)
+
+Used for boolean filter toggles in the Transactions filter bar.
+
+```tsx
+{/* Active */}
+<button className="h-10 px-4 rounded-xl border text-sm font-medium flex items-center gap-2 bg-(--color-primary) text-white border-(--color-primary) shadow-sm">
+  <Repeat size={14} />
+  Recurring
+  <span onClick={clearFilter}><X size={12} /></span>
+</button>
+
+{/* Inactive */}
+<button className="h-10 px-4 rounded-xl border text-sm font-medium flex items-center gap-2 bg-(--color-bg-surface) border-(--color-border-main) text-(--color-text-muted) hover:text-(--color-text-main)">
+  <Repeat size={14} />
+  Recurring
+</button>
+```
+
 ### Image Frames
 
 **Standard Image Frame:**
+
 ```tsx
 <div className="rounded-[1.5rem] border border-(--color-border-main)/60 bg-(--color-bg-surface) p-3 sm:p-4 lg:p-5 shadow-[0_20px_60px_-35px_rgba(15,23,42,0.25)]">
   <ResponsiveImageFrame
@@ -143,6 +224,7 @@ All colors are defined as CSS custom properties in `web/app/globals.css`:
 ```
 
 **Gradient Image Frame:**
+
 ```tsx
 <div className="rounded-[1.5rem] border border-(--color-border-main) bg-linear-to-br from-(--color-bg-surface) via-(--color-bg-subtle) to-(--color-bg-muted) p-3 sm:p-4 lg:p-5 shadow-[0_20px_60px_-35px_rgba(15,23,42,0.25)] transition-all duration-500 hover:shadow-[0_30px_80px_-28px_rgba(91,76,240,0.28)]">
   <ResponsiveImageFrame
@@ -158,6 +240,7 @@ All colors are defined as CSS custom properties in `web/app/globals.css`:
 ### Badges
 
 **Primary Badge:**
+
 ```tsx
 <span className="inline-flex items-center gap-2 rounded-full bg-(--color-primary-soft) px-3.5 py-1.5 text-xs font-semibold text-(--color-primary)">
   {/* Icon + Label */}
@@ -165,6 +248,7 @@ All colors are defined as CSS custom properties in `web/app/globals.css`:
 ```
 
 **Gold Badge:**
+
 ```tsx
 <span className="rounded-full bg-linear-to-r from-(--color-gold) to-(--color-warning) px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-white shadow-sm">
   {/* Label */}
@@ -174,12 +258,14 @@ All colors are defined as CSS custom properties in `web/app/globals.css`:
 ## Shadows
 
 ### Shadow Scale
+
 - **Subtle**: `shadow-sm` (buttons, small elements)
 - **Medium**: `shadow-lg` (cards, feature highlights)
 - **Deep**: `shadow-[0_20px_60px_-35px_rgba(15,23,42,0.25)]` (image frames)
 - **Colored**: `shadow-(--color-primary)/25` (brand-colored shadows)
 
 ### Shadow Usage
+
 - Use colored shadows for brand elements (primary, gold)
 - Use neutral shadows for structural elements
 - Consistent shadow depth across similar components
@@ -194,18 +280,19 @@ All colors are defined as CSS custom properties in `web/app/globals.css`:
 ## Animations
 
 ### Built-in Animations (from globals.css)
+
 - `animate-float`: Gentle vertical floating (6s ease-in-out infinite)
 - `animate-pulse-glow: Subtle opacity pulse (3s ease-in-out infinite)
 - `animate-gold-shimmer`: Gold gradient shimmer (3.5s ease-in-out infinite)
 
 ### Reveal Animation
+
 ```tsx
-<Reveal delay={0.1}>
-  {/* Content fades in with translateY */}
-</Reveal>
+<Reveal delay={0.1}>{/* Content fades in with translateY */}</Reveal>
 ```
 
 ### Hover Effects
+
 - Buttons: `hover:-translate-y-0.5` with `transition-all`
 - Cards: `hover:shadow-xl` with `transition-all duration-300`
 - Images: `hover:scale-[1.01]` with `transition-transform duration-500`
@@ -213,17 +300,20 @@ All colors are defined as CSS custom properties in `web/app/globals.css`:
 ## Responsive Design
 
 ### Breakpoints
+
 - **Mobile**: 375px - 414px (base styles)
 - **Tablet**: 768px - 834px (`sm:` prefix)
 - **Desktop**: 1280px+ (`lg:` prefix)
 
 ### Grid Systems
+
 - **2-column**: `grid-cols-1 sm:grid-cols-2`
 - **3-column**: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`
 - **4-column**: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4`
 - **Custom ratios**: `lg:grid-cols-[1.35fr_0.65fr]` for asymmetric layouts
 
 ### Mobile-First Approach
+
 - Write base styles for mobile
 - Enhance with `sm:` for tablet
 - Polish with `lg:` for desktop
@@ -232,6 +322,7 @@ All colors are defined as CSS custom properties in `web/app/globals.css`:
 ## Accessibility
 
 ### Focus States
+
 ```tsx
 :focus-visible {
   outline: 2px solid var(--color-primary);
@@ -240,6 +331,7 @@ All colors are defined as CSS custom properties in `web/app/globals.css`:
 ```
 
 ### Reduced Motion
+
 ```css
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -250,6 +342,7 @@ All colors are defined as CSS custom properties in `web/app/globals.css`:
 ```
 
 ### Color Contrast
+
 - Ensure text meets WCAG AA standards
 - Use semantic colors with appropriate foreground/background pairs
 - Test in both light and dark modes
@@ -304,6 +397,7 @@ web/
 ## Common Patterns
 
 ### Section Header
+
 ```tsx
 <Reveal className="mx-auto max-w-2xl text-center">
   <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-(--color-text-main)">
@@ -316,6 +410,7 @@ web/
 ```
 
 ### Feature List with Icons
+
 ```tsx
 <ul className="mt-8 space-y-5">
   <li className="flex gap-4 group">
@@ -331,6 +426,7 @@ web/
 ```
 
 ### Grid Layout
+
 ```tsx
 <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
   {items.map((item, i) => (
@@ -353,3 +449,6 @@ web/
 - Maintain the existing section structure and content - this is a visual polish, not a rewrite
 - Use the `Reveal` component for scroll animations with staggered delays
 - Keep animations subtle and professional - no flashy or jarring effects
+- **Premium gate pattern**: show locked features (opacity-60 + Lock icon) rather than hiding them. See the Tab Switcher section for the reference implementation.
+- **Account tabs**: horizontal scrollable tab strip; use `overflow-x-auto` on the wrapper to handle many accounts on mobile.
+- **Recurring filter toggle**: use the Filter Toggle Button pattern above; active = primary fill, inactive = surface border.

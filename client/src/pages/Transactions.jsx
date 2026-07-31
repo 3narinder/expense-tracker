@@ -53,6 +53,7 @@ const Transactions = () => {
   const sort = searchParams.get("sort") || "";
   const startDate = searchParams.get("startDate") || "";
   const endDate = searchParams.get("endDate") || "";
+  const recurring = searchParams.get("recurring") || "";
   const safeAccounts = accounts || [];
 
   //**  2. Reconstruct the filters
@@ -65,6 +66,7 @@ const Transactions = () => {
     sort,
     startDate,
     endDate,
+    recurring,
   };
 
   const { transactions, pagination, stats, isPending } = useTransactions({
@@ -76,6 +78,7 @@ const Transactions = () => {
     sort,
     startDate,
     endDate,
+    recurring,
     limit: PAGE_SIZE,
   });
 
@@ -87,6 +90,7 @@ const Transactions = () => {
     sort,
     startDate,
     endDate,
+    recurring,
   });
 
   const safeTransactions = transactions || [];

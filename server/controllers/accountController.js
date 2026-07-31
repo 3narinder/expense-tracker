@@ -10,9 +10,24 @@ export const getAccounts = async (req, res) => {
   }
 };
 
-//* @desc    Create new account
+//* @desc    Create new account (premium feature — basic users may only hold their default Personal Wallet)
 export const createAccount = async (req, res) => {
   try {
+    const plan = req.user.aiInsightPlan || "basic";
+
+    if (plan === "basic") {
+      const existingCount = await Account.countDocuments({
+        userId: req.user.id,
+      });
+      if (existingCount >= 1) {
+        return res.status(403).json({
+          message:
+            "Upgrade to a Premium plan to create additional accounts.",
+          code: "PREMIUM_REQUIRED",
+        });
+      }
+    }
+
     const { name, type, balance, currency } = req.body;
     const account = await Account.create({
       userId: req.user.id,
@@ -23,6 +38,11 @@ export const createAccount = async (req, res) => {
     });
     res.status(201).json(account);
   } catch (error) {
+    if (error.code === 11000) {
+      return res
+        .status(400)
+        .json({ message: "An account with that name already exists." });
+    }
     res.status(500).json({ message: error.message });
   }
 };

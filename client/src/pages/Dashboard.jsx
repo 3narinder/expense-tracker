@@ -13,6 +13,11 @@ import {
   Bot,
   Crown,
   Zap,
+  Plus,
+  CreditCard,
+  Banknote,
+  TrendingUp as InvestIcon,
+  Lock,
 } from "lucide-react";
 
 import { formatCurrency, formatDate, timeAgo } from "../utils/format.js";
@@ -21,7 +26,7 @@ import { useDashboardData } from "../features/Dashboard/useDashboardData.js";
 import { useBudgets } from "../features/Budgets/useBudgets.js";
 import { useBudgetActions } from "../features/Budgets/useBudgetActions.js";
 import { useCategories } from "../features/Categories/useCategories.js";
-import { useAccounts } from "../features/Accounts/useAccounts.js";
+import { useAccounts, useAccountActions } from "../features/Accounts/useAccounts.js";
 import {
   useGenerateInsight,
   useLatestInsightByType,
@@ -35,15 +40,155 @@ import CategoryBreakdownChart from "../components/charts/CategoryBreakdownChart.
 import Spinner from "../components/Spinner.jsx";
 import Button from "../components/ui/Button.jsx";
 import Modal from "../components/ui/Modal.jsx";
+import Input from "../components/ui/Input.jsx";
+import Select from "../components/ui/Select.jsx";
 import TransactionForm from "../components/transactions/TransactionForm.jsx";
 import BudgetForm from "../components/BudgetForm.jsx";
 
-const scoreTone = (score) =>
-  score >= 70
-    ? "text-[var(--color-success)]"
-    : score >= 40
-      ? "text-[var(--color-warning)]"
-      : "text-[var(--color-danger)]";
+const ACCOUNT_TYPE_ICONS = {
+  bank: CreditCard,
+  credit: CreditCard,
+  cash: Banknote,
+  investment: InvestIcon,
+};
+
+const AddAccountModal = ({ open, onClose, onSave, isSaving }) => {
+  const [form, setForm] = useState({
+    name: "",
+    type: "bank",
+    balance: "",
+    currency: "INR",
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave({
+      name: form.name.trim(),
+      type: form.type,
+      balance: parseFloat(form.balance) || 0,
+      currency: form.currency.toUpperCase().trim() || "INR",
+    });
+  };
+
+  return (
+    <Modal open={open} onClose={onClose} title="New Account">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input
+          label="Account Name"
+          placeholder="e.g. HDFC Savings, Wallet"
+          value={form.name}
+          onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+          required
+        />
+        <Select
+          label="Account Type"
+          value={form.type}
+          onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
+        >
+          <option value="bank">Bank Account</option>
+          <option value="cash">Cash / Wallet</option>
+          <option value="credit">Credit Card</option>
+          <option value="investment">Investment</option>
+        </Select>
+        <div className="grid grid-cols-2 gap-3">
+          <Input
+            label="Opening Balance"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="0.00"
+            value={form.balance}
+            onChange={(e) => setForm((f) => ({ ...f, balance: e.target.value }))}
+          />
+          <Input
+            label="Currency"
+            placeholder="INR"
+            maxLength={3}
+            value={form.currency}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, currency: e.target.value.toUpperCase() }))
+            }
+          />
+        </div>
+        <div className="flex gap-2 pt-1">
+          <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSaving || !form.name.trim()} className="flex-1">
+            {isSaving ? "Creating..." : "Create Account"}
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+};
+
+const AccountTabs = ({
+  accounts,
+  selectedAccountId,
+  onSelect,
+  isPremium,
+  onAddAccount,
+  currency,
+}) => {
+  return (
+    <div className="flex items-center gap-2 flex-wrap">
+      <button
+        onClick={() => onSelect(null)}
+        className={`h-9 px-4 rounded-xl text-sm font-medium transition-all flex items-center gap-2 border ${
+          selectedAccountId === null
+            ? "bg-[var(--color-primary)] text-white border-[var(--color-primary)] shadow-sm"
+            : "bg-[var(--color-bg-surface)] text-[var(--color-text-muted)] border-[var(--color-border-main)] hover:text-[var(--color-text-main)]"
+        }`}
+      >
+        <Wallet size={14} />
+        All Accounts
+      </button>
+
+      {accounts.map((acc) => {
+        const id = acc._id || acc.id;
+        const Icon = ACCOUNT_TYPE_ICONS[acc.type] || Wallet;
+        const isActive = selectedAccountId === id;
+        return (
+          <button
+            key={id}
+            onClick={() => onSelect(id)}
+            className={`h-9 px-4 rounded-xl text-sm font-medium transition-all flex items-center gap-2 border ${
+              isActive
+                ? "bg-[var(--color-primary)] text-white border-[var(--color-primary)] shadow-sm"
+                : "bg-[var(--color-bg-surface)] text-[var(--color-text-muted)] border-[var(--color-border-main)] hover:text-[var(--color-text-main)]"
+            }`}
+          >
+            <Icon size={14} />
+            <span className="max-w-28 truncate">{acc.name}</span>
+            <span
+              className={`text-[11px] font-semibold px-1.5 py-0.5 rounded-md ${
+                isActive
+                  ? "bg-white/20 text-white"
+                  : "bg-[var(--color-bg-muted)] text-[var(--color-text-muted)]"
+              }`}
+            >
+              {formatCurrency(acc.balance, acc.currency || currency)}
+            </span>
+          </button>
+        );
+      })}
+
+      <button
+        onClick={isPremium ? onAddAccount : undefined}
+        title={isPremium ? "Add new account" : "Upgrade to Premium to add accounts"}
+        className={`h-9 px-3 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 border ${
+          isPremium
+            ? "border-dashed border-[var(--color-border-main)] text-[var(--color-text-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] bg-[var(--color-bg-surface)]"
+            : "border-dashed border-[var(--color-border-muted)] text-[var(--color-text-ghost)] bg-[var(--color-bg-surface)] cursor-not-allowed opacity-60"
+        }`}
+      >
+        {isPremium ? <Plus size={14} /> : <Lock size={14} />}
+        {isPremium ? "Add Account" : "Premium"}
+      </button>
+    </div>
+  );
+};
 
 const PlanBadge = ({ eligibility }) => {
   if (!eligibility) return null;
@@ -234,16 +379,22 @@ const DashboardAIInsightCard = ({
 
 const Dashboard = () => {
   const { user } = useCurrentUser();
+  const isPremium =
+    user?.aiInsightPlan === "premium" || user?.aiInsightPlan === "personal";
+
+  const [selectedAccountId, setSelectedAccountId] = useState(null);
+
   const {
     monthSummary,
     monthTrends,
     categoryBreakDown,
     recentTransactions,
     isPending,
-  } = useDashboardData();
+  } = useDashboardData(selectedAccountId);
   const { budgets = [], isPending: budgetsLoading } = useBudgets();
   const { categories = [] } = useCategories();
   const { accounts = [] } = useAccounts();
+  const { addAccount, isCreating } = useAccountActions();
   const { addBudget } = useBudgetActions();
   const { generate, isGenerating } = useGenerateInsight();
   const { eligibility } = useInsightEligibility();
@@ -253,6 +404,7 @@ const Dashboard = () => {
 
   const [transactionModalOpen, setTransactionModalOpen] = useState(false);
   const [budgetModalOpen, setBudgetModalOpen] = useState(false);
+  const [addAccountModalOpen, setAddAccountModalOpen] = useState(false);
 
   if (isPending || !monthSummary) {
     return (
@@ -277,6 +429,12 @@ const Dashboard = () => {
       : aggPct >= 70
         ? "var(--color-warning)"
         : "var(--color-success)";
+
+  const handleAddAccount = (formData) => {
+    addAccount(formData, {
+      onSuccess: () => setAddAccountModalOpen(false),
+    });
+  };
 
   const handleCreateBudget = (formData) =>
     new Promise((resolve, reject) => {
@@ -327,21 +485,36 @@ const Dashboard = () => {
 
   if (hasNoData) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
-        <div className="h-24 w-24 bg-linear-to-br from-(--color-primary-soft) to-(--color-bg-surface) rounded-full flex items-center justify-center mb-6 shadow-inner">
-          <Wallet size={40} className="text-(--color-primary)" />
+      <div className="space-y-6">
+        <div className="bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) p-5 md:p-6">
+          <div className="overflow-x-auto pb-1">
+            <AccountTabs
+              accounts={accounts}
+              selectedAccountId={selectedAccountId}
+              onSelect={setSelectedAccountId}
+              isPremium={isPremium}
+              onAddAccount={() => setAddAccountModalOpen(true)}
+              currency={currency}
+            />
+          </div>
         </div>
-        <h1 className="text-3xl md:text-4xl font-bold text-(--color-text-main) tracking-tight mb-3">
-          Welcome to ExpenseAI!
-        </h1>
-        <p className="text-(--color-text-muted) max-w-md mx-auto mb-8 leading-relaxed">
-          Your dashboard is empty right now. Add a transaction, set a budget, or
-          generate your first AI monthly summary.
-        </p>
-        {quickActions}
 
-        <div className="mt-5 flex justify-center">
-          <PlanBadge eligibility={eligibility} />
+        <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
+          <div className="h-24 w-24 bg-linear-to-br from-(--color-primary-soft) to-(--color-bg-surface) rounded-full flex items-center justify-center mb-6 shadow-inner">
+            <Wallet size={40} className="text-(--color-primary)" />
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold text-(--color-text-main) tracking-tight mb-3">
+            Welcome to ExpenseAI!
+          </h1>
+          <p className="text-(--color-text-muted) max-w-md mx-auto mb-8 leading-relaxed">
+            Your dashboard is empty right now. Add a transaction, set a budget, or
+            generate your first AI monthly summary.
+          </p>
+          {quickActions}
+
+          <div className="mt-5 flex justify-center">
+            <PlanBadge eligibility={eligibility} />
+          </div>
         </div>
 
         <Modal
@@ -368,6 +541,13 @@ const Dashboard = () => {
             onCancel={() => setBudgetModalOpen(false)}
           />
         </Modal>
+
+        <AddAccountModal
+          open={addAccountModalOpen}
+          onClose={() => setAddAccountModalOpen(false)}
+          onSave={handleAddAccount}
+          isSaving={isCreating}
+        />
       </div>
     );
   }
@@ -390,7 +570,11 @@ const Dashboard = () => {
             </div>
             <div className="text-left">
               <div className="text-[11px] font-medium text-(--color-text-ghost) uppercase tracking-wider">
-                Total Balance
+                {selectedAccountId
+                  ? accounts.find(
+                      (a) => (a._id || a.id) === selectedAccountId,
+                    )?.name || "Account Balance"
+                  : "Total Balance"}
               </div>
               <div className="text-2xl font-bold text-(--color-text-main) tracking-tight">
                 {formatCurrency(monthSummary.balance, currency)}
@@ -398,6 +582,19 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* Account switcher tabs */}
+        <div className="mt-4 pb-1 overflow-x-auto">
+          <AccountTabs
+            accounts={accounts}
+            selectedAccountId={selectedAccountId}
+            onSelect={setSelectedAccountId}
+            isPremium={isPremium}
+            onAddAccount={() => setAddAccountModalOpen(true)}
+            currency={currency}
+          />
+        </div>
+
         <div className="mt-4">
           {quickActions}
           <div className="mt-5 flex md:justify-start sm:justify-center">
@@ -666,6 +863,13 @@ const Dashboard = () => {
           onCancel={() => setBudgetModalOpen(false)}
         />
       </Modal>
+
+      <AddAccountModal
+        open={addAccountModalOpen}
+        onClose={() => setAddAccountModalOpen(false)}
+        onSave={handleAddAccount}
+        isSaving={isCreating}
+      />
     </div>
   );
 };
