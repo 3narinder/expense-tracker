@@ -177,12 +177,21 @@ export const setActiveProfile = async (req, res) => {
       });
     }
 
-    req.user.activeProfileType = nextProfileType;
-    await req.user.save();
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      { $set: { activeProfileType: nextProfileType } },
+      { returnDocument: "after", runValidators: true },
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        message: "User not found.",
+      });
+    }
 
     return res.status(200).json({
       success: true,
-      user: req.user,
+      user: updatedUser,
     });
   } catch (error) {
     console.error(error);

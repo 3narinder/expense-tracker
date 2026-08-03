@@ -1,4 +1,5 @@
-import { Bell, Search } from "lucide-react";
+import { Bell, Plus, Search, UserPlus } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
 import { useActiveProfile } from "../features/Authentication/useActiveProfile.js";
 import ThemeToggle from "./ThemeToggle.jsx";
@@ -17,6 +18,11 @@ const formatToday = () =>
     day: "numeric",
   });
 
+const profileLabels = {
+  personal: "Personal",
+  business: "Business",
+};
+
 const TopBar = () => {
   const { user } = useCurrentUser();
   const { activeProfileType, switchProfile, isSwitchingProfile } =
@@ -33,19 +39,59 @@ const TopBar = () => {
         <div className="text-xs text-[var(--color-text-muted)]">{formatToday()}</div>
       </div>
 
-      <div className="flex items-center gap-1">
-        <label className="mr-2 flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
-          <span className="hidden lg:inline">Profile</span>
-          <select
-            className="h-9 rounded-lg border border-[var(--color-border-main)] bg-[var(--color-bg-surface)] px-2.5 text-sm text-[var(--color-text-main)]"
-            value={activeProfileType}
-            onChange={(e) => switchProfile(e.target.value)}
-            disabled={isSwitchingProfile}
-          >
-            <option value="personal">Personal</option>
-            <option value="business">Business</option>
-          </select>
-        </label>
+      <div className="flex items-center gap-2">
+        <select
+          className="md:hidden h-8 rounded-lg border border-[var(--color-border-main)] bg-[var(--color-bg-surface)] px-2 text-xs font-medium text-[var(--color-text-main)]"
+          value={activeProfileType}
+          onChange={(e) => switchProfile(e.target.value)}
+          disabled={isSwitchingProfile}
+          title="Switch profile"
+        >
+          <option value="personal">Personal</option>
+          <option value="business">Business</option>
+        </select>
+
+        <div className="hidden md:flex items-center gap-2 rounded-xl border border-[var(--color-primary)]/35 bg-[var(--color-primary-soft)] px-2.5 py-1.5 shadow-xs">
+          <div className="px-1">
+            <div className="text-[10px] uppercase tracking-wide text-[var(--color-text-muted)]">
+              Active profile
+            </div>
+            <div className="text-xs font-semibold text-[var(--color-text-main)]">
+              {profileLabels[activeProfileType] || "Personal"}
+            </div>
+          </div>
+          <div className="h-6 w-px bg-[var(--color-border-main)]" />
+          <div className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
+            <select
+              className="h-8 rounded-lg border border-[var(--color-border-main)] bg-[var(--color-bg-surface)] px-2.5 text-sm font-medium text-[var(--color-text-main)]"
+              value={activeProfileType}
+              onChange={(e) => switchProfile(e.target.value)}
+              disabled={isSwitchingProfile}
+              title="Switch profile"
+            >
+              <option value="personal">Personal</option>
+              <option value="business">Business</option>
+            </select>
+            <Link
+              to="/?openAddAccount=1"
+              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[var(--color-border-main)] bg-[var(--color-bg-surface)] px-2.5 text-xs font-medium text-[var(--color-text-main)] hover:bg-[var(--color-bg-muted)]"
+              title="Add account"
+            >
+              <Plus size={13} />
+              Add account
+            </Link>
+            <button
+              type="button"
+              onClick={() => switchProfile("business")}
+              disabled={isSwitchingProfile || activeProfileType === "business"}
+              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[var(--color-border-main)] bg-[var(--color-bg-surface)] px-2.5 text-xs font-medium text-[var(--color-text-main)] hover:bg-[var(--color-bg-muted)] disabled:cursor-not-allowed disabled:opacity-60"
+              title="Switch to Business profile"
+            >
+              <UserPlus size={13} />
+              New profile
+            </button>
+          </div>
+        </div>
         <button
           title="Search"
           className="h-9 w-9 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-text-main)] flex items-center justify-center transition-colors"

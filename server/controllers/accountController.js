@@ -21,6 +21,7 @@ export const createAccount = async (req, res) => {
     if (plan === "basic") {
       const existingCount = await Account.countDocuments({
         userId: req.user.id,
+        profileType: req.profileType,
       });
       if (existingCount >= 1) {
         return res.status(403).json({

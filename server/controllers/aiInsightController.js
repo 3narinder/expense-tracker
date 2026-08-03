@@ -290,9 +290,7 @@ export const getLatestInsightByType = async (req, res) => {
     }).sort({ created_at: -1 });
 
     if (!insight) {
-      return res
-        .status(404)
-        .json({ message: "No insights found for this type" });
+      return res.status(200).json(null);
     }
 
     res.status(200).json(insight);

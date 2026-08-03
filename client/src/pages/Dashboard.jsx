@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   Wallet,
   TrendingUp,
@@ -13,11 +13,6 @@ import {
   Bot,
   Crown,
   Zap,
-  Plus,
-  CreditCard,
-  Banknote,
-  TrendingUp as InvestIcon,
-  Lock,
 } from "lucide-react";
 
 import { formatCurrency, formatDate, timeAgo } from "../utils/format.js";
@@ -32,6 +27,7 @@ import {
   useLatestInsightByType,
   useInsightEligibility,
 } from "../features/AiInsights/useInsights.js";
+import { useProfileType } from "../features/Authentication/useActiveProfile.js";
 
 import KpiCard from "../components/KpiCard.jsx";
 import CategoryBadge from "../components/CategoryBadge.jsx";
@@ -44,13 +40,6 @@ import Input from "../components/ui/Input.jsx";
 import Select from "../components/ui/Select.jsx";
 import TransactionForm from "../components/transactions/TransactionForm.jsx";
 import BudgetForm from "../components/BudgetForm.jsx";
-
-const ACCOUNT_TYPE_ICONS = {
-  bank: CreditCard,
-  credit: CreditCard,
-  cash: Banknote,
-  investment: InvestIcon,
-};
 
 const AddAccountModal = ({ open, onClose, onSave, isSaving }) => {
   const [form, setForm] = useState({
@@ -120,73 +109,6 @@ const AddAccountModal = ({ open, onClose, onSave, isSaving }) => {
         </div>
       </form>
     </Modal>
-  );
-};
-
-const AccountTabs = ({
-  accounts,
-  selectedAccountId,
-  onSelect,
-  isPremium,
-  onAddAccount,
-  currency,
-}) => {
-  return (
-    <div className="flex items-center gap-2 flex-wrap">
-      <button
-        onClick={() => onSelect(null)}
-        className={`h-9 px-4 rounded-xl text-sm font-medium transition-all flex items-center gap-2 border ${
-          selectedAccountId === null
-            ? "bg-[var(--color-primary)] text-white border-[var(--color-primary)] shadow-sm"
-            : "bg-[var(--color-bg-surface)] text-[var(--color-text-muted)] border-[var(--color-border-main)] hover:text-[var(--color-text-main)]"
-        }`}
-      >
-        <Wallet size={14} />
-        All Accounts
-      </button>
-
-      {accounts.map((acc) => {
-        const id = acc._id || acc.id;
-        const Icon = ACCOUNT_TYPE_ICONS[acc.type] || Wallet;
-        const isActive = selectedAccountId === id;
-        return (
-          <button
-            key={id}
-            onClick={() => onSelect(id)}
-            className={`h-9 px-4 rounded-xl text-sm font-medium transition-all flex items-center gap-2 border ${
-              isActive
-                ? "bg-[var(--color-primary)] text-white border-[var(--color-primary)] shadow-sm"
-                : "bg-[var(--color-bg-surface)] text-[var(--color-text-muted)] border-[var(--color-border-main)] hover:text-[var(--color-text-main)]"
-            }`}
-          >
-            <Icon size={14} />
-            <span className="max-w-28 truncate">{acc.name}</span>
-            <span
-              className={`text-[11px] font-semibold px-1.5 py-0.5 rounded-md ${
-                isActive
-                  ? "bg-white/20 text-white"
-                  : "bg-[var(--color-bg-muted)] text-[var(--color-text-muted)]"
-              }`}
-            >
-              {formatCurrency(acc.balance, acc.currency || currency)}
-            </span>
-          </button>
-        );
-      })}
-
-      <button
-        onClick={isPremium ? onAddAccount : undefined}
-        title={isPremium ? "Add new account" : "Upgrade to Premium to add accounts"}
-        className={`h-9 px-3 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 border ${
-          isPremium
-            ? "border-dashed border-[var(--color-border-main)] text-[var(--color-text-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] bg-[var(--color-bg-surface)]"
-            : "border-dashed border-[var(--color-border-muted)] text-[var(--color-text-ghost)] bg-[var(--color-bg-surface)] cursor-not-allowed opacity-60"
-        }`}
-      >
-        {isPremium ? <Plus size={14} /> : <Lock size={14} />}
-        {isPremium ? "Add Account" : "Premium"}
-      </button>
-    </div>
   );
 };
 
@@ -378,11 +300,9 @@ const DashboardAIInsightCard = ({
 };
 
 const Dashboard = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const profileType = useProfileType();
   const { user } = useCurrentUser();
-  const isPremium =
-    user?.aiInsightPlan === "premium" || user?.aiInsightPlan === "personal";
-
-  const [selectedAccountId, setSelectedAccountId] = useState(null);
 
   const {
     monthSummary,
@@ -390,7 +310,7 @@ const Dashboard = () => {
     categoryBreakDown,
     recentTransactions,
     isPending,
-  } = useDashboardData(selectedAccountId);
+  } = useDashboardData();
   const { budgets = [], isPending: budgetsLoading } = useBudgets();
   const { categories = [] } = useCategories();
   const { accounts = [] } = useAccounts();
@@ -405,6 +325,14 @@ const Dashboard = () => {
   const [transactionModalOpen, setTransactionModalOpen] = useState(false);
   const [budgetModalOpen, setBudgetModalOpen] = useState(false);
   const [addAccountModalOpen, setAddAccountModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("openAddAccount") !== "1") return;
+    setAddAccountModalOpen(true);
+    const next = new URLSearchParams(searchParams);
+    next.delete("openAddAccount");
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   if (isPending || !monthSummary) {
     return (
@@ -486,19 +414,6 @@ const Dashboard = () => {
   if (hasNoData) {
     return (
       <div className="space-y-6">
-        <div className="bg-(--color-bg-surface) rounded-3xl border border-(--color-border-main) p-5 md:p-6">
-          <div className="overflow-x-auto pb-1">
-            <AccountTabs
-              accounts={accounts}
-              selectedAccountId={selectedAccountId}
-              onSelect={setSelectedAccountId}
-              isPremium={isPremium}
-              onAddAccount={() => setAddAccountModalOpen(true)}
-              currency={currency}
-            />
-          </div>
-        </div>
-
         <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
           <div className="h-24 w-24 bg-linear-to-br from-(--color-primary-soft) to-(--color-bg-surface) rounded-full flex items-center justify-center mb-6 shadow-inner">
             <Wallet size={40} className="text-(--color-primary)" />
@@ -570,29 +485,15 @@ const Dashboard = () => {
             </div>
             <div className="text-left">
               <div className="text-[11px] font-medium text-(--color-text-ghost) uppercase tracking-wider">
-                {selectedAccountId
-                  ? accounts.find(
-                      (a) => (a._id || a.id) === selectedAccountId,
-                    )?.name || "Account Balance"
-                  : "Total Balance"}
+                {profileType === "business"
+                  ? "Business Profile Balance"
+                  : "Personal Profile Balance"}
               </div>
               <div className="text-2xl font-bold text-(--color-text-main) tracking-tight">
                 {formatCurrency(monthSummary.balance, currency)}
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Account switcher tabs */}
-        <div className="mt-4 pb-1 overflow-x-auto">
-          <AccountTabs
-            accounts={accounts}
-            selectedAccountId={selectedAccountId}
-            onSelect={setSelectedAccountId}
-            isPremium={isPremium}
-            onAddAccount={() => setAddAccountModalOpen(true)}
-            currency={currency}
-          />
         </div>
 
         <div className="mt-4">
