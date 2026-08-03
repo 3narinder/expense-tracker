@@ -1,62 +1,56 @@
-## Status
-
-Snapshot of what's actually built vs. planned, based on a scan of the codebase. Update this whenever a feature moves from planned → in progress → done, so it doesn't drift like `Phases.md` did before this update.
+# Product Status (Simple)
 
 ## Backend (`server/`)
 
-| Module                                                                              | Status                   |
-| ----------------------------------------------------------------------------------- | ------------------------ |
-| Auth (register/login/me/logout, JWT cookie)                                         | ✅ Done                  |
-| Accounts (bank/credit/cash/investment) — CRUD                                       | ✅ Done                  |
-| **Account creation premium gate** (basic plan limited to 1 account)                 | ✅ Done                  |
-| **Dashboard endpoints accept `?accountId=`** (scope KPIs/trends/breakdown per acct) | ✅ Done                  |
-| **`GET /transactions/recent` accepts `?accountId=`**                                | ✅ Done                  |
-| **`GET /transactions/trend` accepts `recurring` filter**                            | ✅ Done                  |
-| Categories (hierarchical, auto-categorization by merchant)                          | ✅ Done                  |
-| Transactions (CRUD, recurring, bulk delete, CSV export, trends)                     | ✅ Done                  |
-| Transaction `recurring` filter on `GET /transactions`                               | ✅ Done                  |
-| Budgets (multi-category, period, alert threshold)                                   | ✅ Done                  |
-| Dashboard (month summary/trends/category breakdown)                                 | ✅ Done                  |
-| AI Insights (generation, rate limiting, plan eligibility)                           | ✅ Done                  |
-| Personal/business profile separation (profile-scoped data + active-profile switch)  | ✅ Done                  |
-| Payment/subscription billing                                                        | ⬜ Not started — Phase 2 |
+### Done
+- Auth (register, login, logout, me)
+- Accounts CRUD
+- Transactions CRUD + trend + export + bulk delete
+- Categories CRUD
+- Budgets CRUD
+- Dashboard APIs (summary, trends, category split)
+- AI insights (generate, history, eligibility, limits)
+- Personal/business profile isolation across core data
+- Active profile switching API
+
+### Not started
+- Billing/subscription payments
 
 ## Web app (`client/`)
 
-| Area                                                                             | Status                   |
-| -------------------------------------------------------------------------------- | ------------------------ |
-| Auth pages (Login, Register)                                                     | ✅ Done                  |
-| Dashboard                                                                        | ✅ Done                  |
-| **Dashboard — account switcher tabs** (one tab per account + "All Accounts")     | ✅ Done                  |
-| **Dashboard — per-account KPIs, trends, category breakdown, recent txns**        | ✅ Done                  |
-| **Dashboard — Add Account modal** (premium-only; locked/disabled for basic plan) | ✅ Done                  |
-| Transactions                                                                     | ✅ Done                  |
-| **Transactions — Recurring filter toggle**                                       | ✅ Done                  |
-| Budgets                                                                          | ✅ Done                  |
-| Categories                                                                       | ✅ Done                  |
-| Accounts feature (read)                                                          | ✅ Done                  |
-| **Accounts feature** (create / update / delete mutations + `useAccountActions`)  | ✅ Done                  |
-| AI Insights                                                                      | ✅ Done                  |
-| Personal/business profile switcher (TopBar + profile-scoped query caches)        | ✅ Done                  |
-| Dark mode (ThemeToggle)                                                          | ✅ Present               |
-| Billing/subscription UI                                                          | ⬜ Not started — Phase 2 |
+### Done
+- Auth pages
+- Dashboard
+- Transactions
+- Categories
+- Budgets
+- AI Insights
+- Account management
+- Profile switch (personal/business)
+- Profile-aware data loading (prevents mixed data)
+
+### Not started
+- Billing/subscription UI
 
 ## Marketing site (`web/`)
 
-| Area                                                                                                  | Status                                                              |
-| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| Landing page (Hero, Features, AI/Budget/Transaction/Analytics sections, Testimonials, FAQ, Final CTA) | ✅ Done                                                             |
-| Shared design docs (`web/docs/DESIGN.md`, `web/docs/CHANGELOG.md`)                                    | ✅ Present — kept as the web-specific extension of root `Design.md` |
-| Pricing page                                                                                          | ⬜ Not started — Phase 2                                            |
+### Done
+- Landing page
 
-## Mobile (`mobile/`)
+### Not started
+- Pricing page
 
-| Area                                                                                      | Status                                                              |
-| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| Screens: dashboard, transactions, budget progress, category/trend charts, sign-in/sign-up | ✅ Scaffolded                                                       |
-| Live API wiring                                                                           | ⚠️ Partial — some screens still read from `src/data/mockAppData.ts` |
-| Feature parity with `client/` (categories, accounts management)                           | ⬜ Not started                                                      |
+## Mobile app (`mobile/`)
 
-## Known naming note
+### Done
+- Basic app scaffold and screens
 
-The existing `Account` model remains the financial-account entity (bank/credit/cash/investment). Personal/business separation is implemented via `profileType` scope, not by replacing financial accounts.
+### Partial
+- Some screens still use mock data
+
+### Not started
+- Full feature parity with web app
+
+## Key note
+
+Financial **Account** (bank/cash/credit) is different from personal/business **Profile**.
