@@ -8,11 +8,12 @@ dotenv.config();
 
 const TARGET_USER_ID = "6a44dd1e8848e1c16ef1b6a2";
 const TARGET_ACCOUNT_ID = "6a44dd1f8848e1c16ef1b6a3";
+const TARGET_PROFILE_TYPE = "personal";
 
 const buildMockTransactions = async (userId, accountId) => {
   // Fetch categories to map names to ObjectIds
   const categories = await Category.find({
-    $or: [{ isDefault: true }, { userId }],
+    $or: [{ isDefault: true }, { userId, profileType: TARGET_PROFILE_TYPE }],
   });
   const catMap = Object.fromEntries(categories.map((c) => [c.name, c]));
 
@@ -50,6 +51,7 @@ const buildMockTransactions = async (userId, accountId) => {
 
     out.push({
       userId,
+      profileType: TARGET_PROFILE_TYPE,
       accountId,
       categoryId: c._id,
       amount: parseFloat(finalAmount.toFixed(2)),
@@ -211,7 +213,10 @@ const runSeed = async () => {
     await mongoose.connect(process.env.MONGO_URI_DEV);
 
     console.log("🗑️ Clearing old transactions for this user...");
-    await Transaction.deleteMany({ userId: TARGET_USER_ID });
+    await Transaction.deleteMany({
+      userId: TARGET_USER_ID,
+      profileType: TARGET_PROFILE_TYPE,
+    });
 
     console.log("🛠️ Building mock data for 6 months...");
     const txs = await buildMockTransactions(TARGET_USER_ID, TARGET_ACCOUNT_ID);

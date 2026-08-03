@@ -28,15 +28,20 @@ const sumByType = (type) => ({
 //** 📦 PURE DATA FETCHING FUNCTIONS (Reusable)
 //** ==========================================
 
-export const fetchMonthSummaryData = async (mongoUserId, accountId) => {
+export const fetchMonthSummaryData = async (
+  mongoUserId,
+  profileType,
+  accountId,
+) => {
   const { now, startOfThisMonth } = getDateBoundaries();
 
   const accountFilter = accountId
-    ? { userId: mongoUserId, _id: accountId }
-    : { userId: mongoUserId };
+    ? { userId: mongoUserId, profileType, _id: accountId }
+    : { userId: mongoUserId, profileType };
 
   const txMatch = {
     userId: mongoUserId,
+    profileType,
     transactionDate: { $gte: startOfThisMonth, $lte: now },
   };
   if (accountId) txMatch.accountId = accountId;
@@ -76,10 +81,18 @@ export const fetchMonthSummaryData = async (mongoUserId, accountId) => {
   };
 };
 
-export const fetchMonthlyTrendsData = async (mongoUserId, accountId) => {
+export const fetchMonthlyTrendsData = async (
+  mongoUserId,
+  profileType,
+  accountId,
+) => {
   const { sixMonthsAgo } = getDateBoundaries();
 
-  const txMatch = { userId: mongoUserId, transactionDate: { $gte: sixMonthsAgo } };
+  const txMatch = {
+    userId: mongoUserId,
+    profileType,
+    transactionDate: { $gte: sixMonthsAgo },
+  };
   if (accountId) txMatch.accountId = accountId;
 
   const trends = await Transaction.aggregate([
@@ -111,11 +124,16 @@ export const fetchMonthlyTrendsData = async (mongoUserId, accountId) => {
   }));
 };
 
-export const fetchCategoryBreakdownData = async (mongoUserId, accountId) => {
+export const fetchCategoryBreakdownData = async (
+  mongoUserId,
+  profileType,
+  accountId,
+) => {
   const { now, startOfThisMonth } = getDateBoundaries();
 
   const txMatch = {
     userId: mongoUserId,
+    profileType,
     type: "expense",
     transactionDate: { $gte: startOfThisMonth, $lte: now },
   };
@@ -170,11 +188,11 @@ export const fetchCategoryBreakdownData = async (mongoUserId, accountId) => {
 //** 🚀 EXPRESS ROUTE HANDLERS
 //** ==========================================
 
-export const getAIContextData = async (mongoUserId) => {
+export const getAIContextData = async (mongoUserId, profileType) => {
   const [summary, trends, breakdown] = await Promise.all([
-    fetchMonthSummaryData(mongoUserId),
-    fetchMonthlyTrendsData(mongoUserId),
-    fetchCategoryBreakdownData(mongoUserId),
+    fetchMonthSummaryData(mongoUserId, profileType),
+    fetchMonthlyTrendsData(mongoUserId, profileType),
+    fetchCategoryBreakdownData(mongoUserId, profileType),
   ]);
 
   return {
@@ -194,7 +212,11 @@ export const getMonthSummary = async (req, res) => {
         ? new mongoose.Types.ObjectId(req.query.accountId)
         : null;
 
-    const data = await fetchMonthSummaryData(mongoUserId, accountId);
+    const data = await fetchMonthSummaryData(
+      mongoUserId,
+      req.profileType,
+      accountId,
+    );
     res.status(200).json(data);
   } catch (error) {
     res
@@ -213,7 +235,11 @@ export const getMonthlyTrends = async (req, res) => {
         ? new mongoose.Types.ObjectId(req.query.accountId)
         : null;
 
-    const data = await fetchMonthlyTrendsData(mongoUserId, accountId);
+    const data = await fetchMonthlyTrendsData(
+      mongoUserId,
+      req.profileType,
+      accountId,
+    );
     res.status(200).json(data);
   } catch (error) {
     res
@@ -232,7 +258,11 @@ export const getCategoryBreakdown = async (req, res) => {
         ? new mongoose.Types.ObjectId(req.query.accountId)
         : null;
 
-    const data = await fetchCategoryBreakdownData(mongoUserId, accountId);
+    const data = await fetchCategoryBreakdownData(
+      mongoUserId,
+      req.profileType,
+      accountId,
+    );
     res.status(200).json(data);
   } catch (error) {
     res.status(500).json({

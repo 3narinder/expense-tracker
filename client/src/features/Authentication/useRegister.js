@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { register as userRegisterApi } from "../../services/apiAuth.js";
 import { setAuthToken } from "../../utils/authToken";
+import { setActiveProfileType } from "../../utils/profileScope.js";
 
 export const useRegister = () => {
   const queryClient = useQueryClient();
@@ -14,6 +15,7 @@ export const useRegister = () => {
     onSuccess: (data) => {
       toast.success("Profile created successfully!");
       setAuthToken(data?.token);
+      setActiveProfileType(data?.user?.activeProfileType || "personal");
       queryClient.setQueryData(["user"], data);
       navigate("/", { replace: true });
     },

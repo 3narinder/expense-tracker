@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getMe as getMeApi } from "../../services/apiAuth";
 import { getAuthToken } from "../../utils/authToken.js";
+import { setActiveProfileType } from "../../utils/profileScope.js";
 
 export const useCurrentUser = () => {
   const hasSessionToken = Boolean(getAuthToken());
@@ -12,6 +14,12 @@ export const useCurrentUser = () => {
     refetchOnWindowFocus: false,
     enabled: hasSessionToken,
   });
+
+  useEffect(() => {
+    if (data?.user?.activeProfileType) {
+      setActiveProfileType(data.user.activeProfileType);
+    }
+  }, [data?.user?.activeProfileType]);
 
   return {
     user: data?.user,

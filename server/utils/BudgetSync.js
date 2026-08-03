@@ -3,7 +3,7 @@ import Transaction from "../models/TransactionSchema.js";
 import { getPeriodEnd } from "./BudgetPeriod.js";
 
 export const applyBudgetDelta = async (
-  { userId, categoryId, transactionDate, type },
+  { userId, profileType, categoryId, transactionDate, type },
   delta,
   session,
 ) => {
@@ -13,6 +13,7 @@ export const applyBudgetDelta = async (
 
   const candidateBudgets = await Budget.find({
     userId,
+    profileType,
     categoryIds: categoryId,
     startDate: { $lte: txDate },
   }).session(session);
@@ -45,6 +46,7 @@ export const syncBudgetsOnUpdate = async (
 ) => {
   const oldSnapshot = {
     userId: originalTx.userId,
+    profileType: originalTx.profileType,
     categoryId: originalTx.categoryId,
     transactionDate: originalTx.transactionDate,
     type: originalTx.type,
@@ -53,6 +55,7 @@ export const syncBudgetsOnUpdate = async (
 
   const newSnapshot = {
     userId: originalTx.userId,
+    profileType: originalTx.profileType,
     categoryId: updatedFields.categoryId ?? originalTx.categoryId,
     transactionDate:
       updatedFields.transactionDate ?? originalTx.transactionDate,
@@ -74,6 +77,7 @@ export const reconcileBudget = async (budget) => {
     {
       $match: {
         userId: budget.userId,
+        profileType: budget.profileType,
         categoryId: { $in: budget.categoryIds },
         type: "expense",
         transactionDate: { $gte: budget.startDate, $lt: periodEnd },
@@ -92,8 +96,10 @@ export const reconcileBudget = async (budget) => {
   return trueSpent;
 };
 
-export const reconcileAllBudgets = async (userId = null) => {
-  const filter = userId ? { userId } : {};
+export const reconcileAllBudgets = async (userId = null, profileType = null) => {
+  const filter = {};
+  if (userId) filter.userId = userId;
+  if (profileType) filter.profileType = profileType;
   const budgets = await Budget.find(filter);
   for (const budget of budgets) {
     await reconcileBudget(budget);
@@ -103,6 +109,7 @@ export const reconcileAllBudgets = async (userId = null) => {
 
 export const getCategoryConflicts = async (
   userId,
+  profileType,
   categoryIds,
   period,
   startDate,
@@ -113,6 +120,7 @@ export const getCategoryConflicts = async (
 
   const filter = {
     userId,
+    profileType,
     categoryIds: { $in: categoryIds },
     startDate: { $lt: newEnd },
   };

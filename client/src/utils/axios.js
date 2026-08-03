@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getAuthToken } from "./authToken";
+import { getActiveProfileType } from "./profileScope";
 
 const defaultApiUrl = import.meta.env.PROD
   ? "https://expense-tracker-api-mkt0.onrender.com/api"
@@ -17,6 +18,7 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  config.headers["x-profile-type"] = getActiveProfileType();
   return config;
 });
 

@@ -8,7 +8,10 @@ import Transaction from "../models/TransactionSchema.js";
 export const getCategories = async (req, res) => {
   try {
     const categories = await Category.find({
-      $or: [{ isDefault: true }, { userId: req.user.id }],
+      $or: [
+        { isDefault: true },
+        { userId: req.user.id, profileType: req.profileType },
+      ],
     }).sort({ type: 1, name: 1 });
 
     const formattedCategories = categories.map((cat) => ({
@@ -20,6 +23,7 @@ export const getCategories = async (req, res) => {
       isDefault: cat.isDefault,
       parentId: cat.parentId, // NEW
       ancestors: cat.ancestors, // NEW
+      profileType: cat.profileType || "personal",
     }));
 
     res.status(200).json(formattedCategories);
@@ -40,7 +44,10 @@ export const createCategory = async (req, res) => {
     if (parentId) {
       const parent = await Category.findOne({
         _id: parentId,
-        $or: [{ isDefault: true }, { userId: req.user.id }],
+        $or: [
+          { isDefault: true },
+          { userId: req.user.id, profileType: req.profileType },
+        ],
       });
       if (!parent) {
         return res
@@ -56,6 +63,7 @@ export const createCategory = async (req, res) => {
 
     const category = new Category({
       userId: req.user.id,
+      profileType: req.profileType,
       name,
       type,
       icon,
@@ -86,6 +94,7 @@ export const updateCategory = async (req, res) => {
     const category = await Category.findOne({
       _id: id,
       userId: req.user.id,
+      profileType: req.profileType,
       isDefault: false,
     });
 
@@ -99,7 +108,10 @@ export const updateCategory = async (req, res) => {
       if (parentId) {
         const parent = await Category.findOne({
           _id: parentId,
-          $or: [{ isDefault: true }, { userId: req.user.id }],
+          $or: [
+            { isDefault: true },
+            { userId: req.user.id, profileType: req.profileType },
+          ],
         });
         if (!parent) {
           return res
@@ -145,6 +157,7 @@ export const deleteCategory = async (req, res) => {
     const category = await Category.findOne({
       _id: id,
       userId: userId,
+      profileType: req.profileType,
       isDefault: false,
     });
 
@@ -166,7 +179,7 @@ export const deleteCategory = async (req, res) => {
     }
 
     await Transaction.updateMany(
-      { userId: userId, categoryId: id },
+      { userId: userId, profileType: req.profileType, categoryId: id },
       { $set: { categoryId: fallbackCategory._id } },
     );
 

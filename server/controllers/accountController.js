@@ -3,7 +3,10 @@ import Account from "../models/AccountSchema.js";
 //* @desc    Get all accounts for user
 export const getAccounts = async (req, res) => {
   try {
-    const accounts = await Account.find({ userId: req.user.id });
+    const accounts = await Account.find({
+      userId: req.user.id,
+      profileType: req.profileType,
+    });
     res.status(200).json(accounts);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -31,6 +34,7 @@ export const createAccount = async (req, res) => {
     const { name, type, balance, currency } = req.body;
     const account = await Account.create({
       userId: req.user.id,
+      profileType: req.profileType,
       name,
       type,
       balance,
@@ -60,7 +64,7 @@ export const updateAccount = async (req, res) => {
     if (currency !== undefined) updates.currency = currency;
 
     const account = await Account.findOneAndUpdate(
-      { _id: id, userId: req.user.id },
+      { _id: id, userId: req.user.id, profileType: req.profileType },
       { $set: updates },
       { new: true, runValidators: true },
     );
@@ -78,6 +82,7 @@ export const deleteAccount = async (req, res) => {
     const account = await Account.findOneAndDelete({
       _id: id,
       userId: req.user.id,
+      profileType: req.profileType,
     });
     if (!account) return res.status(404).json({ message: "Account not found" });
     res.status(200).json({ message: "Account deleted" });

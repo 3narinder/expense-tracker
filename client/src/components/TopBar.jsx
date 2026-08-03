@@ -1,5 +1,6 @@
 import { Bell, Search } from "lucide-react";
 import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
+import { useActiveProfile } from "../features/Authentication/useActiveProfile.js";
 import ThemeToggle from "./ThemeToggle.jsx";
 
 const greeting = () => {
@@ -18,6 +19,8 @@ const formatToday = () =>
 
 const TopBar = () => {
   const { user } = useCurrentUser();
+  const { activeProfileType, switchProfile, isSwitchingProfile } =
+    useActiveProfile();
   const firstName = user?.username?.split(" ")[0] || "";
 
   return (
@@ -31,6 +34,18 @@ const TopBar = () => {
       </div>
 
       <div className="flex items-center gap-1">
+        <label className="mr-2 flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
+          <span className="hidden lg:inline">Profile</span>
+          <select
+            className="h-9 rounded-lg border border-[var(--color-border-main)] bg-[var(--color-bg-surface)] px-2.5 text-sm text-[var(--color-text-main)]"
+            value={activeProfileType}
+            onChange={(e) => switchProfile(e.target.value)}
+            disabled={isSwitchingProfile}
+          >
+            <option value="personal">Personal</option>
+            <option value="business">Business</option>
+          </select>
+        </label>
         <button
           title="Search"
           className="h-9 w-9 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-text-main)] flex items-center justify-center transition-colors"

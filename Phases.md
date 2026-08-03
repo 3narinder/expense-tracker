@@ -47,7 +47,7 @@ These features shipped on the `dev` branch as a focused iteration on top of Phas
 
 ---
 
-## Phase 2 — Payments & personal/business accounts (next)
+## Phase 2 — Payments & profile workspaces (in progress)
 
 ### 1. Payment integration
 
@@ -64,25 +64,22 @@ These features shipped on the `dev` branch as a focused iteration on top of Phas
 
 **New data needed**: subscription record, payment method record, invoice record, and a plans table/config — see `Architecture.md` for how these should relate to the existing `User` model.
 
-### 2. Personal / business accounts (per user)
+### 2. Personal / business profiles (per user) ✅ Done
 
 **Objective**: Let a user separate their personal finances from a small business, as its own workspace-level concept.
 
 **Important — do not confuse with the existing `Account` model.** `server/models/AccountSchema.js` already represents financial accounts (bank/credit/cash/investment) used to attribute transactions. This feature is a different, higher-level concept: which "profile" (personal vs. business) a user is currently operating in.
 
-**Open design decision (resolve before building — see `Architecture.md`)**:
+**Implemented scope**:
 
-- **Option A — tag on shared data**: add a `profileType` field to transactions/budgets/categories, filter by it. Simple, but doesn't scale to true separation (e.g. can't easily support a business having multiple team members later).
-- **Option B — separate workspace model**: a `Workspace` (or `Profile`) document that `Transaction`/`Budget`/`Category`/`Account` all reference, in addition to `userId`. More flexible, more migration work.
-
-**Likely scope once decided**:
-
-- Profile creation/switching UI (personal/business selector)
-- Scoping all existing queries (transactions, budgets, categories, accounts, dashboard, insights) to the active profile
-- Migration path for existing users' data into a default "personal" profile
+- `profileType` tagging approach (Option A) implemented for transactions, budgets, categories (user-defined), accounts, and insights.
+- Active profile persisted on user (`activeProfileType`) with auth endpoint for seamless switching.
+- Profile switcher added in app top bar.
+- All critical API reads/writes and AI eligibility/generation now honor active profile scope.
+- Query caches are profile-keyed on client to avoid cross-profile confusion and reduce visual jump while switching.
 
 **Priority**: High  
-**Estimated effort**: Medium (payments), Medium–High (profile separation, depending on Option A vs B)
+**Remaining effort**: Medium (payments), Medium (optional future move from profile tag to workspace model)
 
 ---
 
@@ -93,7 +90,7 @@ No commitment yet on what comes after Phase 2. Reasonable directions to consider
 1. **Advanced analytics & reporting** — custom date-range reports, budget-vs-actual, income vs. expense breakdown, PDF/CSV export, scheduled email reports, net worth over time. Natural next step since the data model (transactions/budgets/categories) already supports richer aggregation than the current dashboard exposes.
 2. **Bank sync** (e.g. via Plaid) — auto-import transactions instead of manual entry. High value, but adds real compliance/security surface area; probably sequenced after payments are stable.
 3. **Receipt scanning / OCR** — photo-to-transaction, reduces manual entry friction, pairs well with the mobile app.
-4. **Shared/family budgeting** — natural extension of the Phase 2 workspace concept if Option B (separate workspace model) is chosen; a "business" workspace with multiple members isn't far from a "family" workspace.
+4. **Shared/family budgeting** — natural extension if the product evolves from profile-tagging to a first-class workspace model with membership.
 5. **Predictive spending / goal-based savings** — leans on the existing AI insight infrastructure (`Insight` model, health score) rather than requiring new infrastructure.
 6. **Mobile parity** — closing the gap noted in `Status.md` (some mobile screens still on mock data) so the mobile app has full feature parity with `client/`.
 7. **Third-party API / integrations** — lowest priority until the core product and monetization are proven.
@@ -107,4 +104,4 @@ Pick and scope this phase once Phase 2 ships and usage data (or user feedback) p
 - Update this file when a phase's scope changes or a phase completes — an out-of-date `Phases.md` was the reason this rewrite was needed.
 - Cross-check `Status.md` before assuming something isn't built yet.
 - Follow `Design.md` for any new UI; follow the model/route conventions in `Architecture.md` for any new backend feature.
-- Resolve the Phase 2 profile-model design decision (Option A vs B) explicitly before writing migration code — this affects every existing collection.
+- If collaborative teams are added, reassess whether to migrate from `profileType` tagging to a first-class workspace model.

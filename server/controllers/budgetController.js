@@ -57,7 +57,10 @@ const formatBudgetForUI = (budget, calculatedSpent = null) => {
 //* @route   GET /api/budgets
 export const getBudgets = async (req, res) => {
   try {
-    const budgets = await Budget.find({ userId: req.user.id })
+    const budgets = await Budget.find({
+      userId: req.user.id,
+      profileType: req.profileType,
+    })
       .populate("categoryIds", "name icon color")
       .sort({ startDate: -1 });
 
@@ -77,6 +80,7 @@ export const getBudgetById = async (req, res) => {
     const budget = await Budget.findOne({
       _id: req.params.id,
       userId: req.user.id,
+      profileType: req.profileType,
     }).populate("categoryIds", "name icon color");
 
     if (!budget) return res.status(404).json({ message: "Budget not found" });
@@ -95,6 +99,7 @@ export const getBudgetById = async (req, res) => {
 export const createBudget = async (req, res) => {
   try {
     const userId = req.user.id;
+    const profileType = req.profileType;
     const {
       name,
       categoryIds,
@@ -120,6 +125,7 @@ export const createBudget = async (req, res) => {
     // Business rule: Overlap checks
     const conflicts = await getCategoryConflicts(
       userId,
+      profileType,
       categoryIds,
       period,
       startDate,
@@ -134,6 +140,7 @@ export const createBudget = async (req, res) => {
 
     const budget = await Budget.create({
       userId,
+      profileType,
       name: name.trim(),
       categoryIds,
       amount,
@@ -162,10 +169,11 @@ export const updateBudget = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
+    const profileType = req.profileType;
     const { name, categoryIds, amount, period, startDate, alertThreshold } =
       req.body;
 
-    const budget = await Budget.findOne({ _id: id, userId });
+    const budget = await Budget.findOne({ _id: id, userId, profileType });
     if (!budget) return res.status(404).json({ message: "Budget not found" });
 
     const checkPeriod = period || budget.period;
@@ -176,6 +184,7 @@ export const updateBudget = async (req, res) => {
     // Evaluate Conflict Boundaries
     const conflicts = await getCategoryConflicts(
       userId,
+      profileType,
       checkCategories,
       checkPeriod,
       checkStart,
@@ -224,7 +233,11 @@ export const deleteBudget = async (req, res) => {
       return res.status(400).json({ message: "Invalid budget ID format" });
     }
 
-    const budget = await Budget.findOneAndDelete({ _id: id, userId });
+    const budget = await Budget.findOneAndDelete({
+      _id: id,
+      userId,
+      profileType: req.profileType,
+    });
 
     if (!budget) {
       return res

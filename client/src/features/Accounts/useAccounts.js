@@ -6,10 +6,12 @@ import {
   updateAccount,
   deleteAccount,
 } from "../../services/apiAccounts";
+import { useProfileType } from "../Authentication/useActiveProfile.js";
 
 export const useAccounts = () => {
+  const profileType = useProfileType();
   const { data, isPending, error } = useQuery({
-    queryKey: ["account"],
+    queryKey: ["account", profileType],
     queryFn: getAccounts,
   });
 

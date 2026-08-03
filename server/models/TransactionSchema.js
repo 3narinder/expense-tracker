@@ -7,6 +7,13 @@ const transactionSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    profileType: {
+      type: String,
+      enum: ["personal", "business"],
+      default: "personal",
+      required: true,
+      index: true,
+    },
 
     accountId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -84,12 +91,12 @@ const transactionSchema = new mongoose.Schema(
 
 //* --- INDEXES FOR PERFORMANCE ---  Existing index for default dashboard fetching
 
-transactionSchema.index({ userId: 1, transactionDate: -1 });
+transactionSchema.index({ userId: 1, profileType: 1, transactionDate: -1 });
 
 //* New indexes to support fast filtering, budget calculation, and cron jobs
-transactionSchema.index({ userId: 1, categoryId: 1 }); //* Speeds up budget calculations
-transactionSchema.index({ userId: 1, accountId: 1 }); //* Speeds up wallet-specific views
-transactionSchema.index({ userId: 1, merchant: 1 }); //* Speeds up auto-categorization rule execution
+transactionSchema.index({ userId: 1, profileType: 1, categoryId: 1 }); //* Speeds up budget calculations
+transactionSchema.index({ userId: 1, profileType: 1, accountId: 1 }); //* Speeds up wallet-specific views
+transactionSchema.index({ userId: 1, profileType: 1, merchant: 1 }); //* Speeds up auto-categorization rule execution
 transactionSchema.index({ recurring: 1, nextOccurrence: 1 }); //* Crucial for backend cron job fetching upcoming bills
 
 export default mongoose.model("Transaction", transactionSchema);
