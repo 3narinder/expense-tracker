@@ -11,6 +11,15 @@ const categorySchema = new mongoose.Schema(
       },
       index: true,
     },
+    profileType: {
+      type: String,
+      enum: ["personal", "business"],
+      default: "personal",
+      required: function () {
+        return !this.isDefault;
+      },
+      index: true,
+    },
     name: {
       type: String,
       required: true,
@@ -65,7 +74,10 @@ const categorySchema = new mongoose.Schema(
   },
 );
 
-categorySchema.index({ userId: 1, name: 1, type: 1 }, { unique: true });
+categorySchema.index(
+  { userId: 1, profileType: 1, name: 1, type: 1 },
+  { unique: true },
+);
 
 categorySchema.index({ "autoCategorizationRules.merchantKeywords": 1 });
 

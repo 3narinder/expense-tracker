@@ -12,6 +12,7 @@ export const useTransactionActions = () => {
   const refreshTransactionViews = () => {
     queryClient.invalidateQueries({ queryKey: ["transactions"] });
     queryClient.invalidateQueries({ queryKey: ["transaction"] });
+    queryClient.invalidateQueries({ queryKey: ["recent-transactions"] });
     queryClient.invalidateQueries({ queryKey: ["summary"] });
     queryClient.invalidateQueries({ queryKey: ["trends"] });
     queryClient.invalidateQueries({ queryKey: ["category-breakdown"] });

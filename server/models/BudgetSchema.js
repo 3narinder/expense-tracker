@@ -8,6 +8,13 @@ const budgetSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    profileType: {
+      type: String,
+      enum: ["personal", "business"],
+      default: "personal",
+      required: true,
+      index: true,
+    },
 
     name: {
       type: String,
@@ -79,7 +86,7 @@ const budgetSchema = new mongoose.Schema(
   },
 );
 
-budgetSchema.index({ userId: 1, period: 1, startDate: 1 });
-budgetSchema.index({ userId: 1, categoryIds: 1 });
+budgetSchema.index({ userId: 1, profileType: 1, period: 1, startDate: 1 });
+budgetSchema.index({ userId: 1, profileType: 1, categoryIds: 1 });
 
 export default mongoose.model("Budget", budgetSchema);

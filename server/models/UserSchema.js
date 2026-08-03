@@ -41,6 +41,13 @@ const userSchema = new mongoose.Schema(
       default: "basic",
       index: true,
     },
+
+    activeProfileType: {
+      type: String,
+      enum: ["personal", "business"],
+      default: "personal",
+      index: true,
+    },
   },
   {
     timestamps: true,

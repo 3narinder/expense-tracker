@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "../models/UserSchema.js";
+import { resolveProfileType } from "../utils/profileScope.js";
 
 export const protect = async (req, res, next) => {
   try {
@@ -27,6 +28,13 @@ export const protect = async (req, res, next) => {
     }
 
     req.user = user;
+    req.profileType = resolveProfileType(user, req.headers["x-profile-type"]);
+
+    if (!req.profileType) {
+      return res.status(400).json({
+        message: "Invalid profile scope. Use personal or business.",
+      });
+    }
 
     next();
   } catch (error) {

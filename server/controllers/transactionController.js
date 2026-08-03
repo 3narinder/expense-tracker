@@ -37,7 +37,7 @@ export const getTransactions = async (req, res) => {
     } = req.query;
 
     //**  Base filter WITHOUT type — shared by counts (so tabs describe each other correctly)
-    const baseFilter = { userId: userObjectId };
+    const baseFilter = { userId: userObjectId, profileType: req.profileType };
 
     if (recurring === "true" || recurring === "false")
       baseFilter.recurring = recurring === "true";
@@ -179,7 +179,7 @@ export const getRecentTransactions = async (req, res) => {
 
     const mongoUserId = new mongoose.Types.ObjectId(userId);
 
-    const filter = { userId: mongoUserId };
+    const filter = { userId: mongoUserId, profileType: req.profileType };
     if (
       req.query.accountId &&
       mongoose.Types.ObjectId.isValid(req.query.accountId)
@@ -222,7 +222,11 @@ export const getTransactionById = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(id))
       return res.status(400).json({ message: "Invalid ID format" });
 
-    const tx = await Transaction.findOne({ _id: id, userId })
+    const tx = await Transaction.findOne({
+      _id: id,
+      userId,
+      profileType: req.profileType,
+    })
       .populate("categoryId", "name icon color isDefault")
       .populate("accountId", "name type currency"); // NEW
 
@@ -247,7 +251,7 @@ export const getTransactionTrend = async (req, res) => {
     const { type, categoryId, accountId, search, range, startDate, endDate, recurring } =
       req.query;
 
-    const filter = { userId: userObjectId };
+    const filter = { userId: userObjectId, profileType: req.profileType };
     if (type === "income" || type === "expense") filter.type = type;
     if (recurring === "true" || recurring === "false")
       filter.recurring = recurring === "true";
@@ -382,9 +386,11 @@ export const createTransaction = async (req, res) => {
       }
 
       //* Validate Account
-      const account = await Account.findOne({ _id: accountId, userId }).session(
-        session,
-      );
+      const account = await Account.findOne({
+        _id: accountId,
+        userId,
+        profileType: req.profileType,
+      }).session(session);
       if (!account) {
         throw Object.assign(new Error("Account not found or unauthorized"), {
           statusCode: 400,
@@ -394,7 +400,7 @@ export const createTransaction = async (req, res) => {
       //* Validate Category
       const category = await Category.findOne({
         _id: categoryId,
-        $or: [{ isDefault: true }, { userId }],
+        $or: [{ isDefault: true }, { userId, profileType: req.profileType }],
       }).session(session);
       if (!category) {
         throw Object.assign(new Error("Category not found or unauthorized"), {
@@ -407,6 +413,7 @@ export const createTransaction = async (req, res) => {
 
       const transaction = new Transaction({
         userId,
+        profileType: req.profileType,
         accountId,
         categoryId,
         type,
@@ -430,6 +437,7 @@ export const createTransaction = async (req, res) => {
       await syncBudgetsOnCreate(
         {
           userId,
+          profileType: req.profileType,
           categoryId,
           transactionDate: txDate,
           type,
@@ -473,9 +481,11 @@ export const updateTransaction = async (req, res) => {
         });
       }
 
-      const originalTx = await Transaction.findOne({ _id: id, userId }).session(
-        session,
-      );
+      const originalTx = await Transaction.findOne({
+        _id: id,
+        userId,
+        profileType: req.profileType,
+      }).session(session);
       if (!originalTx) {
         throw Object.assign(new Error("Transaction not found"), {
           statusCode: 404,
@@ -486,7 +496,7 @@ export const updateTransaction = async (req, res) => {
       if (updates.categoryId) {
         const catExists = await Category.findOne({
           _id: updates.categoryId,
-          $or: [{ isDefault: true }, { userId }],
+          $or: [{ isDefault: true }, { userId, profileType: req.profileType }],
         }).session(session);
         if (!catExists) {
           throw Object.assign(new Error("Invalid Category"), {
@@ -518,6 +528,7 @@ export const updateTransaction = async (req, res) => {
           const newAccount = await Account.findOne({
             _id: updates.accountId,
             userId,
+            profileType: req.profileType,
           }).session(session);
           if (!newAccount) {
             throw Object.assign(new Error("Invalid new Account"), {
@@ -588,9 +599,11 @@ export const deleteTransaction = async (req, res) => {
       const { id } = req.params;
       const userId = req.user?.id || req.user?._id;
 
-      const tx = await Transaction.findOne({ _id: id, userId }).session(
-        session,
-      );
+      const tx = await Transaction.findOne({
+        _id: id,
+        userId,
+        profileType: req.profileType,
+      }).session(session);
       if (!tx) {
         throw Object.assign(new Error("Transaction not found"), {
           statusCode: 404,
@@ -648,6 +661,7 @@ export const bulkDeleteTransactions = async (req, res) => {
       const transactionsToDelete = await Transaction.find({
         _id: { $in: validIds },
         userId,
+        profileType: req.profileType,
       }).session(session);
 
       const impactByAccount = new Map();
@@ -672,7 +686,7 @@ export const bulkDeleteTransactions = async (req, res) => {
       );
 
       const result = await Transaction.deleteMany(
-        { _id: { $in: validIds }, userId },
+        { _id: { $in: validIds }, userId, profileType: req.profileType },
         { session },
       );
 
@@ -711,7 +725,10 @@ export const exportTransactionsCSV = async (req, res) => {
       recurring,
       ids,
     } = req.query;
-    const filter = { userId: new mongoose.Types.ObjectId(userId) };
+    const filter = {
+      userId: new mongoose.Types.ObjectId(userId),
+      profileType: req.profileType,
+    };
 
     // 1. Handle explicit IDs or dynamic filters
     if (ids) {

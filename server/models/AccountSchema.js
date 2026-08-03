@@ -8,6 +8,13 @@ const accountSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    profileType: {
+      type: String,
+      enum: ["personal", "business"],
+      default: "personal",
+      required: true,
+      index: true,
+    },
     name: {
       type: String,
       required: true,
@@ -33,7 +40,7 @@ const accountSchema = new mongoose.Schema(
 );
 
 //* Prevent users from having duplicate account names
-accountSchema.index({ userId: 1, name: 1 }, { unique: true });
+accountSchema.index({ userId: 1, profileType: 1, name: 1 }, { unique: true });
 
 const Account = mongoose.model("Account", accountSchema);
 export default Account;

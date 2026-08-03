@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import User from "../models/UserSchema.js";
 import Account from "../models/AccountSchema.js";
+import { normalizeProfileType } from "../utils/profileScope.js";
 
 //** Generate JWT
 const generateToken = (userId) => {
@@ -48,7 +49,15 @@ export const register = async (req, res) => {
     await session.withTransaction(async () => {
       //* 1. Create the user profile
       user = await User.create(
-        [{ username, email, passwordHash: password, currency }],
+        [
+          {
+            username,
+            email,
+            passwordHash: password,
+            currency,
+            activeProfileType: "personal",
+          },
+        ],
         { session },
       );
       user = user[0]; // create() with an array + session returns an array
@@ -62,6 +71,7 @@ export const register = async (req, res) => {
             type: "cash",
             balance: 0,
             currency: user.currency || currency || "USD",
+            profileType: "personal",
           },
         ],
         { session },
@@ -155,4 +165,29 @@ export const logout = (req, res) => {
     success: true,
     message: "Logged out successfully.",
   });
+};
+
+//** @route PATCH /api/auth/active-profile
+export const setActiveProfile = async (req, res) => {
+  try {
+    const nextProfileType = normalizeProfileType(req.body?.profileType);
+    if (!nextProfileType) {
+      return res.status(400).json({
+        message: "Invalid profile type. Use personal or business.",
+      });
+    }
+
+    req.user.activeProfileType = nextProfileType;
+    await req.user.save();
+
+    return res.status(200).json({
+      success: true,
+      user: req.user,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Something went wrong.",
+    });
+  }
 };

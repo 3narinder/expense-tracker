@@ -6,14 +6,16 @@ import {
   getLatestInsightByType,
   getInsightEligibility,
 } from "../../services/apiInsights";
+import { useProfileType } from "../Authentication/useActiveProfile.js";
 
 export const useInsights = () => {
+  const profileType = useProfileType();
   const {
     data: insights = [],
     isPending,
     error,
   } = useQuery({
-    queryKey: ["insights"],
+    queryKey: ["insights", profileType],
     queryFn: getInsights,
   });
 
@@ -70,12 +72,13 @@ export const useGenerateInsight = () => {
 };
 
 export const useLatestInsightByType = (type) => {
+  const profileType = useProfileType();
   const {
     data: insight = null,
     isPending,
     error,
   } = useQuery({
-    queryKey: ["insight-latest", type],
+    queryKey: ["insight-latest", profileType, type],
     queryFn: () => getLatestInsightByType(type),
     enabled: !!type,
   });
@@ -84,12 +87,13 @@ export const useLatestInsightByType = (type) => {
 };
 
 export const useInsightEligibility = () => {
+  const profileType = useProfileType();
   const {
     data: eligibility,
     isPending,
     error,
   } = useQuery({
-    queryKey: ["insight-eligibility"],
+    queryKey: ["insight-eligibility", profileType],
     queryFn: getInsightEligibility,
   });
 

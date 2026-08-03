@@ -9,6 +9,7 @@ import {
   getTransactions,
   getTransactionById,
 } from "../../services/apiTransaction.js";
+import { useProfileType } from "../Authentication/useActiveProfile.js";
 
 export const useTransactions = ({
   page: pageArg,
@@ -22,6 +23,7 @@ export const useTransactions = ({
   endDate: endDateArg,
   recurring: recurringArg,
 } = {}) => {
+  const profileType = useProfileType();
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
 
@@ -49,7 +51,7 @@ export const useTransactions = ({
   };
 
   const { data, isPending, error } = useQuery({
-    queryKey: ["transactions", filters],
+    queryKey: ["transactions", profileType, filters],
     queryFn: () => getTransactions(filters),
     placeholderData: keepPreviousData,
     staleTime: 5000,
@@ -59,13 +61,13 @@ export const useTransactions = ({
 
   if (page < totalPages) {
     queryClient.prefetchQuery({
-      queryKey: ["transactions", { ...filters, page: page + 1 }],
+      queryKey: ["transactions", profileType, { ...filters, page: page + 1 }],
       queryFn: () => getTransactions({ ...filters, page: page + 1 }),
     });
   }
   if (page > 1) {
     queryClient.prefetchQuery({
-      queryKey: ["transactions", { ...filters, page: page - 1 }],
+      queryKey: ["transactions", profileType, { ...filters, page: page - 1 }],
       queryFn: () => getTransactions({ ...filters, page: page - 1 }),
     });
   }
@@ -81,12 +83,13 @@ export const useTransactions = ({
   };
 };
 export const useTransaction = (id) => {
+  const profileType = useProfileType();
   const {
     data: transaction,
     isPending,
     error,
   } = useQuery({
-    queryKey: ["transaction", id],
+    queryKey: ["transaction", profileType, id],
     queryFn: () => getTransactionById(id),
     enabled: !!id,
   });

@@ -43,13 +43,14 @@ const getUtcDayBounds = (date = new Date()) => {
   return { start, end };
 };
 
-const getAIEligibility = async (mongoUserId, user) => {
+const getAIEligibility = async (mongoUserId, user, profileType) => {
   const { start, end } = getUtcDayBounds();
   const { plan, dailyLimit } = getPlanDetails(user);
   const [transactionCount, generatedToday] = await Promise.all([
-    Transaction.countDocuments({ userId: mongoUserId }),
+    Transaction.countDocuments({ userId: mongoUserId, profileType }),
     Insight.countDocuments({
       userId: mongoUserId,
+      profileType,
       created_at: { $gte: start, $lt: end },
     }),
   ]);
@@ -134,7 +135,10 @@ export const getRecentAnalyses = async (req, res) => {
     }
 
     // Fetch only insights for the authenticated user
-    const insights = await Insight.find({ userId: mongoUserId }).sort({
+    const insights = await Insight.find({
+      userId: mongoUserId,
+      profileType: req.profileType,
+    }).sort({
       created_at: -1,
     });
 
@@ -170,7 +174,11 @@ export const generateInsightExtended = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const eligibility = await getAIEligibility(mongoUserId, req.user);
+    const eligibility = await getAIEligibility(
+      mongoUserId,
+      req.user,
+      req.profileType,
+    );
     if (!eligibility.canGenerate) {
       return res.status(403).json({
         error: "AI insight generation unavailable",
@@ -180,7 +188,7 @@ export const generateInsightExtended = async (req, res) => {
     }
 
     // 2️⃣ FETCH REAL USER FINANCIAL DATA
-    const dashboardData = await getAIContextData(mongoUserId);
+    const dashboardData = await getAIContextData(mongoUserId, req.profileType);
 
     // 3️⃣ Transform into AI-friendly format
     const financialData = transformFinancialDataForAI(dashboardData);
@@ -213,6 +221,7 @@ export const generateInsightExtended = async (req, res) => {
     // 5️⃣ Save insight to database with user ID
     const recordedAnalysis = await Insight.create({
       userId: mongoUserId, // 🔑 Associate with user
+      profileType: req.profileType,
       insight_type: type, // Use consistent naming
       content_json: parsedAIOutput, // Store structured AI output
       health_score: parsedAIOutput.health_score || 50,
@@ -246,7 +255,11 @@ export const getInsightEligibility = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const eligibility = await getAIEligibility(mongoUserId, req.user);
+    const eligibility = await getAIEligibility(
+      mongoUserId,
+      req.user,
+      req.profileType,
+    );
     res.status(200).json(eligibility);
   } catch (error) {
     console.error("❌ Error fetching AI eligibility:", error.message);
@@ -272,6 +285,7 @@ export const getLatestInsightByType = async (req, res) => {
 
     const insight = await Insight.findOne({
       userId: mongoUserId,
+      profileType: req.profileType,
       insight_type: type,
     }).sort({ created_at: -1 });
 

@@ -8,6 +8,13 @@ const InsightSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    profileType: {
+      type: String,
+      enum: ["personal", "business"],
+      default: "personal",
+      required: true,
+      index: true,
+    },
 
     insight_type: {
       type: String,
@@ -59,8 +66,13 @@ InsightSchema.index({ insight_type: 1 });
 InsightSchema.index({ created_at: -1 });
 
 // Compound indexes for common queries
-InsightSchema.index({ userId: 1, created_at: -1 }); // Get user's recent insights
-InsightSchema.index({ userId: 1, insight_type: 1, created_at: -1 });
+InsightSchema.index({ userId: 1, profileType: 1, created_at: -1 }); // Get user's recent insights
+InsightSchema.index({
+  userId: 1,
+  profileType: 1,
+  insight_type: 1,
+  created_at: -1,
+});
 InsightSchema.index({ health_score: 1 });
 
 //** ==========================================
@@ -72,6 +84,7 @@ InsightSchema.methods.toJSON = function () {
   return {
     id: obj._id,
     userId: obj.userId,
+    profileType: obj.profileType,
     insight_type: obj.insight_type,
     health_score: obj.health_score,
     content_json: obj.content_json,
@@ -87,20 +100,30 @@ InsightSchema.methods.belongsToUser = function (userId) {
 // 🔧 STATICS
 // ==========================================
 
-InsightSchema.statics.getLatestByType = async function (userId, type) {
+InsightSchema.statics.getLatestByType = async function (userId, type, profileType) {
   return this.findOne({
     userId,
+    profileType,
     insight_type: type,
   }).sort({ created_at: -1 });
 };
 
-InsightSchema.statics.getByUser = async function (userId, limit = 50) {
-  return this.find({ userId }).sort({ created_at: -1 }).limit(limit);
+InsightSchema.statics.getByUser = async function (
+  userId,
+  profileType,
+  limit = 50,
+) {
+  return this.find({ userId, profileType }).sort({ created_at: -1 }).limit(limit);
 };
 
-InsightSchema.statics.getByUserAndType = async function (userId, type) {
+InsightSchema.statics.getByUserAndType = async function (
+  userId,
+  type,
+  profileType,
+) {
   return this.find({
     userId,
+    profileType,
     insight_type: type,
   }).sort({ created_at: -1 });
 };

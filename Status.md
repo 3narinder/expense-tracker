@@ -18,8 +18,8 @@ Snapshot of what's actually built vs. planned, based on a scan of the codebase. 
 | Budgets (multi-category, period, alert threshold)                                   | ✅ Done                  |
 | Dashboard (month summary/trends/category breakdown)                                 | ✅ Done                  |
 | AI Insights (generation, rate limiting, plan eligibility)                           | ✅ Done                  |
+| Personal/business profile separation (profile-scoped data + active-profile switch)  | ✅ Done                  |
 | Payment/subscription billing                                                        | ⬜ Not started — Phase 2 |
-| Personal/business profile separation                                                | ⬜ Not started — Phase 2 |
 
 ## Web app (`client/`)
 
@@ -37,6 +37,7 @@ Snapshot of what's actually built vs. planned, based on a scan of the codebase. 
 | Accounts feature (read)                                                          | ✅ Done                  |
 | **Accounts feature** (create / update / delete mutations + `useAccountActions`)  | ✅ Done                  |
 | AI Insights                                                                      | ✅ Done                  |
+| Personal/business profile switcher (TopBar + profile-scoped query caches)        | ✅ Done                  |
 | Dark mode (ThemeToggle)                                                          | ✅ Present               |
 | Billing/subscription UI                                                          | ⬜ Not started — Phase 2 |
 
@@ -56,6 +57,6 @@ Snapshot of what's actually built vs. planned, based on a scan of the codebase. 
 | Live API wiring                                                                           | ⚠️ Partial — some screens still read from `src/data/mockAppData.ts` |
 | Feature parity with `client/` (categories, accounts management)                           | ⬜ Not started                                                      |
 
-## Known naming risk
+## Known naming note
 
-The existing `Account` model (bank/credit/cash/investment, for transaction attribution) and the Phase 2 "personal/business account for user" concept are **not the same thing**. Whoever picks up Phase 2 should name the new concept distinctly (e.g. `profileType` on `User`, or a `Workspace` model) — see `Architecture.md` open questions.
+The existing `Account` model remains the financial-account entity (bank/credit/cash/investment). Personal/business separation is implemented via `profileType` scope, not by replacing financial accounts.

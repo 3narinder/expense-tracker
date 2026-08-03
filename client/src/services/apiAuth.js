@@ -45,3 +45,12 @@ export const logout = async () => {
     handleApiError(error, "logout");
   }
 };
+
+export const updateActiveProfile = async (profileType) => {
+  try {
+    const res = await api.patch("/auth/active-profile", { profileType });
+    return res.data;
+  } catch (error) {
+    handleApiError(error, "updateActiveProfile");
+  }
+};

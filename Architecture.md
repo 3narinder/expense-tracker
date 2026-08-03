@@ -27,12 +27,12 @@ server/
 
 | Model         | Key fields                                                                                                                                      | Notes                                                                                                                                              |
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `User`        | username, email, passwordHash, currency, `aiInsightPlan` (basic/personal/premium)                                                               | Password hashed via bcrypt pre-save hook. `aiInsightPlan` gates premium features (e.g. multi-account creation).                                    |
-| `Account`     | userId, name, type (bank/credit/cash/investment), balance, currency                                                                             | A financial account for transaction attribution — **not** the Phase 2 personal/business profile concept. `basic` users limited to 1 account.       |
-| `Category`    | userId, name, type (income/expense), icon, color, isDefault, parentId, ancestors, autoCategorizationRules                                       | Hierarchical via materialized `ancestors` path; circular-reference guarded in pre-save hook                                                        |
-| `Transaction` | userId, accountId, categoryId, amount, type, description, merchant, tags, notes, transactionDate, recurring, recurringFrequency, nextOccurrence | Amount rounded to 2 decimals via schema setter                                                                                                     |
-| `Budget`      | userId, name, categoryIds[], amount, spent, period (weekly/monthly/quarterly), startDate, alertThreshold, isAlertSent                           | Multi-category budgets supported                                                                                                                   |
-| `Insight`     | userId, insight_type (monthly_summary/savings_tips/budget_alert), content_json, health_score, created_at                                        | Custom collection name `insights`, manual timestamps, has static helpers (`getLatestByType`, `getByUser`, etc.)                                    |
+| `User`        | username, email, passwordHash, currency, `aiInsightPlan` (basic/personal/premium), `activeProfileType` (personal/business)                     | Password hashed via bcrypt pre-save hook. `aiInsightPlan` gates premium features (e.g. multi-account creation).                                    |
+| `Account`     | userId, `profileType`, name, type (bank/credit/cash/investment), balance, currency                                                              | Financial account for transaction attribution; now profile-scoped so personal/business ledgers stay isolated.                                       |
+| `Category`    | userId, `profileType` (user-defined only), name, type (income/expense), icon, color, isDefault, parentId, ancestors, autoCategorizationRules   | Defaults remain global (`isDefault: true`); user-defined categories are profile-scoped.                                                            |
+| `Transaction` | userId, `profileType`, accountId, categoryId, amount, type, description, merchant, tags, notes, transactionDate, recurring, recurringFrequency, nextOccurrence | Amount rounded to 2 decimals via schema setter; each transaction is tied to personal or business profile.                               |
+| `Budget`      | userId, `profileType`, name, categoryIds[], amount, spent, period (weekly/monthly/quarterly), startDate, alertThreshold, isAlertSent           | Budgets are profile-scoped and budget reconciliation/sync runs inside profile boundaries.                                                           |
+| `Insight`     | userId, `profileType`, insight_type (monthly_summary/savings_tips/budget_alert), content_json, health_score, created_at                         | AI insight generation, eligibility, and history are profile-scoped.                                                                                |
 
 ### API surface
 
@@ -44,6 +44,7 @@ All routes below are mounted under `/api` and require auth (`protect` middleware
 - `POST /login` _(public)_
 - `GET /me`
 - `POST /logout`
+- `PATCH /active-profile` — sets the user’s active profile (`personal`/`business`)
 
 **`/api/accounts`**
 
@@ -109,6 +110,8 @@ client/src/
 
 **Premium gate in UI**: The `isPremium` flag (`user.aiInsightPlan === 'premium' || 'personal'`) controls whether the "Add Account" button in `AccountTabs` is interactive or shown as a locked/disabled state.
 
+**Personal/business profile scope**: `TopBar.jsx` provides a profile switcher. Client requests include `x-profile-type`, backend resolves scope via auth middleware, and all key query caches are keyed by profile to prevent cross-profile data leakage and reduce UI jump when switching.
+
 **Recurring filter**: A toggle button in `TransactionFilters` sets `?recurring=true` in the URL. `useTransactions` and `useTransactionTrend` both read and forward this param to the API.
 
 ## Mobile structure (`mobile/`)
@@ -126,6 +129,6 @@ mobile/src/
 
 ## Open questions for Phase 2
 
-1. **Personal/business account model** — does switching profiles swap the entire data context (separate transactions/budgets/categories per profile), or is it a filter/tag on otherwise shared data? This determines whether it's a `profileType` field on `User` or a new `Workspace` model that `Transaction`/`Budget`/`Category`/`Account` all reference alongside `userId`.
-2. **Payment provider** — Stripe is the default assumption in `Phases.md`; confirm before building webhook handlers and plan-sync logic.
+1. **Payment provider** — Stripe is the default assumption in `Phases.md`; confirm before building webhook handlers and plan-sync logic.
+2. **Profile model evolution** — current implementation uses `profileType` tagging. If team/collaborative workspaces are introduced later, reassess moving to a first-class `Workspace` model.
 3. **Mobile parity** — several mobile screens still read from `mockAppData.ts` rather than the live API; decide whether Phase 2 work should also close that gap.
