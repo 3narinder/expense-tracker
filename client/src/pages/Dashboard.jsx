@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   Wallet,
@@ -27,6 +27,7 @@ import {
   useLatestInsightByType,
   useInsightEligibility,
 } from "../features/AiInsights/useInsights.js";
+import SubscriptionPlansModal from "../features/Subscription/SubscriptionPlansModal.jsx";
 import { useProfileType } from "../features/Authentication/useActiveProfile.js";
 
 import KpiCard from "../components/KpiCard.jsx";
@@ -115,19 +116,29 @@ const AddAccountModal = ({ open, onClose, onSave, isSaving }) => {
 const PlanBadge = ({ eligibility }) => {
   if (!eligibility) return null;
 
-  const isPremium = eligibility.plan?.toLowerCase() === "premium";
-  const Icon = isPremium ? Crown : Zap;
+  const plan = eligibility.plan?.toLowerCase();
+  const isPremium = plan === "premium";
+  const isPro = plan === "pro";
+  const Icon = isPremium ? Crown : isPro ? Zap : Sparkles;
 
   const badgeClasses = isPremium
     ? "bg-gradient-to-r from-amber-50 to-amber-100/50 border-amber-200 text-amber-900"
-    : "bg-[var(--color-bg-muted)] border-[var(--color-border-main)] text-[var(--color-text-main)]";
+    : isPro
+      ? "bg-blue-50 border-blue-200 text-blue-900"
+      : "bg-[var(--color-bg-muted)] border-[var(--color-border-main)] text-[var(--color-text-main)]";
 
   const iconClasses = isPremium
     ? "text-amber-600"
-    : "text-[var(--color-text-muted)]";
+    : isPro
+      ? "text-blue-500"
+      : "text-[var(--color-text-muted)]";
   const statClasses = isPremium
     ? "text-amber-700/80"
-    : "text-[var(--color-text-muted)]";
+    : isPro
+      ? "text-blue-700/80"
+      : "text-[var(--color-text-muted)]";
+
+  const period = eligibility.period || "day";
 
   return (
     <div
@@ -141,17 +152,20 @@ const PlanBadge = ({ eligibility }) => {
       </div>
 
       <div
-        className={`w-px h-3 ${isPremium ? "bg-amber-300" : "bg-(--color-border-main)"}`}
+        className={`w-px h-3 ${isPremium ? "bg-amber-300" : isPro ? "bg-blue-300" : "bg-(--color-border-main)"}`}
       />
 
       <div
         className={`flex items-center gap-1.5 text-[11px] font-medium ${statClasses}`}
       >
-        <span>AI uses left today:</span>
+        <span>
+          {period === "week" ? "AI uses left this week:" : "AI uses left today:"}
+        </span>
         <span
-          className={`font-mono-tab px-1.5 py-0.5 rounded-md ${isPremium ? "bg-amber-200/50" : "bg-(--color-bg-surface) border border-(--color-border-main)"}`}
+          className={`font-mono-tab px-1.5 py-0.5 rounded-md ${isPremium ? "bg-amber-200/50" : isPro ? "bg-blue-100 border border-blue-200" : "bg-(--color-bg-surface) border border-(--color-border-main)"}`}
         >
-          {eligibility.remainingToday} / {eligibility.dailyLimit}
+          {(eligibility.remainingInPeriod ?? eligibility.remainingToday)} /{" "}
+          {(eligibility.periodLimit ?? eligibility.dailyLimit)}
         </span>
       </div>
     </div>
@@ -314,9 +328,14 @@ const Dashboard = () => {
   const { budgets = [], isPending: budgetsLoading } = useBudgets();
   const { categories = [] } = useCategories();
   const { accounts = [] } = useAccounts();
-  const { addAccount, isCreating } = useAccountActions();
+  const [plansModalOpen, setPlansModalOpen] = useState(false);
+  const { addAccount, isCreating } = useAccountActions({
+    onPremiumRequired: () => setPlansModalOpen(true),
+  });
   const { addBudget } = useBudgetActions();
-  const { generate, isGenerating } = useGenerateInsight();
+  const { generate, isGenerating } = useGenerateInsight({
+    onLimitReached: () => setPlansModalOpen(true),
+  });
   const { eligibility } = useInsightEligibility();
   const { insight: latestMonthlyInsight } =
     useLatestInsightByType("monthly_summary");
@@ -325,14 +344,19 @@ const Dashboard = () => {
   const [transactionModalOpen, setTransactionModalOpen] = useState(false);
   const [budgetModalOpen, setBudgetModalOpen] = useState(false);
   const [addAccountModalOpen, setAddAccountModalOpen] = useState(false);
+  const openedFromQuery = searchParams.get("openAddAccount") === "1";
 
-  useEffect(() => {
-    if (searchParams.get("openAddAccount") !== "1") return;
-    setAddAccountModalOpen(true);
+  const clearAddAccountQueryFlag = () => {
+    if (!openedFromQuery) return;
     const next = new URLSearchParams(searchParams);
     next.delete("openAddAccount");
     setSearchParams(next, { replace: true });
-  }, [searchParams, setSearchParams]);
+  };
+
+  const closeAddAccountModal = () => {
+    setAddAccountModalOpen(false);
+    clearAddAccountQueryFlag();
+  };
 
   if (isPending || !monthSummary) {
     return (
@@ -360,7 +384,7 @@ const Dashboard = () => {
 
   const handleAddAccount = (formData) => {
     addAccount(formData, {
-      onSuccess: () => setAddAccountModalOpen(false),
+      onSuccess: () => closeAddAccountModal(),
     });
   };
 
@@ -411,6 +435,19 @@ const Dashboard = () => {
     </div>
   );
 
+  const currentPlan = eligibility?.plan || "basic";
+  const forcePlansModalOpen =
+    eligibility?.canGenerate === false &&
+    (eligibility.reason === "daily_limit_reached" ||
+      eligibility.reason === "period_limit_reached");
+  const plansModal = (
+    <SubscriptionPlansModal
+      open={plansModalOpen || forcePlansModalOpen}
+      onClose={() => setPlansModalOpen(false)}
+      currentPlan={currentPlan}
+    />
+  );
+
   if (hasNoData) {
     return (
       <div className="space-y-6">
@@ -458,11 +495,13 @@ const Dashboard = () => {
         </Modal>
 
         <AddAccountModal
-          open={addAccountModalOpen}
-          onClose={() => setAddAccountModalOpen(false)}
+          open={addAccountModalOpen || openedFromQuery}
+          onClose={closeAddAccountModal}
           onSave={handleAddAccount}
           isSaving={isCreating}
         />
+
+        {plansModal}
       </div>
     );
   }
@@ -502,6 +541,7 @@ const Dashboard = () => {
             <PlanBadge eligibility={eligibility} />
           </div>
         </div>
+        {plansModal}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

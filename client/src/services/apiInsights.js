@@ -50,3 +50,14 @@ export const getInsightEligibility = async () => {
     handleApiError(error, "getInsightEligibility");
   }
 };
+
+export const updateSubscriptionPlan = async (subscriptionPlan) => {
+  try {
+    const { data } = await api.patch("/user/subscription-plan", {
+      subscriptionPlan,
+    });
+    return data;
+  } catch (error) {
+    handleApiError(error, "updateSubscriptionPlan");
+  }
+};

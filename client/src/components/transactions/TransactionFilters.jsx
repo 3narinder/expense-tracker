@@ -61,24 +61,18 @@ const TransactionFilters = ({
   categories = [],
   counts = {},
 }) => {
-  const [localSearch, setLocalSearch] = useState(filters.search || "");
   const [calendarOpen, setCalendarOpen] = useState(false);
   const calendarRef = useRef(null);
+  const searchDebounceRef = useRef(null);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (localSearch !== (filters.search || "")) {
-        onChange({ ...filters, search: localSearch });
+  useEffect(
+    () => () => {
+      if (searchDebounceRef.current) {
+        clearTimeout(searchDebounceRef.current);
       }
-    }, 400);
-
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [localSearch]);
-
-  useEffect(() => {
-    setLocalSearch(filters.search || "");
-  }, [filters.search]);
+    },
+    [],
+  );
 
   // Close the calendar popover on outside click
   useEffect(() => {
@@ -144,6 +138,15 @@ const TransactionFilters = ({
       }`
     : "Date range";
 
+  const handleSearchChange = (value) => {
+    if (searchDebounceRef.current) {
+      clearTimeout(searchDebounceRef.current);
+    }
+    searchDebounceRef.current = setTimeout(() => {
+      onChange({ ...filters, search: value });
+    }, 400);
+  };
+
   return (
     <div className="flex flex-col gap-4 mb-5">
       {/* ROW 1: Search & Type Tabs */}
@@ -154,8 +157,8 @@ const TransactionFilters = ({
             className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
           />
           <input
-            value={localSearch}
-            onChange={(e) => setLocalSearch(e.target.value)}
+            value={filters.search || ""}
+            onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Search description or notes..."
             aria-label="Search transactions by description or notes"
             className={`w-full pl-10 pr-4 ${controlClasses}`}

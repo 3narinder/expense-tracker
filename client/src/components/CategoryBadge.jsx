@@ -1,3 +1,4 @@
+import { createElement } from "react";
 import { lucideIconByName } from "../utils/icons.js";
 
 const dimensionMap = {
@@ -7,7 +8,6 @@ const dimensionMap = {
 };
 
 const CategoryBadge = ({ name, icon, color, size = "md" }) => {
-  const Icon = lucideIconByName(icon);
   const { box, icon: iconSize } = dimensionMap[size];
   const baseColor = color || "#71717a";
 
@@ -20,7 +20,11 @@ const CategoryBadge = ({ name, icon, color, size = "md" }) => {
           borderColor: baseColor + "20",
         }}
       >
-        <Icon size={iconSize} style={{ color: baseColor }} strokeWidth={1.75} />
+        {createElement(lucideIconByName(icon), {
+          size: iconSize,
+          style: { color: baseColor },
+          strokeWidth: 1.75,
+        })}
       </div>
       {name && (
         <span className="font-medium text-sm text-[var(--color-text-main)] truncate">

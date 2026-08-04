@@ -176,7 +176,7 @@ The account switcher pattern is used on the Dashboard to switch between financia
 Premium-only features should follow this pattern consistently: show the feature but visually lock it for non-premium users (opacity + lock icon + tooltip), rather than hiding it entirely. This makes the premium tier discoverable.
 
 ```tsx
-const isPremium = user?.aiInsightPlan === "premium" || user?.aiInsightPlan === "personal";
+const isPremium = user?.subscriptionPlan === "premium" || user?.subscriptionPlan === "pro";
 
 <button
   onClick={isPremium ? onAction : undefined}

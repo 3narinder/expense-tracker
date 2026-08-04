@@ -9,6 +9,7 @@ import accountRoutes from "./routes/account.routes.js";
 import budgetRoutes from "./routes/budget.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import aiInsightRoutes from "./routes/aiInsight.routes.js";
+import userRoutes from "./routes/user.routes.js";
 
 const app = express();
 
@@ -87,5 +88,6 @@ app.use("/api/accounts", accountRoutes);
 app.use("/api/budgets", budgetRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/insight", aiInsightRoutes);
+app.use("/api/user", userRoutes);
 
 export default app;

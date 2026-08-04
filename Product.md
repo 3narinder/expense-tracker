@@ -71,9 +71,9 @@ This is the feature set already implemented in this repo.
 
 **1. Payment integration**
 
-- Add paid subscription tiers (the `User.aiInsightPlan` field — `basic`/`personal`/`premium` — already anticipates this; there's no billing behind it yet). The Phase 1 account-creation gate (`PREMIUM_REQUIRED`) is the first live enforcement of this field.
+- Add paid subscription tiers (the `User.subscriptionPlan` field — `basic`/`pro`/`premium` — already anticipates this; there's no billing behind it yet). The account-creation gate (`PREMIUM_REQUIRED`) is the first live enforcement of this field.
 - Payment provider integration (e.g. Stripe): checkout, subscription lifecycle (upgrade/downgrade/cancel), invoices, webhook handling for payment events.
-- Plan-gated features should key off the same `aiInsightPlan`-style field rather than inventing a second flag.
+- Plan-gated features should key off the same `subscriptionPlan` field rather than inventing a second flag.
 - Add a Pricing page to the marketing site.
 
 **2. Personal vs. business accounts (user-level, not the existing `Account` model)**

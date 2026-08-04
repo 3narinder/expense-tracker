@@ -35,9 +35,9 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
-    aiInsightPlan: {
+    subscriptionPlan: {
       type: String,
-      enum: ["basic", "personal", "premium"],
+      enum: ["basic", "pro", "premium"],
       default: "basic",
       index: true,
     },

@@ -5,6 +5,7 @@ import {
   generateInsight,
   getLatestInsightByType,
   getInsightEligibility,
+  updateSubscriptionPlan,
 } from "../../services/apiInsights";
 import { useProfileType } from "../Authentication/useActiveProfile.js";
 
@@ -22,7 +23,14 @@ export const useInsights = () => {
   return { isPending, error, insights };
 };
 
-export const useGenerateInsight = () => {
+/**
+ * useGenerateInsight
+ *
+ * @param {{ onLimitReached?: () => void }} options
+ *   onLimitReached — called when the plan limit is hit so the caller can
+ *   open the plans upgrade modal contextually.
+ */
+export const useGenerateInsight = ({ onLimitReached } = {}) => {
   const queryClient = useQueryClient();
 
   const {
@@ -59,7 +67,13 @@ export const useGenerateInsight = () => {
         "Failed to generate insight.";
       const reason = err?.response?.data?.eligibility?.reason || err?.reason;
 
-      if (reason === "daily_limit_reached" || reason === "insufficient_data") {
+      if (reason === "daily_limit_reached" || reason === "period_limit_reached") {
+        toast(message, { icon: "🤖" });
+        onLimitReached?.();
+        return;
+      }
+
+      if (reason === "insufficient_data") {
         toast(message, { icon: "🤖" });
         return;
       }
@@ -98,4 +112,46 @@ export const useInsightEligibility = () => {
   });
 
   return { eligibility, isPending, error };
+};
+
+/**
+ * useUpgradePlan
+ *
+ * Mutation hook for changing the user's subscription plan tier.
+ * Invalidates eligibility so any UI that reads it refreshes automatically.
+ *
+ * NOTE: In production this should only be called after payment confirmation —
+ * see server/controllers/aiInsightController.js for the full TODO.
+ */
+export const useUpgradePlan = () => {
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: upgradePlan, isPending: isUpgrading } = useMutation({
+    mutationFn: (subscriptionPlan) => updateSubscriptionPlan(subscriptionPlan),
+    onSuccess: (data) => {
+      queryClient.setQueryData(["user"], (current) =>
+        current?.user
+          ? {
+              ...current,
+              user: {
+                ...current.user,
+                subscriptionPlan:
+                  data?.subscriptionPlan ?? current.user.subscriptionPlan,
+              },
+            }
+          : current,
+      );
+      queryClient.invalidateQueries({ queryKey: ["insight-eligibility"] });
+      toast.success(`Plan updated to ${data?.subscriptionPlan ?? "new plan"}!`);
+    },
+    onError: (err) => {
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to update plan.";
+      toast.error(message);
+    },
+  });
+
+  return { upgradePlan, isUpgrading };
 };

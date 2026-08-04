@@ -1,4 +1,5 @@
 import Account from "../models/AccountSchema.js";
+import { getPlanConfig } from "../utils/planConfig.js";
 
 //* @desc    Get all accounts for user
 export const getAccounts = async (req, res) => {
@@ -16,20 +17,53 @@ export const getAccounts = async (req, res) => {
 //* @desc    Create new account (premium feature — basic users may only hold their default Personal Wallet)
 export const createAccount = async (req, res) => {
   try {
-    const plan = req.user.aiInsightPlan || "basic";
+    const plan = req.user.subscriptionPlan || "basic";
+    const config = getPlanConfig(plan);
 
-    if (plan === "basic") {
-      const existingCount = await Account.countDocuments({
-        userId: req.user.id,
-        profileType: req.profileType,
+    if (
+      req.profileType === "business" &&
+      config.canCreateBusinessAccount !== true
+    ) {
+      return res.status(403).json({
+        message:
+          "Your current plan allows personal accounts only. Upgrade to create business accounts.",
+        code: "PREMIUM_REQUIRED",
       });
-      if (existingCount >= 1) {
-        return res.status(403).json({
-          message:
-            "Upgrade to a Premium plan to create additional accounts.",
-          code: "PREMIUM_REQUIRED",
-        });
-      }
+    }
+
+    const [totalCount, personalCount, businessCount] = await Promise.all([
+      Account.countDocuments({ userId: req.user.id }),
+      Account.countDocuments({ userId: req.user.id, profileType: "personal" }),
+      Account.countDocuments({ userId: req.user.id, profileType: "business" }),
+    ]);
+
+    if (totalCount >= config.maxAccounts) {
+      return res.status(403).json({
+        message: `Upgrade to create more accounts. Your ${plan} plan allows up to ${config.maxAccounts} accounts.`,
+        code: "PREMIUM_REQUIRED",
+      });
+    }
+
+    if (
+      req.profileType === "personal" &&
+      personalCount >= config.maxPersonalAccounts
+    ) {
+      return res.status(403).json({
+        message:
+          "Your current plan does not allow more personal accounts. Upgrade to continue.",
+        code: "PREMIUM_REQUIRED",
+      });
+    }
+
+    if (
+      req.profileType === "business" &&
+      businessCount >= config.maxBusinessAccounts
+    ) {
+      return res.status(403).json({
+        message:
+          "Your current plan has reached its business-account limit. Upgrade to continue.",
+        code: "PREMIUM_REQUIRED",
+      });
     }
 
     const { name, type, balance, currency } = req.body;

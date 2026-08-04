@@ -1,4 +1,4 @@
-import { Bell, Plus, Search, UserPlus } from "lucide-react";
+import { Bell, Plus, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
 import { useActiveProfile } from "../features/Authentication/useActiveProfile.js";
@@ -80,16 +80,6 @@ const TopBar = () => {
               <Plus size={13} />
               Add account
             </Link>
-            <button
-              type="button"
-              onClick={() => switchProfile("business")}
-              disabled={isSwitchingProfile || activeProfileType === "business"}
-              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[var(--color-border-main)] bg-[var(--color-bg-surface)] px-2.5 text-xs font-medium text-[var(--color-text-main)] hover:bg-[var(--color-bg-muted)] disabled:cursor-not-allowed disabled:opacity-60"
-              title="Switch to Business profile"
-            >
-              <UserPlus size={13} />
-              New profile
-            </button>
           </div>
         </div>
         <button

@@ -8,6 +8,7 @@ import {
   Clock,
   Crown,
   Zap,
+  ArrowUpRight,
 } from "lucide-react";
 
 import { timeAgo } from "../utils/format.js";
@@ -20,26 +21,37 @@ import {
   useGenerateInsight,
   useInsightEligibility,
 } from "../features/AiInsights/useInsights.js";
+import SubscriptionPlansModal from "../features/Subscription/SubscriptionPlansModal.jsx";
 import KpiCard from "../components/KpiCard.jsx";
 
 const PlanBadge = ({ eligibility }) => {
   if (!eligibility) return null;
 
-  const isPremium = eligibility.plan?.toLowerCase() === "premium";
-  const Icon = isPremium ? Crown : Zap;
+  const plan = eligibility.plan?.toLowerCase();
+  const isPremium = plan === "premium";
+  const isPro = plan === "pro";
+  const Icon = isPremium ? Crown : isPro ? Zap : Sparkles;
 
   // Conditional styling based on plan to give premium a subtle gold/violet glow,
   // and free/basic a standard neutral look.
   const badgeClasses = isPremium
     ? "bg-gradient-to-r from-amber-50 to-amber-100/50 border-amber-200 text-amber-900"
+    : isPro
+      ? "bg-blue-50 border-blue-200 text-blue-900"
     : "bg-[var(--color-bg-muted)] border-[var(--color-border-main)] text-[var(--color-text-main)]";
 
   const iconClasses = isPremium
     ? "text-amber-600"
+    : isPro
+      ? "text-blue-500"
     : "text-[var(--color-text-muted)]";
   const statClasses = isPremium
     ? "text-amber-700/80"
+    : isPro
+      ? "text-blue-700/80"
     : "text-[var(--color-text-muted)]";
+
+  const period = eligibility.period || "day";
 
   return (
     <div
@@ -54,27 +66,27 @@ const PlanBadge = ({ eligibility }) => {
 
       {/* Divider - hidden on mobile, visible on sm+ */}
       <div
-        className={`hidden sm:block w-px h-4 ${isPremium ? "bg-amber-300" : "bg-[var(--color-border-main)]"}`}
+        className={`hidden sm:block w-px h-4 ${isPremium ? "bg-amber-300" : isPro ? "bg-blue-300" : "bg-[var(--color-border-main)]"}`}
       />
 
       <div
         className={`flex items-center gap-4 text-xs font-medium ${statClasses}`}
       >
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-1.5">
-          <span>Daily Limit:</span>
+          <span>{period === "week" ? "Weekly Limit:" : "Daily Limit:"}</span>
           <span
-            className={`font-mono-tab px-1.5 py-0.5 rounded-md ${isPremium ? "bg-amber-200/50" : "bg-[var(--color-bg-surface)] border border-[var(--color-border-main)]"}`}
+            className={`font-mono-tab px-1.5 py-0.5 rounded-md ${isPremium ? "bg-amber-200/50" : isPro ? "bg-blue-100 border border-blue-200" : "bg-[var(--color-bg-surface)] border border-[var(--color-border-main)]"}`}
           >
-            {eligibility.dailyLimit}
+            {eligibility.periodLimit ?? eligibility.dailyLimit}
           </span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-1.5">
-          <span>Remaining:</span>
+          <span>{period === "week" ? "Remaining this week:" : "Remaining today:"}</span>
           <span
-            className={`font-mono-tab px-1.5 py-0.5 rounded-md ${isPremium ? "bg-amber-200/50" : "bg-[var(--color-bg-surface)] border border-[var(--color-border-main)]"}`}
+            className={`font-mono-tab px-1.5 py-0.5 rounded-md ${isPremium ? "bg-amber-200/50" : isPro ? "bg-blue-100 border border-blue-200" : "bg-[var(--color-bg-surface)] border border-[var(--color-border-main)]"}`}
           >
-            {eligibility.remainingToday}
+            {eligibility.remainingInPeriod ?? eligibility.remainingToday}
           </span>
         </div>
       </div>
@@ -138,7 +150,10 @@ const ActionStamp = ({
 
 const Insights = () => {
   const { insights, isPending: loading } = useInsights();
-  const { generate, isGenerating } = useGenerateInsight();
+  const [plansModalOpen, setPlansModalOpen] = useState(false);
+  const { generate, isGenerating } = useGenerateInsight({
+    onLimitReached: () => setPlansModalOpen(true),
+  });
   const { eligibility } = useInsightEligibility();
   const [activeType, setActiveType] = useState(null);
 
@@ -190,6 +205,11 @@ const Insights = () => {
     month: "long",
     year: "numeric",
   });
+  const currentPlan = eligibility?.plan || "basic";
+  const forcePlansModalOpen =
+    eligibility?.canGenerate === false &&
+    (eligibility.reason === "daily_limit_reached" ||
+      eligibility.reason === "period_limit_reached");
 
   return (
     <div className="space-y-8">
@@ -209,8 +229,17 @@ const Insights = () => {
         </div>
 
         {/* Replaced old text paragraph with new elegant badge */}
-        <div className="shrink-0">
+        <div className="shrink-0 flex flex-col items-start gap-3">
           <PlanBadge eligibility={eligibility} />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPlansModalOpen(true)}
+            className="inline-flex"
+          >
+            <ArrowUpRight size={14} />
+            Upgrade plan
+          </Button>
         </div>
       </div>
 
@@ -280,6 +309,12 @@ const Insights = () => {
           </div>
         </div>
       )}
+
+      <SubscriptionPlansModal
+        open={plansModalOpen || forcePlansModalOpen}
+        onClose={() => setPlansModalOpen(false)}
+        currentPlan={currentPlan}
+      />
 
       {/* Analysis History — everything older than the latest snapshot above */}
       <div>

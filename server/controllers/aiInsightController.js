@@ -3,20 +3,14 @@ import Insight from "../models/InsightSchema.js";
 import Transaction from "../models/TransactionSchema.js";
 import { DEVELOPER_PROMPTS } from "../utils/Prompt.js";
 import { getGroqClient } from "../utils/groq.js";
-import {
-  getAIContextData,
-} from "./dashboardController.js";
+import { getAIContextData } from "./dashboardController.js";
+import { getPlanConfig } from "../utils/planConfig.js";
 
 const MODEL = "llama-3.3-70b-versatile";
 const AI_MIN_TRANSACTION_COUNT = parseInt(
   process.env.AI_MIN_TRANSACTION_COUNT || "10",
   10,
 );
-const AI_DAILY_LIMIT_BY_PLAN = {
-  basic: parseInt(process.env.AI_DAILY_LIMIT_BASIC || "2", 10),
-  personal: parseInt(process.env.AI_DAILY_LIMIT_PERSONAL || "10", 10),
-  premium: parseInt(process.env.AI_DAILY_LIMIT_PREMIUM || "100", 10),
-};
 
 // ==========================================
 // 🛠️ UTILITIES
@@ -28,25 +22,40 @@ const getMongoUserId = (req) => {
 };
 
 const getPlanDetails = (user) => {
-  const plan = user?.aiInsightPlan || "basic";
-  const dailyLimit =
-    AI_DAILY_LIMIT_BY_PLAN[plan] ?? AI_DAILY_LIMIT_BY_PLAN.basic ?? 2;
-  return { plan, dailyLimit };
+  const plan = user?.subscriptionPlan || "basic";
+  const config = getPlanConfig(plan);
+  return {
+    plan,
+    limit: config.aiLimit,
+    period: config.aiPeriod,
+  };
 };
 
-const getUtcDayBounds = (date = new Date()) => {
-  const start = new Date(
+const getUtcPeriodBounds = (period = "day", date = new Date()) => {
+  const dayStart = new Date(
     Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
   );
+
+  if (period === "week") {
+    const weekday = dayStart.getUTCDay();
+    const shiftToMonday = (weekday + 6) % 7;
+    const start = new Date(dayStart);
+    start.setUTCDate(start.getUTCDate() - shiftToMonday);
+    const end = new Date(start);
+    end.setUTCDate(end.getUTCDate() + 7);
+    return { start, end };
+  }
+
+  const start = dayStart;
   const end = new Date(start);
   end.setUTCDate(end.getUTCDate() + 1);
   return { start, end };
 };
 
 const getAIEligibility = async (mongoUserId, user, profileType) => {
-  const { start, end } = getUtcDayBounds();
-  const { plan, dailyLimit } = getPlanDetails(user);
-  const [transactionCount, generatedToday] = await Promise.all([
+  const { plan, limit, period } = getPlanDetails(user);
+  const { start, end } = getUtcPeriodBounds(period);
+  const [transactionCount, generatedInPeriod] = await Promise.all([
     Transaction.countDocuments({ userId: mongoUserId, profileType }),
     Insight.countDocuments({
       userId: mongoUserId,
@@ -61,37 +70,51 @@ const getAIEligibility = async (mongoUserId, user, profileType) => {
       plan,
       transactionCount,
       minimumRequired: AI_MIN_TRANSACTION_COUNT,
-      generatedToday,
-      dailyLimit,
-      remainingToday: Math.max(0, dailyLimit - generatedToday),
+      generatedToday: generatedInPeriod,
+      dailyLimit: limit,
+      remainingToday: Math.max(0, limit - generatedInPeriod),
+      period,
+      periodLimit: limit,
+      generatedInPeriod,
+      remainingInPeriod: Math.max(0, limit - generatedInPeriod),
       message: `Add at least ${AI_MIN_TRANSACTION_COUNT} transactions before using AI insights. You currently have ${transactionCount}.`,
       reason: "insufficient_data",
     };
   }
 
-  if (generatedToday >= dailyLimit) {
+  if (generatedInPeriod >= limit) {
+    const periodLabel = period === "week" ? "weekly" : "daily";
     return {
       canGenerate: false,
       plan,
       transactionCount,
       minimumRequired: AI_MIN_TRANSACTION_COUNT,
-      generatedToday,
-      dailyLimit,
+      generatedToday: generatedInPeriod,
+      dailyLimit: limit,
       remainingToday: 0,
-      message: `You have reached today's AI insight limit (${dailyLimit}/${dailyLimit}) for your ${plan} plan. Please try again tomorrow.`,
-      reason: "daily_limit_reached",
+      period,
+      periodLimit: limit,
+      generatedInPeriod,
+      remainingInPeriod: 0,
+      message: `You have reached your ${periodLabel} AI insight limit (${limit}/${limit}) for your ${plan} plan.`,
+      reason: "period_limit_reached",
     };
   }
 
+  const remaining = Math.max(0, limit - generatedInPeriod);
   return {
     canGenerate: true,
     plan,
     transactionCount,
     minimumRequired: AI_MIN_TRANSACTION_COUNT,
-    generatedToday,
-    dailyLimit,
-    remainingToday: Math.max(0, dailyLimit - generatedToday),
-    message: `You can generate ${Math.max(0, dailyLimit - generatedToday)} more AI insight${dailyLimit - generatedToday === 1 ? "" : "s"} today.`,
+    generatedToday: generatedInPeriod,
+    dailyLimit: limit,
+    remainingToday: remaining,
+    period,
+    periodLimit: limit,
+    generatedInPeriod,
+    remainingInPeriod: remaining,
+    message: `You can generate ${remaining} more AI insight${remaining === 1 ? "" : "s"} this ${period}.`,
     reason: null,
   };
 };

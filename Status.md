@@ -10,6 +10,7 @@
 - Budgets CRUD
 - Dashboard APIs (summary, trends, category split)
 - AI insights (generate, history, eligibility, limits)
+- Subscription plan entitlements (`subscriptionPlan`) for AI + accounts
 - Personal/business profile isolation across core data
 - Active profile switching API
 

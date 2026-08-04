@@ -18,7 +18,7 @@ export const useAccounts = () => {
   return { isPending, error, accounts: data || [] };
 };
 
-export const useAccountActions = () => {
+export const useAccountActions = ({ onPremiumRequired } = {}) => {
   const queryClient = useQueryClient();
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["account"] });
@@ -32,6 +32,9 @@ export const useAccountActions = () => {
     onError: (err) => {
       const msg =
         err?.response?.data?.message || "Failed to create account.";
+      if (err?.response?.data?.code === "PREMIUM_REQUIRED") {
+        onPremiumRequired?.();
+      }
       toast.error(msg);
     },
   });

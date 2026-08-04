@@ -11,6 +11,7 @@
 
 - **User**
   - Auth identity, plan, preferred currency
+  - `subscriptionPlan` drives feature entitlements (`basic` / `pro` / `premium`)
   - Stores active profile: `personal` or `business`
 - **Account**
   - Financial accounts (bank, cash, credit, investment)
@@ -52,6 +53,7 @@ All routes are under `/api`.
 - `/budgets` — budget CRUD
 - `/dashboard` — summary, trends, category breakdown
 - `/insight` — generate insight, history, eligibility
+- `/user` — user-level settings such as subscription plan updates
 
 ## Security model
 

@@ -131,52 +131,70 @@ export const fetchCategoryBreakdownData = async (
 ) => {
   const { now, startOfThisMonth } = getDateBoundaries();
 
-  const txMatch = {
+  const baseMatch = {
     userId: mongoUserId,
     profileType,
     type: "expense",
-    transactionDate: { $gte: startOfThisMonth, $lte: now },
   };
-  if (accountId) txMatch.accountId = accountId;
+  if (accountId) baseMatch.accountId = accountId;
 
-  const breakdown = await Transaction.aggregate([
-    {
-      $match: txMatch,
-    },
-    {
-      $group: {
-        _id: "$categoryId",
-        totalAmount: { $sum: "$amount" },
-        transaction_count: { $sum: 1 },
+  const aggregateForMatch = async (match) =>
+    Transaction.aggregate([
+      {
+        $match: match,
       },
-    },
-    {
-      $lookup: {
-        from: "categories",
-        localField: "_id",
-        foreignField: "_id",
-        as: "categoryDetails",
+      {
+        $group: {
+          _id: "$categoryId",
+          totalAmount: { $sum: "$amount" },
+          transaction_count: { $sum: 1 },
+        },
       },
-    },
-    {
-      $unwind: {
-        path: "$categoryDetails",
-        preserveNullAndEmptyArrays: true,
+      {
+        $lookup: {
+          from: "categories",
+          localField: "_id",
+          foreignField: "_id",
+          as: "categoryDetails",
+        },
       },
-    },
-    { $sort: { totalAmount: -1 } },
-    {
-      $project: {
-        _id: 0,
-        category_id: "$_id",
-        category_name: { $ifNull: ["$categoryDetails.name", "Uncategorized"] },
-        category_icon: { $ifNull: ["$categoryDetails.icon", "help-circle"] },
-        category_color: { $ifNull: ["$categoryDetails.color", "#94A3B8"] },
-        total: "$totalAmount",
-        transaction_count: 1,
+      {
+        $unwind: {
+          path: "$categoryDetails",
+          preserveNullAndEmptyArrays: true,
+        },
       },
-    },
-  ]);
+      { $sort: { totalAmount: -1 } },
+      {
+        $project: {
+          _id: 0,
+          category_id: "$_id",
+          category_name: { $ifNull: ["$categoryDetails.name", "Uncategorized"] },
+          category_icon: { $ifNull: ["$categoryDetails.icon", "help-circle"] },
+          category_color: { $ifNull: ["$categoryDetails.color", "#94A3B8"] },
+          total: "$totalAmount",
+          transaction_count: 1,
+        },
+      },
+    ]);
+
+  const startOfLast90Days = new Date(now);
+  startOfLast90Days.setDate(now.getDate() - 90);
+
+  // Primary: current month. Fallbacks: last 90 days, then all-time.
+  let breakdown = await aggregateForMatch({
+    ...baseMatch,
+    transactionDate: { $gte: startOfThisMonth, $lte: now },
+  });
+  if (breakdown.length === 0) {
+    breakdown = await aggregateForMatch({
+      ...baseMatch,
+      transactionDate: { $gte: startOfLast90Days, $lte: now },
+    });
+  }
+  if (breakdown.length === 0) {
+    breakdown = await aggregateForMatch(baseMatch);
+  }
 
   return breakdown.map((item) => ({
     ...item,
