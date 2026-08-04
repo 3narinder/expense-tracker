@@ -43,9 +43,9 @@ export default function AISection() {
           </p>
         </Reveal>
 
-        <div className="mt-16 grid gap-14 lg:grid-cols-[0.5fr_1fr] lg:items-center">
+        <div className="mt-16 grid gap-14 lg:grid-cols-[1fr_1fr] lg:items-center">
           <Reveal>
-            <div className="max-w-xl flex flex-col justify-center">
+            <div className="max-w-2xl">
               <ul className="space-y-5">
                 {points.map((point) => {
                   const Icon = point.icon;
@@ -77,9 +77,7 @@ export default function AISection() {
                 priority
               />
               */}
-              <div className="aspect-[2267/1013] w-full rounded-2xl border-2 border-dashed border-(--color-border-muted) bg-(--color-bg-subtle) flex items-center justify-center">
-                <span className="font-display text-[10rem] font-semibold text-(--color-text-ghost)/20">A</span>
-              </div>
+              <div className="aspect-[16/10] w-full rounded-2xl border-2 border-dashed border-(--color-border-muted) bg-(--color-bg-subtle)" />
             </div>
           </Reveal>
         </div>

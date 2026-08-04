@@ -9,7 +9,22 @@ interface AnimatedNumberProps {
   suffix?: string;
   /** Number of decimal places to render, e.g. 1 for "12.4%" */
   decimals?: number;
+  /**
+   * Visual treatment for the number:
+   * - "gold": animated gradient shimmer — reserve this for a single
+   *   showcase stat so it keeps its impact instead of feeling repetitive
+   *   when every number does it.
+   * - "violet": solid brand color, no shimmer — neutral/informational stats.
+   * - "success": solid success-green, no shimmer — positive/growth stats.
+   */
+  tone?: "gold" | "violet" | "success";
 }
+
+const TONE_CLASSES: Record<NonNullable<AnimatedNumberProps["tone"]>, string> = {
+  gold: "bg-linear-to-br from-(--color-gold) via-[#f4d999] to-(--color-gold) bg-clip-text text-transparent drop-shadow-[0_0_16px_rgba(212,175,90,0.35)]",
+  violet: "text-(--color-violet-bright)",
+  success: "text-(--color-success)",
+};
 
 export default function AnimatedNumber({
   end,
@@ -17,6 +32,7 @@ export default function AnimatedNumber({
   prefix = "",
   suffix = "",
   decimals = 0,
+  tone = "gold",
 }: AnimatedNumberProps) {
   const [count, setCount] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
@@ -62,31 +78,39 @@ export default function AnimatedNumber({
     maximumFractionDigits: decimals,
   });
 
+  const isGold = tone === "gold";
+
   return (
     <span
       ref={ref}
-      className="relative inline-flex items-baseline tabular-nums font-display bg-linear-to-br from-(--color-gold) via-[#f4d999] to-(--color-gold) bg-clip-text text-transparent drop-shadow-[0_0_16px_rgba(212,175,90,0.35)]"
-      style={{
-        backgroundSize: "200% auto",
-        animation: "expenseai-gold-shimmer 3.5s ease-in-out infinite",
-      }}
+      className={`relative inline-flex items-baseline tabular-nums font-display ${TONE_CLASSES[tone]}`}
+      style={
+        isGold
+          ? {
+              backgroundSize: "200% auto",
+              animation: "expenseai-gold-shimmer 3.5s ease-in-out infinite",
+            }
+          : undefined
+      }
     >
       {prefix}
       {formatted}
       {suffix}
-      <style jsx>{`
-        @keyframes expenseai-gold-shimmer {
-          0% {
-            background-position: 0% center;
+      {isGold && (
+        <style jsx>{`
+          @keyframes expenseai-gold-shimmer {
+            0% {
+              background-position: 0% center;
+            }
+            50% {
+              background-position: 100% center;
+            }
+            100% {
+              background-position: 0% center;
+            }
           }
-          50% {
-            background-position: 100% center;
-          }
-          100% {
-            background-position: 0% center;
-          }
-        }
-      `}</style>
+        `}</style>
+      )}
     </span>
   );
 }

@@ -32,14 +32,12 @@ export default function BudgetSection() {
                 priority
               />
               */}
-              <div className="aspect-[896/528] w-full rounded-2xl border-2 border-dashed border-(--color-border-muted) bg-(--color-bg-subtle) flex items-center justify-center">
-                <span className="font-display text-[10rem] font-semibold text-(--color-text-ghost)/20">B</span>
-              </div>
+              <div className="aspect-[16/10] w-full rounded-2xl border-2 border-dashed border-(--color-border-muted) bg-(--color-bg-subtle)" />
             </div>
           </Reveal>
 
           <Reveal delay={0.08} className="order-1 lg:order-2">
-            <div className="max-w-xl flex flex-col justify-center">
+            <div className="max-w-2xl">
               <ul className="space-y-5">
                 <li className="flex gap-4 rounded-2xl border border-(--color-border-main)/70 bg-(--color-bg-surface)/90 p-5 backdrop-blur-xl">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-(--color-violet-soft)">

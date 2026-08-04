@@ -37,7 +37,7 @@ export default function Hero() {
       />
 
       <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid items-center gap-16 lg:grid-cols-[0.5fr_1fr] lg:gap-12">
+        <div className="grid items-center gap-16 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
           <Reveal>
             <div className="max-w-2xl">
               {/* Eyebrow badge */}
@@ -113,7 +113,7 @@ export default function Hero() {
                 <dl className="grid gap-6 sm:grid-cols-3">
                   <div>
                     <dt className="text-xs font-mono font-medium uppercase tracking-[0.2em] text-(--color-text-muted)">
-                      Spend tracked
+                      Spend
                     </dt>
                     <dd className="mt-2 font-display text-2xl font-semibold text-(--color-text-main) sm:text-3xl">
                       <AnimatedNumber end={284900} prefix="$" />
@@ -121,7 +121,7 @@ export default function Hero() {
                   </div>
                   <div>
                     <dt className="text-xs font-mono font-medium uppercase tracking-[0.2em] text-(--color-text-muted)">
-                      Saved automatically
+                      Saved
                     </dt>
                     <dd className="mt-2 font-display text-2xl font-semibold text-(--color-text-main) sm:text-3xl">
                       <AnimatedNumber end={18240} prefix="$" />
@@ -129,7 +129,7 @@ export default function Hero() {
                   </div>
                   <div>
                     <dt className="text-xs font-mono font-medium uppercase tracking-[0.2em] text-(--color-text-muted)">
-                      Avg. monthly growth
+                      Avg.growth
                     </dt>
                     <dd className="mt-2 font-display text-2xl font-semibold text-(--color-text-main) sm:text-3xl">
                       <AnimatedNumber end={12.4} decimals={1} suffix="%" />
@@ -140,21 +140,22 @@ export default function Hero() {
             </div>
           </Reveal>
 
-          {/* Dashboard placeholder */}
+          {/* Dashboard placeholder — fills its full grid column so it actually
+              reads as the dominant visual element, matching the real hero
+              image's landscape ratio (1553x1097, see layout.tsx OpenGraph
+              metadata) instead of the old mismatched portrait ratio. */}
           <Reveal delay={0.08}>
             <div className="relative flex justify-center items-center">
               {/*
               <ResponsiveImageFrame
                 src="/Dashboard_Hero.png"
                 alt="ExpenseAI dashboard preview"
-                aspectClassName="aspect-[1553/1900]"
-                wrapperClassName="rounded-2xl"
+                aspectClassName="aspect-[16/10]"
+                wrapperClassName="w-full rounded-2xl"
                 priority
               />
               */}
-              <div className="aspect-[1553/1900] w-full max-w-[600px] rounded-2xl border-2 border-dashed border-(--color-border-muted) bg-(--color-bg-subtle) flex items-center justify-center">
-                <span className="font-display text-[10rem] font-semibold text-(--color-text-ghost)/20">H</span>
-              </div>
+              <div className="aspect-[16/10] w-full rounded-2xl border-2 border-dashed border-(--color-border-muted) bg-(--color-bg-subtle)" />
             </div>
           </Reveal>
         </div>
