@@ -47,9 +47,9 @@ export default function TransactionsSection() {
           </p>
         </Reveal>
 
-        <div className="mt-16 grid gap-14 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+        <div className="mt-16 grid gap-14 lg:grid-cols-[0.5fr_1fr] lg:items-center">
           <Reveal>
-            <div className="space-y-4">
+            <div className="max-w-xl flex flex-col justify-center space-y-4">
               {points.map((point) => {
                 const Icon = point.icon;
                 return (
@@ -79,7 +79,9 @@ export default function TransactionsSection() {
                 priority
               />
               */}
-              <div className="aspect-[2280/1008] w-full rounded-2xl border-2 border-dashed border-(--color-border-muted) bg-(--color-bg-subtle)" />
+              <div className="aspect-[2280/1008] w-full rounded-2xl border-2 border-dashed border-(--color-border-muted) bg-(--color-bg-subtle) flex items-center justify-center">
+                <span className="font-display text-[10rem] font-semibold text-(--color-text-ghost)/20">T</span>
+              </div>
             </div>
           </Reveal>
         </div>

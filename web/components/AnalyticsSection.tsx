@@ -20,9 +20,9 @@ export default function AnalyticsSection() {
           </p>
         </Reveal>
 
-        <div className="mt-16 grid gap-6 lg:grid-cols-[1.3fr_0.7fr] lg:items-stretch">
+        <div className="mt-16 grid gap-6 lg:grid-cols-[0.6fr_1fr] lg:items-center">
           <Reveal>
-            <div className="flex h-full flex-col rounded-2xl border border-(--color-border-main)/70 bg-(--color-bg-surface)/90 p-4 shadow-[0_22px_80px_-40px_rgba(124,108,246,0.3)] backdrop-blur-xl">
+            <div className="flex flex-col justify-center rounded-2xl border border-(--color-border-main)/70 bg-(--color-bg-surface)/90 p-4 shadow-[0_22px_80px_-40px_rgba(124,108,246,0.3)] backdrop-blur-xl">
               {/*
               <ResponsiveImageFrame
                 src="/chart_image.png"
@@ -32,12 +32,14 @@ export default function AnalyticsSection() {
                 imageClassName="rounded-[1.15rem]"
               />
               */}
-              <div className="aspect-[1474/770] h-full w-full rounded-2xl border-2 border-dashed border-(--color-border-muted) bg-(--color-bg-subtle)" />
+              <div className="aspect-[1474/770] w-full rounded-2xl border-2 border-dashed border-(--color-border-muted) bg-(--color-bg-subtle) flex items-center justify-center">
+                <span className="font-display text-[10rem] font-semibold text-(--color-text-ghost)/20">A</span>
+              </div>
             </div>
           </Reveal>
 
           <Reveal delay={0.08}>
-            <div className="flex h-full flex-col rounded-2xl border border-(--color-border-main)/70 bg-(--color-bg-surface)/90 p-4 shadow-[0_22px_80px_-40px_rgba(124,108,246,0.3)] backdrop-blur-xl">
+            <div className="flex flex-col justify-center rounded-2xl border border-(--color-border-main)/70 bg-(--color-bg-surface)/90 p-4 shadow-[0_22px_80px_-40px_rgba(124,108,246,0.3)] backdrop-blur-xl">
               {/*
               <ResponsiveImageFrame
                 src="/category_image.png"
@@ -47,7 +49,9 @@ export default function AnalyticsSection() {
                 imageClassName="rounded-[1.15rem]"
               />
               */}
-              <div className="aspect-[696/770] h-full w-full rounded-2xl border-2 border-dashed border-(--color-border-muted) bg-(--color-bg-subtle)" />
+              <div className="aspect-[696/770] w-full rounded-2xl border-2 border-dashed border-(--color-border-muted) bg-(--color-bg-subtle) flex items-center justify-center">
+                <span className="font-display text-[10rem] font-semibold text-(--color-text-ghost)/20">A</span>
+              </div>
             </div>
           </Reveal>
         </div>

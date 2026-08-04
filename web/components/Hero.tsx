@@ -37,7 +37,7 @@ export default function Hero() {
       />
 
       <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid items-center gap-16 lg:grid-cols-[0.92fr_1.08fr] lg:gap-12">
+        <div className="grid items-center gap-16 lg:grid-cols-[0.5fr_1fr] lg:gap-12">
           <Reveal>
             <div className="max-w-2xl">
               {/* Eyebrow badge */}
@@ -140,96 +140,20 @@ export default function Hero() {
             </div>
           </Reveal>
 
-          {/* Dashboard mock - glass panel with floating chips */}
+          {/* Dashboard placeholder */}
           <Reveal delay={0.08}>
-            <div className="relative flex justify-center items-center perspective-1600">
-              {/* Floating chip - savings */}
-              <div className="absolute -top-4 -left-4 hidden lg:flex animate-float items-center gap-3 rounded-xl border border-(--color-border-main) bg-(--color-bg-surface)/90 p-3 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.6)] backdrop-blur-xl" style={{ animationDelay: "-1.5s" }}>
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-(--color-emerald-soft) text-(--color-emerald)">
-                  <TrendingUp size={16} />
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-(--color-text-main)">Savings rate 30.8%</div>
-                  <div className="text-xs text-(--color-text-ghost)">Trending up this month</div>
-                </div>
-              </div>
-
-              {/* Floating chip - AI insight */}
-              <div className="absolute -bottom-4 -right-4 hidden lg:flex animate-float items-center gap-3 rounded-xl border border-(--color-border-main) bg-(--color-bg-surface)/90 p-3 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.6)] backdrop-blur-xl" style={{ animationDelay: "-3s" }}>
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-(--color-gold-soft) text-(--color-gold)">
-                  <Star size={14} fill="currentColor" />
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-(--color-text-main)">Insight refreshed</div>
-                  <div className="text-xs text-(--color-text-ghost)">AI analysis complete</div>
-                </div>
-              </div>
-
-              {/* Main dashboard panel */}
-              <div className="relative w-full max-w-[560px] rounded-2xl border border-(--color-border-main) bg-(--color-bg-surface)/90 p-6 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)] backdrop-blur-2xl animate-float">
-                {/* Panel header */}
-                <div className="mb-4 flex items-start justify-between">
-                  <div>
-                    <div className="font-display text-xl font-semibold text-(--color-text-main)">Dashboard</div>
-                    <div className="text-xs text-(--color-text-ghost)">Overview · This month</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-(--color-text-ghost)">Total balance</div>
-                    <div className="font-mono text-lg font-medium text-(--color-text-main) mt-1">₹1,05,749.79</div>
-                  </div>
-                </div>
-
-                {/* Premium badge with shimmer */}
-                <div className="mb-4 inline-flex items-center gap-2 rounded-lg border border-(--color-gold)/30 bg-linear-to-r from-(--color-gold-soft) to-transparent px-3 py-2 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-gold-shimmer" />
-                  <Sparkles size={14} className="text-(--color-gold)" />
-                  <span className="text-xs font-semibold text-[#f5d9a8]">Premium</span>
-                  <span className="h-3 w-px bg-(--color-gold)/30" />
-                  <span className="font-mono text-xs text-(--color-text-muted)">AI insights <span className="text-(--color-text-main)">100/100</span></span>
-                </div>
-
-                {/* KPI row */}
-                <div className="mb-4 grid grid-cols-3 gap-2">
-                  <div className="rounded-xl bg-(--color-bg-subtle) border border-(--color-border-muted) p-3">
-                    <div className="text-[10.5px] text-(--color-text-ghost)">Income</div>
-                    <div className="font-mono text-sm font-medium text-(--color-emerald) mt-1">₹28,000</div>
-                  </div>
-                  <div className="rounded-xl bg-(--color-bg-subtle) border border-(--color-border-muted) p-3">
-                    <div className="text-[10.5px] text-(--color-text-ghost)">Expenses</div>
-                    <div className="font-mono text-sm font-medium text-(--color-danger) mt-1">₹19,368</div>
-                  </div>
-                  <div className="rounded-xl bg-(--color-bg-subtle) border border-(--color-border-muted) p-3">
-                    <div className="text-[10.5px] text-(--color-text-ghost)">Net</div>
-                    <div className="font-mono text-sm font-medium text-(--color-emerald) mt-1">₹8,631</div>
-                  </div>
-                </div>
-
-                {/* AI summary card */}
-                <div className="mb-4 flex items-center gap-4 rounded-xl bg-(--color-violet-soft) border border-(--color-violet)/22 p-4">
-                  <div className="relative h-16 w-16 shrink-0">
-                    <svg className="h-full w-full -rotate-90" viewBox="0 0 64 64">
-                      <circle cx="32" cy="32" r="28" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="6" />
-                      <circle cx="32" cy="32" r="28" fill="none" stroke="var(--color-emerald)" strokeWidth="6" strokeLinecap="round" strokeDasharray="175.9" strokeDashoffset="35" className="animate-[draw_1.6s_0.4s_cubic-bezier(.2,.8,.2,1)_forwards]" style={{ filter: "drop-shadow(0 0 6px rgba(52,211,153,0.5))" }} />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center font-mono text-lg font-medium">80</div>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                  <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-(--color-violet-bright)">AI summary · Healthy</div>
-                    <div className="text-sm leading-6 text-(--color-text-muted) mt-1">
-                      High savings rate, but <span className="text-(--color-text-main) font-medium">Rent</span> is a large share of spend.
-                    </div>
-                  </div>
-                </div>
-
-                {/* Mini chart */}
-                <div className="flex items-end gap-1.5 h-14 px-1">
-                  <div className="flex-1 rounded-t-sm bg-linear-to-t from-(--color-violet) to-(--color-violet-bright) opacity-85" style={{ height: "70%" }} />
-                  <div className="flex-1 rounded-t-sm bg-linear-to-t from-(--color-violet) to-(--color-violet-bright) opacity-85" style={{ height: "68%" }} />
-                  <div className="flex-1 rounded-t-sm bg-linear-to-t from-(--color-violet) to-(--color-violet-bright) opacity-85" style={{ height: "48%" }} />
-                  <div className="flex-1 rounded-t-sm bg-linear-to-t from-(--color-violet) to-(--color-violet-bright) opacity-85" style={{ height: "66%" }} />
-                  <div className="flex-1 rounded-t-sm bg-linear-to-t from-(--color-violet) to-(--color-violet-bright) opacity-85" style={{ height: "64%" }} />
-                  <div className="flex-1 rounded-t-sm bg-linear-to-t from-(--color-violet) to-(--color-violet-bright) opacity-85" style={{ height: "38%" }} />
-                </div>
+            <div className="relative flex justify-center items-center">
+              {/*
+              <ResponsiveImageFrame
+                src="/Dashboard_Hero.png"
+                alt="ExpenseAI dashboard preview"
+                aspectClassName="aspect-[1553/1900]"
+                wrapperClassName="rounded-2xl"
+                priority
+              />
+              */}
+              <div className="aspect-[1553/1900] w-full max-w-[600px] rounded-2xl border-2 border-dashed border-(--color-border-muted) bg-(--color-bg-subtle) flex items-center justify-center">
+                <span className="font-display text-[10rem] font-semibold text-(--color-text-ghost)/20">H</span>
               </div>
             </div>
           </Reveal>
