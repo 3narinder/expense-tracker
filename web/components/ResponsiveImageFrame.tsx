@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 
 type ResponsiveImageFrameProps = {
@@ -19,17 +22,25 @@ export default function ResponsiveImageFrame({
   priority = false,
   sizes,
 }: ResponsiveImageFrameProps) {
+  const [isLoading, setIsLoading] = useState(true);
+
   return (
     <div
       className={`relative overflow-hidden ${aspectClassName} ${wrapperClassName}`}
     >
+      {isLoading && (
+        <div className="absolute inset-0 bg-(--color-bg-muted) animate-pulse" />
+      )}
       <Image
         src={src}
         alt={alt}
         fill
         sizes={sizes ?? "(max-width: 1024px) 100vw, 50vw"}
         priority={priority}
-        className={`object-contain object-center ${imageClassName}`}
+        className={`object-contain object-center transition-opacity duration-500 ease-out ${
+          isLoading ? "opacity-0" : "opacity-100"
+        } ${imageClassName}`}
+        onLoadingComplete={() => setIsLoading(false)}
       />
     </div>
   );

@@ -47,13 +47,14 @@ const features = [
 export default function Features() {
   return (
     <section id="features" className="relative overflow-hidden py-24 sm:py-32">
-      <div aria-hidden className="absolute inset-0 bg-linear-to-b from-(--color-bg-muted)/70 via-transparent to-(--color-bg-surface)" />
+      <div aria-hidden className="absolute inset-0 bg-linear-to-b from-(--color-bg-muted)/50 via-transparent to-(--color-bg-surface)" />
       <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
         <Reveal className="mx-auto max-w-3xl text-center">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-(--color-border-main)/70 bg-(--color-bg-surface)/90 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-(--color-text-muted)">
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-(--color-violet)/25 bg-(--color-violet-soft) px-4 py-2 text-xs font-mono font-semibold uppercase tracking-[0.14em] text-(--color-violet)">
+            <span className="h-1.5 w-1.5 rounded-full bg-(--color-violet) shadow-[0_0_8px_var(--color-violet)]" />
             Core features
           </div>
-          <h2 className="mt-6 font-display text-3xl font-semibold tracking-tight text-(--color-text-main) sm:text-4xl">
+          <h2 className="mt-8 font-display text-3xl font-semibold tracking-tight text-(--color-text-main) sm:text-4xl">
             Everything you need, nothing you don&apos;t
           </h2>
           <p className="mt-4 text-lg leading-8 text-(--color-text-muted)">
@@ -61,23 +62,23 @@ export default function Features() {
           </p>
         </Reveal>
 
-        <div className="mt-16 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((feature, index) => (
-            <Reveal key={feature.title} delay={index * 0.04}>
+            <Reveal key={feature.title} delay={index * 0.05}>
               <div
-                className={`relative h-full rounded-[1.6rem] border p-6 transition-all duration-300 hover:-translate-y-1 ${
+                className={`relative h-full rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1 ${
                   feature.highlight
-                    ? "border-(--color-gold)/35 bg-linear-to-b from-(--color-gold-soft)/70 to-(--color-bg-surface) shadow-[0_25px_80px_-40px_rgba(201,138,26,0.35)]"
-                    : "border-(--color-border-main)/70 bg-(--color-bg-surface) hover:border-(--color-primary)/40 hover:shadow-[0_24px_70px_-38px_rgba(91,76,240,0.3)]"
+                    ? "border-(--color-gold)/35 bg-linear-to-b from-(--color-gold-soft)/70 to-(--color-bg-surface) shadow-[0_25px_80px_-40px_rgba(240,182,77,0.35)]"
+                    : "border-(--color-border-main)/70 bg-(--color-bg-surface)/90 backdrop-blur-xl hover:border-(--color-violet)/40 hover:shadow-[0_24px_70px_-38px_rgba(124,108,246,0.3)]"
                 }`}
               >
                 {feature.highlight && (
-                  <span className="absolute right-5 top-[-0.9rem] rounded-full bg-linear-to-r from-(--color-gold) to-(--color-warning) px-2.5 py-0.75 text-[10px] font-bold uppercase tracking-[0.2em] text-white shadow-sm">
+                  <span className="absolute right-5 top-[-0.9rem] rounded-full bg-linear-to-r from-(--color-gold) to-(--color-warning) px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white shadow-sm">
                     Most loved
                   </span>
                 )}
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${feature.highlight ? "bg-(--color-gold)/15" : "bg-(--color-primary-soft)"}`}>
-                  <span className={`text-sm font-semibold ${feature.highlight ? "text-(--color-gold)" : "text-(--color-primary)"}`}>
+                <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${feature.highlight ? "bg-(--color-gold)/15" : "bg-(--color-violet-soft)"}`}>
+                  <span className={`text-sm font-semibold ${feature.highlight ? "text-(--color-gold)" : "text-(--color-violet)"}`}>
                     {index + 1}
                   </span>
                 </div>

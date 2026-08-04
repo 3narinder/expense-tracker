@@ -35,10 +35,11 @@ export default function TransactionsSection() {
     <section className="bg-(--color-bg-muted) py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <Reveal className="mx-auto max-w-3xl text-center">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-(--color-border-main)/70 bg-(--color-bg-surface)/90 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-(--color-text-muted)">
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-(--color-violet)/25 bg-(--color-violet-soft) px-4 py-2 text-xs font-mono font-semibold uppercase tracking-[0.14em] text-(--color-violet)">
+            <span className="h-1.5 w-1.5 rounded-full bg-(--color-violet) shadow-[0_0_8px_var(--color-violet)]" />
             Transactions
           </div>
-          <h2 className="mt-6 font-display text-3xl font-semibold tracking-tight text-(--color-text-main) sm:text-4xl">
+          <h2 className="mt-8 font-display text-3xl font-semibold tracking-tight text-(--color-text-main) sm:text-4xl">
             Transaction management that stays out of your way
           </h2>
           <p className="mt-4 text-lg leading-8 text-(--color-text-muted)">
@@ -46,15 +47,15 @@ export default function TransactionsSection() {
           </p>
         </Reveal>
 
-        <div className="mt-16 grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+        <div className="mt-16 grid gap-14 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
           <Reveal>
             <div className="space-y-4">
               {points.map((point) => {
                 const Icon = point.icon;
                 return (
-                  <div key={point.title} className="flex gap-4 rounded-[1.25rem] border border-(--color-border-main)/70 bg-(--color-bg-surface)/90 p-4">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-(--color-bg-muted)">
-                      <Icon size={16} className="text-(--color-primary)" />
+                  <div key={point.title} className="flex gap-4 rounded-2xl border border-(--color-border-main)/70 bg-(--color-bg-surface)/90 p-5 backdrop-blur-xl">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-(--color-violet-soft)">
+                      <Icon size={16} className="text-(--color-violet)" />
                     </span>
                     <div>
                       <p className="font-semibold text-(--color-text-main)">{point.title}</p>
@@ -67,14 +68,19 @@ export default function TransactionsSection() {
           </Reveal>
 
           <Reveal delay={0.08}>
-            <ResponsiveImageFrame
-              src="/transaction_image.png"
-              alt="Transaction management experience"
-              aspectClassName="aspect-[2280/1008]"
-              wrapperClassName="w-full"
-              imageClassName="rounded-[1.15rem]"
-              priority
-            />
+            <div className="relative">
+              {/*
+              <ResponsiveImageFrame
+                src="/transaction_image.png"
+                alt="Transaction management experience"
+                aspectClassName="aspect-[2280/1008]"
+                wrapperClassName="w-full"
+                imageClassName="rounded-[1.15rem]"
+                priority
+              />
+              */}
+              <div className="aspect-[2280/1008] w-full rounded-2xl border-2 border-dashed border-(--color-border-muted) bg-(--color-bg-subtle)" />
+            </div>
           </Reveal>
         </div>
       </div>

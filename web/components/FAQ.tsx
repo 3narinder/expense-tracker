@@ -61,12 +61,16 @@ export default function FAQ() {
     <section id="faq" className="bg-(--color-bg-muted) py-24 sm:py-32">
       <div className="mx-auto max-w-3xl px-6 lg:px-8">
         <Reveal className="text-center">
-          <h2 className="font-display text-3xl font-semibold tracking-tight text-(--color-text-main) sm:text-4xl">
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-(--color-violet)/25 bg-(--color-violet-soft) px-4 py-2 text-xs font-mono font-semibold uppercase tracking-[0.14em] text-(--color-violet)">
+            <span className="h-1.5 w-1.5 rounded-full bg-(--color-violet) shadow-[0_0_8px_var(--color-violet)]" />
+            FAQ
+          </div>
+          <h2 className="mt-8 font-display text-3xl font-semibold tracking-tight text-(--color-text-main) sm:text-4xl">
             Frequently asked questions
           </h2>
         </Reveal>
 
-        <Reveal delay={0.08} className="mt-12 rounded-[2rem] border border-(--color-border-main)/70 bg-(--color-bg-surface)/90 px-6 shadow-[0_20px_70px_-38px_rgba(15,23,42,0.2)]">
+        <Reveal delay={0.08} className="mt-12 rounded-2xl border border-(--color-border-main)/70 bg-(--color-bg-surface)/90 p-6 shadow-[0_20px_70px_-38px_rgba(124,108,246,0.2)] backdrop-blur-xl">
           {faqs.map((faq) => (
             <FaqItem key={faq.q} q={faq.q} a={faq.a} />
           ))}

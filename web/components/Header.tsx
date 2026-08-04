@@ -6,6 +6,7 @@ import { Menu, X, ArrowUpRight } from "lucide-react";
 import Logo from "./Logo";
 import { GITHUB_URL } from "@/lib/config";
 import LaunchAppLink from "./LaunchAppLink";
+import ThemeToggle from "./ThemeToggle";
 
 const navItems = [
   { href: "#features", label: "Features" },
@@ -55,6 +56,7 @@ export default function Header() {
         </ul>
 
         <div className="hidden items-center gap-3 md:flex">
+          <ThemeToggle />
           <a
             href={GITHUB_URL}
             target="_blank"
@@ -94,7 +96,8 @@ export default function Header() {
                 </a>
               </li>
             ))}
-            <li className="pt-2">
+            <li className="pt-2 flex items-center gap-3">
+              <ThemeToggle />
               <a
                 href={GITHUB_URL}
                 target="_blank"

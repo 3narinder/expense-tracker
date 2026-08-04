@@ -1,15 +1,15 @@
-@import url("https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&family=Lora:ital,wght@0,400..700;1,400..700&display=swap");
-
 @import "tailwindcss";
 
 @theme inline {
   --font-sans:
-    "Urbanist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     sans-serif;
-  --font-display: "Lora", Georgia, "Times New Roman", serif;
+  --font-display:
+    var(--font-space-grotesk), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
   --font-mono:
-    ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono",
-    monospace;
+    var(--font-ibm-plex-mono), ui-monospace, "SFMono-Regular", Menlo, Consolas,
+    "Liberation Mono", monospace;
 
   --color-bg-app: var(--bg-app);
   --color-bg-surface: var(--bg-surface);
@@ -61,6 +61,9 @@
 
   --color-gold: var(--gold);
   --color-gold-soft: var(--gold-soft);
+  --color-violet: var(--violet);
+  --color-violet-bright: var(--violet-bright);
+  --color-violet-soft: var(--violet-soft);
 }
 
 :root {
@@ -80,8 +83,8 @@
   --border-focus: #d1d5db;
   --divider: #e5e7eb;
 
-  --primary: #5b4cf0;
-  --primary-hover: #4b3ee0;
+  --primary: #7c6cf6;
+  --primary-hover: #6b5ce0;
   --primary-soft: #ecebff;
   --primary-foreground: #ffffff;
 
@@ -90,8 +93,8 @@
   --secondary-soft: #f1f5f9;
   --secondary-foreground: #ffffff;
 
-  --success: #10b981;
-  --success-hover: #059669;
+  --success: #34d399;
+  --success-hover: #10b981;
   --success-soft: #ecfdf5;
   --success-foreground: #065f46;
 
@@ -100,8 +103,8 @@
   --warning-soft: #fffbeb;
   --warning-foreground: #92400e;
 
-  --danger: #dc2626;
-  --danger-hover: #b91c1c;
+  --danger: #f87171;
+  --danger-hover: #dc2626;
   --danger-soft: #fef2f2;
   --danger-foreground: #ffffff;
 
@@ -112,8 +115,69 @@
   --emerald: #0a9f7a;
   --emerald-soft: #ecfdf5;
 
-  --gold: #c98a1a;
-  --gold-soft: #fffbeb;
+  --gold: #f0b64d;
+  --gold-soft: rgba(240, 182, 77, 0.14);
+
+  --violet: #7c6cf6;
+  --violet-bright: #9686ff;
+  --violet-soft: rgba(124, 108, 246, 0.16);
+}
+
+.dark {
+  --bg-app: #090a12;
+  --bg-surface: rgba(255, 255, 255, 0.045);
+  --bg-muted: #0d0f1c;
+  --bg-hover: rgba(255, 255, 255, 0.065);
+  --bg-subtle: rgba(255, 255, 255, 0.02);
+
+  --text-main: #f2f3f8;
+  --text-muted: #9297ab;
+  --text-ghost: #656a7e;
+  --text-inverse: #ffffff;
+
+  --border-main: rgba(255, 255, 255, 0.09);
+  --border-muted: rgba(255, 255, 255, 0.06);
+  --border-focus: rgba(255, 255, 255, 0.15);
+  --divider: rgba(255, 255, 255, 0.09);
+
+  --primary: #7c6cf6;
+  --primary-hover: #9686ff;
+  --primary-soft: rgba(124, 108, 246, 0.16);
+  --primary-foreground: #ffffff;
+
+  --secondary: #64748b;
+  --secondary-hover: #94a3b8;
+  --secondary-soft: rgba(100, 116, 139, 0.16);
+  --secondary-foreground: #ffffff;
+
+  --success: #34d399;
+  --success-hover: #6ee7b7;
+  --success-soft: rgba(52, 211, 153, 0.14);
+  --success-foreground: #ffffff;
+
+  --warning: #f59e0b;
+  --warning-hover: #fbbf24;
+  --warning-soft: rgba(240, 182, 77, 0.14);
+  --warning-foreground: #ffffff;
+
+  --danger: #f87171;
+  --danger-hover: #fca5a5;
+  --danger-soft: rgba(248, 113, 113, 0.14);
+  --danger-foreground: #ffffff;
+
+  --info: #3b82f6;
+  --info-hover: #60a5fa;
+  --info-soft: rgba(59, 130, 246, 0.14);
+
+  --emerald: #0a9f7a;
+  --emerald-soft: rgba(10, 159, 122, 0.14);
+
+  --gold: #f0b64d;
+  --gold-soft: rgba(240, 182, 77, 0.14);
+
+  --violet: #7c6cf6;
+  --violet-bright: #9686ff;
+  --violet-soft: rgba(124, 108, 246, 0.16);
 }
 
 html {

@@ -7,7 +7,7 @@ import LaunchAppLink from "./LaunchAppLink";
 export default function FinalCTA() {
   return (
     <section className="relative overflow-hidden py-24 sm:py-32">
-      <div aria-hidden className="absolute inset-0 bg-linear-to-br from-(--color-primary) via-(--color-primary-hover) to-(--color-info)" />
+      <div aria-hidden className="absolute inset-0 bg-linear-to-br from-(--color-violet) via-(--color-violet-bright) to-(--color-gold)" />
       <div aria-hidden className="absolute -right-16 top-0 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
       <div aria-hidden className="absolute -bottom-20 left-0 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
 
@@ -19,8 +19,8 @@ export default function FinalCTA() {
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-white/80">
             No spreadsheets. No guesswork. Just a clear, AI-assisted view of your money.
           </p>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-            <LaunchAppLink className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-(--color-primary) shadow-lg transition-colors hover:bg-white/90">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <LaunchAppLink className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-(--color-violet) shadow-lg transition-colors hover:bg-white/90">
               Launch App
               <ArrowUpRight size={16} />
             </LaunchAppLink>
