@@ -46,7 +46,7 @@ const App = () => {
         <Route
           path="/login"
           element={
-            <PublicRoute fallback={<DashboardShellSkeleton />}>
+            <PublicRoute fallback={<AuthPageSkeleton />}>
               <Suspense fallback={<AuthPageSkeleton />}>
                 <Login />
               </Suspense>
@@ -56,7 +56,7 @@ const App = () => {
         <Route
           path="/register"
           element={
-            <PublicRoute fallback={<DashboardShellSkeleton />}>
+            <PublicRoute fallback={<AuthPageSkeleton />}>
               <Suspense fallback={<AuthPageSkeleton />}>
                 <Register />
               </Suspense>
