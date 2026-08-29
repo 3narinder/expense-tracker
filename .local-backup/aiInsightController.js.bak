@@ -6,7 +6,7 @@ import { getGroqClient } from "../utils/groq.js";
 import { getAIContextData } from "./dashboardController.js";
 import { getPlanConfig } from "../utils/planConfig.js";
 
-const MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
+const MODEL = "llama-3.3-70b-versatile";
 const AI_MIN_TRANSACTION_COUNT = parseInt(
   process.env.AI_MIN_TRANSACTION_COUNT || "10",
   10,
