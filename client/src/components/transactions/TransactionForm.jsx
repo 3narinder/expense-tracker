@@ -33,7 +33,7 @@ const TransactionForm = ({
     transactionDate:
       initial?.transactionDate?.split("T")[0] || todayDateString(),
     recurring: initial?.recurring ? true : false,
-    recurringInterval: initial?.recurring?.interval || "monthly",
+    recurringInterval: initial?.recurringFrequency || "monthly",
   });
 
   const [showDetails, setShowDetails] = useState(!compactMode);
@@ -51,7 +51,9 @@ const TransactionForm = ({
       description: form.description || null,
       notes: form.notes || null,
       transactionDate: form.transactionDate,
-      recurring: form.recurring ? { interval: form.recurringInterval || "monthly" } : null,
+      // backend expects boolean + recurringFrequency string
+      recurring: !!form.recurring,
+      recurringFrequency: form.recurring ? form.recurringInterval || "monthly" : null,
     };
 
     if (initial) {
