@@ -9,11 +9,11 @@ const NotificationItem = ({ item, onClick, onDelete }) => {
   return (
     <div
       onClick={() => onClick(item)}
-      className={`flex gap-3 p-3 rounded-lg cursor-pointer hover:bg-[var(--color-bg-muted)] transition-colors ${isUnread ? "bg-[var(--color-primary-soft)]" : "bg-[var(--color-bg-surface)]"}`}
+      className={`flex gap-2 p-2 md:p-3 rounded-lg cursor-pointer hover:bg-[var(--color-bg-muted)] transition-colors ${isUnread ? "bg-[var(--color-primary-soft)]" : "bg-[var(--color-bg-surface)]"}`}
     >
       <div className={`h-3 w-3 mt-1 rounded-full ${isUnread ? "bg-[var(--color-primary)]" : "bg-[var(--color-border-main)]"}`} />
       <div className="flex-1">
-        <div className={`flex items-center justify-between gap-2`}> 
+        <div className={`flex flex-col md:flex-row items-start md:items-center justify-between gap-2`}>
           <div className={`text-sm ${isUnread ? "font-semibold text-[var(--color-text-main)]" : "text-[var(--color-text-muted)]"}`}>{item.title}</div>
           <div className="text-xs text-[var(--color-text-muted)]">{formatDistanceToNowStrict(new Date(item.createdAt), { addSuffix: true })}</div>
         </div>
@@ -58,7 +58,7 @@ const NotificationDropdown = ({ open, onClose }) => {
   const items = data?.items || [];
 
   return (
-    <div ref={ref} className="absolute right-0 mt-2 w-96 bg-[var(--color-bg-surface)] border border-[var(--color-border-main)] rounded-xl shadow-lg z-50">
+    <div ref={ref} className="absolute right-0 mt-2 w-full max-w-xs md:w-96 bg-[var(--color-bg-surface)] border border-[var(--color-border-main)] rounded-xl shadow-lg z-50">
       <div className="p-3 border-b border-[var(--color-border-main)] flex items-center justify-between">
         <div className="text-sm font-semibold">Notifications</div>
         <div className="flex items-center gap-2">

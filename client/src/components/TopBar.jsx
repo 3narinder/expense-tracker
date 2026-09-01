@@ -31,7 +31,7 @@ const TopBar = () => {
   const firstName = user?.username?.split(" ")[0] || "";
 
   return (
-    <header className="h-16 bg-[var(--color-bg-surface)] border-b border-[var(--color-border-main)] flex items-center justify-between px-6 shrink-0">
+    <header className="h-14 md:h-16 bg-[var(--color-bg-surface)] border-b border-[var(--color-border-main)] flex items-center justify-between px-4 md:px-6 shrink-0">
       <div>
         <div className="text-sm font-semibold text-[var(--color-text-main)] tracking-tight">
           {greeting()}
@@ -40,7 +40,7 @@ const TopBar = () => {
         <div className="text-xs text-[var(--color-text-muted)]">{formatToday()}</div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 md:gap-2">
         <select
           className="md:hidden h-8 rounded-lg border border-[var(--color-border-main)] bg-[var(--color-bg-surface)] px-2 text-xs font-medium text-[var(--color-text-main)]"
           value={activeProfileType}
@@ -85,7 +85,7 @@ const TopBar = () => {
         </div>
         <button
           title="Search"
-          className="h-9 w-9 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-text-main)] flex items-center justify-center transition-colors"
+          className="h-8 w-8 md:h-9 md:w-9 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-text-main)] flex items-center justify-center transition-colors"
         >
           <Search size={17} />
         </button>
