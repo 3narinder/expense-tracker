@@ -13,6 +13,31 @@ import {
 const getBalanceImpact = (type, amount) =>
   type === "income" ? amount : -amount;
 
+const normalizeRecurringFlag = (value) => {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (["true", "1", "yes"].includes(normalized)) return true;
+    if (["false", "0", "no", ""].includes(normalized)) return false;
+  }
+  if (value && typeof value === "object") {
+    return !!value.interval || Object.keys(value).length > 0;
+  }
+  return Boolean(value);
+};
+
+const normalizeRecurringFrequency = (value) => {
+  if (value && typeof value === "object" && typeof value.interval === "string") {
+    return normalizeRecurringFrequency(value.interval);
+  }
+  if (typeof value !== "string") return null;
+  const normalized = value.trim();
+  if (!normalized) return null;
+  return ["daily", "weekly", "monthly", "yearly"].includes(normalized)
+    ? normalized
+    : null;
+};
+
 //* @desc    Get paginated, sorted, and filtered transactions with real-time insights
 //* @route   GET /api/transactions
 export const getTransactions = async (req, res) => {
@@ -418,6 +443,8 @@ export const createTransaction = async (req, res) => {
 
       const parsedAmount = parseFloat(amount);
       const txDate = transactionDate ? new Date(transactionDate) : new Date();
+      const isRecurring = normalizeRecurringFlag(recurring);
+      const freq = isRecurring ? normalizeRecurringFrequency(recurringFrequency) : null;
 
       const transaction = new Transaction({
         userId,
@@ -431,8 +458,27 @@ export const createTransaction = async (req, res) => {
         notes,
         amount: parsedAmount,
         transactionDate: txDate,
-        recurring: recurring || false,
-        recurringFrequency: recurring ? recurringFrequency : null,
+        recurring: isRecurring,
+        recurringFrequency: freq,
+        nextOccurrence: isRecurring && freq ? (() => {
+          const d = new Date(txDate);
+          switch (freq) {
+            case "daily":
+              d.setDate(d.getDate() + 1);
+              return d;
+            case "weekly":
+              d.setDate(d.getDate() + 7);
+              return d;
+            case "monthly":
+              d.setMonth(d.getMonth() + 1);
+              return d;
+            case "yearly":
+              d.setFullYear(d.getFullYear() + 1);
+              return d;
+            default:
+              return null;
+          }
+        })() : null,
       });
 
       await transaction.save({ session });
@@ -578,40 +624,47 @@ export const updateTransaction = async (req, res) => {
       ) {
         const isRecurring =
           updates.recurring !== undefined
-            ? updates.recurring
-            : originalTx.recurring;
-        const freq =
+            ? normalizeRecurringFlag(updates.recurring)
+            : !!originalTx.recurring;
+        let freq =
           updates.recurringFrequency !== undefined
-            ? updates.recurringFrequency
-            : originalTx.recurringFrequency;
+            ? normalizeRecurringFrequency(updates.recurringFrequency)
+            : normalizeRecurringFrequency(originalTx.recurringFrequency);
+
         if (isRecurring && freq) {
           const baseDate =
             updates.transactionDate || originalTx.transactionDate;
           const d = new Date(baseDate);
           let next = null;
-          switch (freq) {
-            case "daily":
-              d.setDate(d.getDate() + 1);
-              next = d;
-              break;
-            case "weekly":
-              d.setDate(d.getDate() + 7);
-              next = d;
-              break;
-            case "monthly":
-              d.setMonth(d.getMonth() + 1);
-              next = d;
-              break;
-            case "yearly":
-              d.setFullYear(d.getFullYear() + 1);
-              next = d;
-              break;
-            default:
-              next = null;
+          if (!isNaN(d.getTime())) {
+            switch (freq) {
+              case "daily":
+                d.setDate(d.getDate() + 1);
+                next = d;
+                break;
+              case "weekly":
+                d.setDate(d.getDate() + 7);
+                next = d;
+                break;
+              case "monthly":
+                d.setMonth(d.getMonth() + 1);
+                next = d;
+                break;
+              case "yearly":
+                d.setFullYear(d.getFullYear() + 1);
+                next = d;
+                break;
+              default:
+                next = null;
+            }
           }
           updates.nextOccurrence = next;
+          updates.recurring = true;
+          updates.recurringFrequency = freq;
         } else {
           updates.nextOccurrence = null;
+          updates.recurring = false;
+          updates.recurringFrequency = null;
         }
       }
 

@@ -30,8 +30,8 @@ const TransactionForm = ({
     notes: initial?.notes || "",
     transactionDate:
       initial?.transactionDate?.split("T")[0] || todayDateString(),
-    recurring: initial?.recurring ? true : false,
-    recurringInterval: initial?.recurring?.interval || "monthly",
+    recurring: !!initial?.recurring,
+    recurringFrequency: initial?.recurringFrequency || initial?.recurring?.interval || "monthly",
   });
 
   const filteredCategories = categories.filter((c) => c.type === form.type);
@@ -47,9 +47,8 @@ const TransactionForm = ({
       description: form.description || null,
       notes: form.notes || null,
       transactionDate: form.transactionDate,
-      recurring: form.recurring
-        ? { interval: form.recurringInterval || "monthly" }
-        : null,
+      recurring: !!form.recurring,
+      recurringFrequency: form.recurring ? form.recurringFrequency : null,
     };
 
     if (initial) {
