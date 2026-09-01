@@ -16,6 +16,7 @@ const Transactions = lazy(() => import("./pages/Transactions.jsx"));
 const Categories = lazy(() => import("./pages/Categories.jsx"));
 const Budgets = lazy(() => import("./pages/Budgets.jsx"));
 const Insight = lazy(() => import("./pages/Insight.jsx"));
+const Notifications = lazy(() => import("./pages/Notifications.jsx"));
 const Layout = lazy(() => import("./components/Layout.jsx"));
 const ReactQueryDevtools = import.meta.env.DEV
   ? lazy(() =>
@@ -110,6 +111,14 @@ const App = () => {
             element={
               <Suspense fallback={<DashboardShellSkeleton />}>
                 <Insight />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <Suspense fallback={<DashboardShellSkeleton />}>
+                <Notifications />
               </Suspense>
             }
           />

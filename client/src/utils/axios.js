@@ -2,11 +2,12 @@ import axios from "axios";
 import { getAuthToken } from "./authToken";
 import { getActiveProfileType } from "./profileScope";
 
-const defaultApiUrl = import.meta.env.PROD
-  ? "https://expense-tracker-api-mkt0.onrender.com/api"
-  : "http://localhost:8000/api";
+// Use local API in development unless VITE_API_URL explicitly set
+const defaultApiUrl = import.meta.env.DEV
+  ? (import.meta.env.VITE_API_URL || "http://localhost:8000/api")
+  : (import.meta.env.VITE_API_URL || "https://expense-tracker-api-mkt0.onrender.com/api");
 
-const API_URL = import.meta.env.VITE_API_URL || defaultApiUrl;
+const API_URL = defaultApiUrl;
 
 const api = axios.create({
   baseURL: API_URL,

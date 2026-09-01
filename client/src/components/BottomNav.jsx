@@ -5,6 +5,7 @@ import {
   Folder,
   Target,
   Sparkles,
+  Bell,
 } from "lucide-react";
 import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
 import { useLogout } from "../features/Authentication/useLogout.js";
@@ -15,6 +16,7 @@ const navItems = [
   { to: "/categories", label: "Categories", icon: Folder },
   { to: "/budgets", label: "Budgets", icon: Target },
   { to: "/insights", label: "Insights", icon: Sparkles },
+  { to: "/notifications", label: "Notifications", icon: Bell },
 ];
 
 const BottomNav = () => {
@@ -60,15 +62,16 @@ const BottomNav = () => {
         </NavLink>
       ))}
 
+      {/* More / quick actions button for mobile: opens bottom actions sheet */}
       <button
-        onClick={logout}
-        title="Logout"
+        onClick={() => window.dispatchEvent(new CustomEvent("toggle-mobile-actions"))}
+        title="More"
         className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-[11px] font-medium text-[var(--color-text-muted)] transition-colors"
       >
-        <div className="h-7 w-7 rounded-full bg-[var(--color-primary)] flex items-center justify-center text-[var(--color-primary-foreground)] font-semibold text-[11px]">
-          {initial}
+        <div className="p-2 rounded-lg">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--color-text-muted)]"><circle cx="5" cy="12" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle></svg>
         </div>
-        Logout
+        More
       </button>
     </nav>
   );

@@ -35,7 +35,7 @@ const TopBar = () => {
       <div>
         <div className="text-sm font-semibold text-[var(--color-text-main)] tracking-tight">
           {greeting()}
-          {firstName && `, ${firstName}`} 👋
+          {firstName && `, ${firstName}` }
         </div>
         <div className="text-xs text-[var(--color-text-muted)]">
           {formatToday()}
@@ -87,13 +87,13 @@ const TopBar = () => {
         </div>
         <button
           title="Search"
-          className="h-8 w-8 md:h-9 md:w-9 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-text-main)] flex items-center justify-center transition-colors"
+          className="hidden md:inline-flex h-8 w-8 md:h-9 md:w-9 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-text-main)] flex items-center justify-center transition-colors"
         >
           <Search size={17} />
         </button>
-        <NotificationBell />
-        <div className="w-px h-6 bg-[var(--color-border-main)] mx-1" />
-        <ThemeToggle />
+        <div className="hidden md:inline-flex"><NotificationBell /></div>
+        <div className="hidden md:inline-flex w-px h-6 bg-[var(--color-border-main)] mx-1" />
+        <div className="hidden md:inline-flex"><ThemeToggle /></div>
       </div>
     </header>
   );
