@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
 import { useActiveProfile } from "../features/Authentication/useActiveProfile.js";
 import ThemeToggle from "./ThemeToggle.jsx";
+import NotificationBell from "./NotificationBell";
 
 const greeting = () => {
   const h = new Date().getHours();
@@ -88,13 +89,7 @@ const TopBar = () => {
         >
           <Search size={17} />
         </button>
-        <button
-          title="Notifications"
-          className="relative h-9 w-9 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-text-main)] flex items-center justify-center transition-colors"
-        >
-          <Bell size={17} />
-          <span className="absolute top-2 right-2 h-2 w-2 bg-[var(--color-danger)] rounded-full ring-2 ring-[var(--color-bg-surface)]" />
-        </button>
+        <NotificationBell />
         <div className="w-px h-6 bg-[var(--color-border-main)] mx-1" />
         <ThemeToggle />
       </div>
