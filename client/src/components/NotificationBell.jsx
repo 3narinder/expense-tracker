@@ -6,8 +6,14 @@ import { getUnreadCount } from "../services/apiNotifications";
 
 const NotificationBell = () => {
   const [open, setOpen] = useState(false);
-  const { data } = useQuery({ queryKey: ["notifications","unreadCount"], queryFn: getUnreadCount, refetchInterval: 60 * 1000 });
+  const qc = useQueryClient();
+  const { data } = useQuery({ queryKey: ["notifications","unreadCount"], queryFn: getUnreadCount, refetchInterval: 60 * 1000, staleTime: 1000 * 60 * 2 });
   const count = data?.count || 0;
+
+  // Prefetch notifications list in background so dropdown opens instantly
+  useEffect(()=>{
+    qc.prefetchQuery(["notifications","list"], () => getNotifications({ limit: 50 }), { staleTime: 1000 * 60 * 5, cacheTime: 1000 * 60 * 30, refetchOnWindowFocus: false });
+  },[]);
 
   return (
     <div className="relative">

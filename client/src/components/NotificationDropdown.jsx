@@ -30,32 +30,78 @@ const NotificationItem = ({ item, onClick, onDelete }) => {
 const NotificationDropdown = ({ open, onClose }) => {
   const ref = useRef(null);
   const qc = useQueryClient();
-  const [page, setPage] = useState(1);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["notifications", page],
-    queryFn: () => getNotifications({ page, limit: 10 }),
-    enabled: open,
+  // read cached unread count (prefetched by NotificationBell) to quickly show "You're all caught up"
+  const cachedCount = qc.getQueryData(["notifications","unreadCount"]);
+
+  // notifications list query: use a stable key and larger staleTime so reopening dropdown won't refetch immediately
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["notifications","list"],
+    queryFn: () => getNotifications({ limit: 50 }),
+    enabled: true, // always keep cached in background (prefetch from bell), but safe to enable
     keepPreviousData: true,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    cacheTime: 1000 * 60 * 30, // 30 minutes
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
-  const unreadQuery = useQuery({ queryKey: ["notifications","unreadCount"], queryFn: getUnreadCount, enabled: open });
-
-  const markAsReadMut = useMutation({ mutationFn: (id) => markAsRead(id), onSuccess: ()=>{ qc.invalidateQueries(["notifications"]); qc.invalidateQueries(["notifications","unreadCount"]); } });
-  const markAllMut = useMutation({ mutationFn: () => markAllAsRead(), onSuccess: ()=>{ qc.invalidateQueries(["notifications"]); qc.invalidateQueries(["notifications","unreadCount"]); } });
-  const deleteMut = useMutation({ mutationFn: (id) => deleteNotification(id), onSuccess: ()=>{ qc.invalidateQueries(["notifications"]); qc.invalidateQueries(["notifications","unreadCount"]); } });
+  const markAsReadMut = useMutation({ mutationFn: (id) => markAsRead(id), onSuccess: ()=>{ qc.invalidateQueries(["notifications","list"]); qc.invalidateQueries(["notifications","unreadCount"]); } });
+  const markAllMut = useMutation({ mutationFn: () => markAllAsRead(), onSuccess: ()=>{ qc.invalidateQueries(["notifications","list"]); qc.invalidateQueries(["notifications","unreadCount"]); } });
+  const deleteMut = useMutation({ mutationFn: (id) => deleteNotification(id), onSuccess: ()=>{ qc.invalidateQueries(["notifications","list"]); qc.invalidateQueries(["notifications","unreadCount"]); } });
 
   useEffect(()=>{
     const handleClick = (e)=>{
-      if (open && ref.current && !ref.current.contains(e.target)) onClose();
+      if (ref.current && !ref.current.contains(e.target)) onClose();
     };
     window.addEventListener("mousedown", handleClick);
     return ()=> window.removeEventListener("mousedown", handleClick);
-  },[open, onClose]);
+  },[onClose]);
 
-  if (!open) return null;
-
+  // If there is a cached unread count of zero, show "You're all caught up" immediately while background fetch continues.
   const items = data?.items || [];
+  const unreadCountKnownZero = cachedCount && cachedCount.count === 0;
+
+  if (!open && !data) return null; // don't render dropdown when closed and no cached data
+
+  if (!open && data) return null; // closed -> don't show dropdown (but keep cache)
+
+  // mobile full-screen panel
+  if (typeof window !== 'undefined' && window.innerWidth < 768 && open) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-end md:hidden">
+        <div onClick={onClose} className="absolute inset-0 bg-black/40" />
+        <div className="relative w-full bg-[var(--color-bg-surface)] rounded-t-xl shadow-xl max-h-[90vh] overflow-auto">
+          <div className="p-4 border-b border-[var(--color-border-main)] flex items-center justify-between sticky top-0 bg-[var(--color-bg-surface)]">
+            <div className="text-base font-semibold">Notifications</div>
+            <div className="flex items-center gap-2">
+              <button onClick={()=>markAllMut.mutate()} className="text-sm text-[var(--color-text-muted)] hover:underline">Mark all read</button>
+              <button onClick={onClose} className="text-sm font-medium px-2 py-1 rounded bg-[var(--color-bg-surface)] border border-[var(--color-border-main)]">Close</button>
+            </div>
+          </div>
+
+          <div className="p-3 space-y-3">
+            {isLoading && !data && <div className="p-3 text-sm text-[var(--color-text-muted)]">Loading...</div>}
+            {!isLoading && items.length === 0 && unreadCountKnownZero && <div className="p-3 text-sm text-[var(--color-text-muted)]">You're all caught up.</div>}
+            {items.map((it)=> (
+              <div key={it._id} onClick={()=>{ if(!it.isRead) markAsReadMut.mutate(it._id); }} className={`p-4 rounded-lg ${!it.isRead ? 'bg-[var(--color-primary-soft)]' : 'bg-[var(--color-bg-surface)]'}`}>
+                <div className="flex items-center justify-between gap-2">
+                  <div className={`text-sm ${!it.isRead ? 'font-semibold text-[var(--color-text-main)]' : 'text-[var(--color-text-muted)]'}`}>{it.title}</div>
+                  <div className="text-xs text-[var(--color-text-muted)]">{new Date(it.createdAt).toLocaleString()}</div>
+                </div>
+                {it.message && <div className="text-sm mt-2 text-[var(--color-text-main)]">{it.message}</div>}
+                <div className="mt-2 flex items-center justify-between">
+                  <div className="text-xs text-[var(--color-text-muted)]">{it.category}</div>
+                  <button onClick={(e)=>{ e.stopPropagation(); deleteMut.mutate(it._id); }} className="text-xs text-[var(--color-danger)]">Dismiss</button>
+                </div>
+              </div>
+            ))}
+            {!isLoading && !isFetching && items.length === 0 && !unreadCountKnownZero && <div className="p-3 text-sm text-[var(--color-text-muted)]">You're all caught up.</div>}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div ref={ref} className="absolute right-0 mt-2 w-full max-w-xs md:w-96 bg-[var(--color-bg-surface)] border border-[var(--color-border-main)] rounded-xl shadow-lg z-50">
@@ -67,19 +113,16 @@ const NotificationDropdown = ({ open, onClose }) => {
       </div>
 
       <div className="max-h-96 overflow-auto p-2 space-y-2">
-        {isLoading && <div className="p-3 text-sm text-[var(--color-text-muted)]">Loading...</div>}
-        {!isLoading && items.length === 0 && <div className="p-3 text-sm text-[var(--color-text-muted)]">You're all caught up.</div>}
-        {!isLoading && items.map((it)=> (
+        {isLoading && !data && <div className="p-3 text-sm text-[var(--color-text-muted)]">Loading...</div>}
+        {!isLoading && !isFetching && items.length === 0 && unreadCountKnownZero && <div className="p-3 text-sm text-[var(--color-text-muted)]">You're all caught up.</div>}
+        {(!isLoading || data) && items.map((it)=> (
           <NotificationItem key={it._id} item={it} onClick={(item)=>{ if(!item.isRead) markAsReadMut.mutate(item._id); /* navigate if needed */ onClose(); }} onDelete={(id)=>deleteMut.mutate(id)} />
         ))}
+        {!isLoading && !isFetching && items.length === 0 && !unreadCountKnownZero && <div className="p-3 text-sm text-[var(--color-text-muted)]">You're all caught up.</div>}
       </div>
 
       <div className="p-3 border-t border-[var(--color-border-main)] flex items-center justify-between">
         <div className="text-xs text-[var(--color-text-muted)]">Showing {items.length} notifications</div>
-        <div className="flex items-center gap-2">
-          <button onClick={()=>setPage((p)=>Math.max(1,p-1))} className="px-2 py-1 rounded bg-[var(--color-bg-surface)] border border-[var(--color-border-main)] text-xs">Prev</button>
-          <button onClick={()=>setPage((p)=>p+1)} className="px-2 py-1 rounded bg-[var(--color-bg-surface)] border border-[var(--color-border-main)] text-xs">Next</button>
-        </div>
       </div>
     </div>
   );

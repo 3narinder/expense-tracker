@@ -1,4 +1,4 @@
-import { Bell, Plus, Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
 import { useActiveProfile } from "../features/Authentication/useActiveProfile.js";
@@ -37,7 +37,9 @@ const TopBar = () => {
           {greeting()}
           {firstName && `, ${firstName}`} 👋
         </div>
-        <div className="text-xs text-[var(--color-text-muted)]">{formatToday()}</div>
+        <div className="text-xs text-[var(--color-text-muted)]">
+          {formatToday()}
+        </div>
       </div>
 
       <div className="flex items-center gap-1 md:gap-2">

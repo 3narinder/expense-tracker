@@ -1,7 +1,7 @@
 import api from "../utils/axios";
 import { handleApiError } from "../utils/format";
 
-export const getNotifications = async ({ page = 1, limit = 10, unreadOnly = false } = {}) => {
+export const getNotifications = async ({ page = 1, limit = 50, unreadOnly = false } = {}) => {
   try {
     const res = await api.get(`/notifications?page=${page}&limit=${limit}&unreadOnly=${unreadOnly}`);
     return res.data;
