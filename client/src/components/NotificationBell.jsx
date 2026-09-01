@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Bell } from "lucide-react";
 import NotificationDropdown from "./NotificationDropdown";
-import { useQuery } from "@tanstack/react-query";
-import { getUnreadCount } from "../services/apiNotifications";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getUnreadCount, getNotifications } from "../services/apiNotifications";
 
 const NotificationBell = () => {
   const [open, setOpen] = useState(false);
