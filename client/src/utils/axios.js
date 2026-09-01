@@ -2,12 +2,11 @@ import axios from "axios";
 import { getAuthToken } from "./authToken";
 import { getActiveProfileType } from "./profileScope";
 
-// Use local API in development unless VITE_API_URL explicitly set
-const defaultApiUrl = import.meta.env.DEV
-  ? (import.meta.env.VITE_API_URL || "http://localhost:8000/api")
-  : (import.meta.env.VITE_API_URL || "https://expense-tracker-api-mkt0.onrender.com/api");
-
-const API_URL = defaultApiUrl;
+// Resolve API URL precedence:
+// 1. VITE_API_URL (explicit)
+// 2. If running Vite in dev (import.meta.env.DEV) use local backend
+// 3. Otherwise use production URL
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:8000/api" : "https://expense-tracker-api-mkt0.onrender.com/api");
 
 const api = axios.create({
   baseURL: API_URL,
@@ -17,6 +16,7 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
   const token = getAuthToken();
+  config.headers = config.headers || {};
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -31,6 +31,7 @@ api.interceptors.response.use(
 
     if (
       error.response?.status === 401 &&
+      typeof window !== "undefined" &&
       window.location.pathname !== "/login" &&
       !originalRequest?.url?.includes("/auth/me")
     ) {

@@ -12,8 +12,15 @@ const NotificationBell = () => {
 
   // Prefetch notifications list in background so dropdown opens instantly
   useEffect(()=>{
-    qc.prefetchQuery(["notifications","list"], () => getNotifications({ limit: 50 }), { staleTime: 1000 * 60 * 5, cacheTime: 1000 * 60 * 30, refetchOnWindowFocus: false });
-  },[]);
+    // Use the object-style options form to avoid overload ambiguity and ensure queryKey is an array
+    qc.prefetchQuery({
+      queryKey: ["notifications","list"],
+      queryFn: () => getNotifications({ limit: 50 }),
+      staleTime: 1000 * 60 * 5,
+      cacheTime: 1000 * 60 * 30,
+      refetchOnWindowFocus: false,
+    });
+  },[qc]);
 
   return (
     <div className="relative">

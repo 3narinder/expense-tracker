@@ -16,7 +16,7 @@ const navItems = [
   { to: "/categories", label: "Categories", icon: Folder },
   { to: "/budgets", label: "Budgets", icon: Target },
   { to: "/insights", label: "Insights", icon: Sparkles },
-  { to: "/notifications", label: "Notifications", icon: Bell },
+  // Notifications intentionally removed from bottom nav to avoid cramped tabs on mobile
 ];
 
 const BottomNav = () => {
