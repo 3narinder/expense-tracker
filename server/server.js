@@ -17,14 +17,6 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`🚀 Server running at http://localhost:${PORT}`);
     });
-
-    // Start background recurring scheduler (non-blocking)
-    try {
-      const { startRecurringScheduler } = await import("./utils/recurringScheduler.js");
-      startRecurringScheduler({ intervalMs: 1000 * 60 * 60 }); // hourly
-    } catch (err) {
-      console.warn("Could not start recurring scheduler:", err?.message || err);
-    }
   } catch (error) {
     console.error("❌ Server failed to start:", error.message);
     process.exit(1);
