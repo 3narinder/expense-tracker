@@ -425,6 +425,28 @@ export const createTransaction = async (req, res) => {
         transactionDate: txDate,
         recurring: recurring || false,
         recurringFrequency: recurring ? recurringFrequency : null,
+        // compute nextOccurrence when recurring is enabled
+        nextOccurrence: recurring
+          ? (function() {
+              const d = new Date(txDate);
+              switch (recurringFrequency) {
+                case "daily":
+                  d.setDate(d.getDate() + 1);
+                  return d;
+                case "weekly":
+                  d.setDate(d.getDate() + 7);
+                  return d;
+                case "monthly":
+                  d.setMonth(d.getMonth() + 1);
+                  return d;
+                case "yearly":
+                  d.setFullYear(d.getFullYear() + 1);
+                  return d;
+                default:
+                  return null;
+              }
+            })()
+          : null,
       });
 
       await transaction.save({ session });
@@ -561,6 +583,40 @@ export const updateTransaction = async (req, res) => {
       //* Parse the date properly if provided
       if (updates.transactionDate)
         updates.transactionDate = new Date(updates.transactionDate);
+
+      // If recurring or recurringFrequency changes, recompute nextOccurrence
+      if (updates.recurring !== undefined || updates.recurringFrequency !== undefined || updates.transactionDate) {
+        const isRecurring = updates.recurring !== undefined ? updates.recurring : originalTx.recurring;
+        const freq = updates.recurringFrequency !== undefined ? updates.recurringFrequency : originalTx.recurringFrequency;
+        if (isRecurring && freq) {
+          const baseDate = updates.transactionDate || originalTx.transactionDate;
+          const d = new Date(baseDate);
+          let next = null;
+          switch (freq) {
+            case "daily":
+              d.setDate(d.getDate() + 1);
+              next = d;
+              break;
+            case "weekly":
+              d.setDate(d.getDate() + 7);
+              next = d;
+              break;
+            case "monthly":
+              d.setMonth(d.getMonth() + 1);
+              next = d;
+              break;
+            case "yearly":
+              d.setFullYear(d.getFullYear() + 1);
+              next = d;
+              break;
+            default:
+              next = null;
+          }
+          updates.nextOccurrence = next;
+        } else {
+          updates.nextOccurrence = null;
+        }
+      }
 
       //* NEW: Sync budgets — revert the old (category/amount/type/date)
       //* combination and apply the new one, same session.
