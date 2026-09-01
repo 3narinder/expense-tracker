@@ -30,9 +30,13 @@ const TransactionForm = ({
     notes: initial?.notes || "",
     transactionDate:
       initial?.transactionDate?.split("T")[0] || todayDateString(),
+    // recurring fields
+    recurring: initial?.recurring || false,
+    recurringFrequency: initial?.recurringFrequency || "monthly",
   });
 
   const filteredCategories = categories.filter((c) => c.type === form.type);
+  const [showDetails, setShowDetails] = useState(false);
 
   const submit = (e) => {
     e.preventDefault();
@@ -45,6 +49,8 @@ const TransactionForm = ({
       description: form.description || null,
       notes: form.notes || null,
       transactionDate: form.transactionDate,
+      recurring: !!form.recurring,
+      recurringFrequency: form.recurring ? form.recurringFrequency : null,
     };
 
     if (initial) {
@@ -143,6 +149,46 @@ const TransactionForm = ({
         value={form.transactionDate}
         onChange={(e) => setForm({ ...form, transactionDate: e.target.value })}
       />
+
+      <div className="pt-2">
+        <button
+          type="button"
+          className="text-sm text-[var(--color-primary)] hover:underline"
+          onClick={() => setShowDetails((s) => !s)}
+        >
+          {showDetails ? "Hide details" : "Add details"}
+        </button>
+
+        {showDetails && (
+          <div className="mt-3 space-y-2">
+            <label className="inline-flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={!!form.recurring}
+                onChange={(e) =>
+                  setForm({ ...form, recurring: e.target.checked })
+                }
+              />
+              <span className="text-sm">Repeat this transaction</span>
+            </label>
+
+            {form.recurring && (
+              <Select
+                label="Repeat"
+                value={form.recurringFrequency}
+                onChange={(e) =>
+                  setForm({ ...form, recurringFrequency: e.target.value })
+                }
+              >
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+              </Select>
+            )}
+          </div>
+        )}
+      </div>
 
       <Textarea
         label="Notes (optional)"
