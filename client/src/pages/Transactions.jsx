@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 //* Hooks */
 import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
@@ -17,7 +18,9 @@ import TransactionForm from "../components/transactions/TransactionForm.jsx";
 import TransactionsHeader from "../components/transactions/TransactionHeader.jsx";
 import TransactionFilters from "../components/transactions/TransactionFilters.jsx";
 import TransactionTrendCard from "../components/transactions/TransactionCard.jsx";
-import TransactionsTable from "../components/transactions/TransactionTable.jsx";
+import TransactionFeed from "../components/transactions/TransactionFeed.jsx";
+import Fab from "../components/ui/Fab.jsx";
+import BottomSheet from "../components/ui/BottomSheet.jsx";
 import ConfirmDeleteModal from "../components/ui/ConfirmDeleteModal.jsx";
 import { exportTransactionsCSV } from "../services/apiTransaction.js";
 
@@ -98,6 +101,22 @@ const Transactions = () => {
 
   const selectedCount = selectedIds.length;
 
+  const [isMobile, setIsMobile] = useState(false);
+  const [showSaved, setShowSaved] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 768px)");
+    const handler = (e) => setIsMobile(e.matches);
+    setIsMobile(mq.matches);
+    if (mq.addEventListener) mq.addEventListener("change", handler);
+    else mq.addListener(handler);
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener("change", handler);
+      else mq.removeListener(handler);
+    };
+  }, []);
+
   //** 3. Dynamic filter updater that syncs component state changes to the URL bar
   const handleFilterChange = (nextFilters) => {
     const params = new URLSearchParams(searchParams);
@@ -133,6 +152,18 @@ const Transactions = () => {
   const onCreate = () => {
     setEditing(null);
     setModalOpen(true);
+  };
+
+  const queryClient = useQueryClient();
+
+  const onRefresh = () => {
+    try {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    } catch (e) {
+      const params = new URLSearchParams(searchParams);
+      params.set("page", String(page));
+      setSearchParams(params);
+    }
   };
 
   const onEdit = (t) => {
@@ -242,34 +273,65 @@ const Transactions = () => {
           counts={stats?.counts || { all: 0, income: 0, expense: 0 }}
         />
 
-        <TransactionsTable
+        <TransactionFeed
           transactions={safeTransactions}
           currency={currency}
           isLoading={isPending}
           pagination={pagination}
-          onPageChange={changePage}
+          onLoadMore={() => changePage((pagination?.page || 1) + 1)}
           onEdit={onEdit}
           onDelete={(id) => setDeleteSingleTransaction(id)}
           onCreate={onCreate}
-          selectedIds={selectedIds}
-          onToggleSelect={toggleSelect}
-          onToggleSelectAll={toggleSelectAll}
+          onRefresh={onRefresh}
         />
+
+        {/* Floating action button (FAB) */}
+        <Fab onClick={onCreate} ariaLabel="Add transaction">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
+        </Fab>
       </div>
 
-      <Modal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={editing ? "Edit Transaction" : "New Transaction"}
-      >
-        <TransactionForm
-          initial={editing}
-          categories={safeCategories}
-          accounts={safeAccounts}
-          onSaved={() => setModalOpen(false)}
-          onCancel={() => setModalOpen(false)}
-        />
-      </Modal>
+      {isMobile ? (
+        <BottomSheet open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? "Edit Transaction" : "New Transaction"}>
+          <TransactionForm
+            compactMode={true}
+            initial={editing}
+            categories={safeCategories}
+            accounts={safeAccounts}
+            onSaved={() => {
+              setModalOpen(false);
+              setShowSaved(true);
+              setTimeout(() => setShowSaved(false), 1000);
+            }}
+            onCancel={() => setModalOpen(false)}
+          />
+        </BottomSheet>
+      ) : (
+        <Modal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          title={editing ? "Edit Transaction" : "New Transaction"}
+        >
+          <TransactionForm
+            compactMode={false}
+            initial={editing}
+            categories={safeCategories}
+            accounts={safeAccounts}
+            onSaved={() => {
+              setModalOpen(false);
+              setShowSaved(true);
+              setTimeout(() => setShowSaved(false), 1000);
+            }}
+            onCancel={() => setModalOpen(false)}
+          />
+        </Modal>
+      )}
+
+      {showSaved && (
+        <div className="fixed left-1/2 top-10 transform -translate-x-1/2 z-50 p-3 rounded-lg bg-[var(--color-bg-surface)] border border-[var(--color-border-main)] shadow-md text-[var(--color-success)] font-semibold">
+          ✓ Saved
+        </div>
+      )
 
       <ConfirmDeleteModal
         open={!!deleteSingleTransaction}

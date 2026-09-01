@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 
 //** Hooks and functions */
 import { todayDateString } from "../../utils/format.js";
@@ -16,6 +17,7 @@ const TransactionForm = ({
   accounts = [],
   onSaved,
   onCancel,
+  compactMode = false,
 }) => {
   const { addTransaction, isCreating, editTransaction, isUpdating } =
     useTransactionActions();
@@ -30,7 +32,11 @@ const TransactionForm = ({
     notes: initial?.notes || "",
     transactionDate:
       initial?.transactionDate?.split("T")[0] || todayDateString(),
+    recurring: initial?.recurring ? true : false,
+    recurringInterval: initial?.recurring?.interval || "monthly",
   });
+
+  const [showDetails, setShowDetails] = useState(!compactMode);
 
   const filteredCategories = categories.filter((c) => c.type === form.type);
 
@@ -45,6 +51,7 @@ const TransactionForm = ({
       description: form.description || null,
       notes: form.notes || null,
       transactionDate: form.transactionDate,
+      recurring: form.recurring ? { interval: form.recurringInterval || "monthly" } : null,
     };
 
     if (initial) {
@@ -53,7 +60,14 @@ const TransactionForm = ({
         { onSuccess: () => onSaved?.() },
       );
     } else {
-      addTransaction(payload, { onSuccess: () => onSaved?.() });
+      addTransaction(payload, { onSuccess: (res) => {
+          // small micro-feedback for recurring
+          if (payload.recurring) {
+            toast.success("Recurring transaction scheduled");
+          }
+          onSaved?.(res);
+        }
+      });
     }
   };
 
@@ -93,64 +107,177 @@ const TransactionForm = ({
         value={form.amount}
         onChange={(e) => setForm({ ...form, amount: e.target.value })}
       />
+      {/* Compact / composer mode shows fewer fields by default */}
+      {compactMode ? (
+        <>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="col-span-2">
+              <Input
+                label="Amount"
+                type="number"
+                step="0.01"
+                min="0.01"
+                required
+                value={form.amount}
+                onChange={(e) => setForm({ ...form, amount: e.target.value })}
+              />
+            </div>
 
-      <Select
-        label="Account"
-        required
-        value={form.accountId}
-        onChange={(e) => setForm({ ...form, accountId: e.target.value })}
-      >
-        <option value="" disabled>
-          Select account
-        </option>
-        {accounts.map((a) => {
-          const accId = a.id || a._id;
-          return (
-            <option key={accId} value={accId}>
-              {a.name}
+            <div>
+              <Select
+                label="Category"
+                value={form.categoryId}
+                onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
+              >
+                <option value="">Uncategorized</option>
+                {filteredCategories.map((c) => {
+                  const catId = c.id || c._id;
+                  return (
+                    <option key={catId} value={catId}>
+                      {c.name}
+                    </option>
+                  );
+                })}
+              </Select>
+            </div>
+
+            <div className="col-span-3">
+              <Input
+                label="Description"
+                placeholder="e.g. Coffee at Starbucks"
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+              />
+            </div>
+
+            <div className="col-span-3">
+              <button
+                type="button"
+                onClick={() => setShowDetails((s) => !s)}
+                className="text-sm text-[var(--color-primary)]"
+              >
+                {showDetails ? "Hide details" : "Add details"}
+              </button>
+            </div>
+
+            {showDetails && (
+              <>
+                <div className="col-span-3">
+                  <Select
+                    label="Account"
+                    value={form.accountId}
+                    onChange={(e) => setForm({ ...form, accountId: e.target.value })}
+                  >
+                    <option value="">Select account</option>
+                    {accounts.map((a) => {
+                      const accId = a.id || a._id;
+                      return (
+                        <option key={accId} value={accId}>
+                          {a.name}
+                        </option>
+                      );
+                    })}
+                  </Select>
+                </div>
+
+                <div className="col-span-2">
+                  <Input
+                    label="Date"
+                    type="date"
+                    value={form.transactionDate}
+                    onChange={(e) => setForm({ ...form, transactionDate: e.target.value })}
+                  />
+                </div>
+
+                <div className="col-span-3">
+                  <Textarea
+                    label="Notes (optional)"
+                    rows={3}
+                    value={form.notes}
+                    onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                  />
+                </div>
+
+                <div className="col-span-3 mt-2 border-t pt-2">
+                  <label className="flex items-center gap-2 text-sm">
+                    <input type="checkbox" checked={form.recurring || false} onChange={(e) => setForm({ ...form, recurring: e.target.checked })} />
+                    <span>Make this a recurring transaction</span>
+                  </label>
+
+                  {form.recurring && (
+                    <div className="mt-2">
+                      <Select label="Interval" value={form.recurringInterval || "monthly"} onChange={(e) => setForm({ ...form, recurringInterval: e.target.value })}>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
+                      </Select>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          <Select
+            label="Account"
+            required
+            value={form.accountId}
+            onChange={(e) => setForm({ ...form, accountId: e.target.value })}
+          >
+            <option value="" disabled>
+              Select account
             </option>
-          );
-        })}
-      </Select>
+            {accounts.map((a) => {
+              const accId = a.id || a._id;
+              return (
+                <option key={accId} value={accId}>
+                  {a.name}
+                </option>
+              );
+            })}
+          </Select>
 
-      <Select
-        label="Category"
-        value={form.categoryId}
-        onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
-      >
-        <option value="">Uncategorized</option>
-        {filteredCategories.map((c) => {
-          const catId = c.id || c._id;
-          return (
-            <option key={catId} value={catId}>
-              {c.name}
-            </option>
-          );
-        })}
-      </Select>
+          <Select
+            label="Category"
+            value={form.categoryId}
+            onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
+          >
+            <option value="">Uncategorized</option>
+            {filteredCategories.map((c) => {
+              const catId = c.id || c._id;
+              return (
+                <option key={catId} value={catId}>
+                  {c.name}
+                </option>
+              );
+            })}
+          </Select>
 
-      <Input
-        label="Description"
-        placeholder="e.g. Coffee at Starbucks"
-        value={form.description}
-        onChange={(e) => setForm({ ...form, description: e.target.value })}
-      />
+          <Input
+            label="Description"
+            placeholder="e.g. Coffee at Starbucks"
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+          />
 
-      <Input
-        label="Date"
-        type="date"
-        required
-        value={form.transactionDate}
-        onChange={(e) => setForm({ ...form, transactionDate: e.target.value })}
-      />
+          <Input
+            label="Date"
+            type="date"
+            required
+            value={form.transactionDate}
+            onChange={(e) => setForm({ ...form, transactionDate: e.target.value })}
+          />
 
-      <Textarea
-        label="Notes (optional)"
-        rows={3}
-        value={form.notes}
-        onChange={(e) => setForm({ ...form, notes: e.target.value })}
-      />
-
+          <Textarea
+            label="Notes (optional)"
+            rows={3}
+            value={form.notes}
+            onChange={(e) => setForm({ ...form, notes: e.target.value })}
+          />
+        </>
+      )}
       <div className="flex gap-2 justify-end pt-2">
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
