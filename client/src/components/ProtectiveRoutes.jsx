@@ -2,9 +2,9 @@ import { useCurrentUser } from "../features/Authentication/useCurrentUser.js";
 import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children, fallback = null }) => {
-  const { user, isLoading, hasSessionToken } = useCurrentUser();
+  const { user, isAuthPending } = useCurrentUser();
 
-  if (hasSessionToken && isLoading) {
+  if (isAuthPending) {
     return fallback;
   }
 
@@ -16,9 +16,9 @@ const ProtectedRoute = ({ children, fallback = null }) => {
 };
 
 export const PublicRoute = ({ children, fallback = null }) => {
-  const { user, isLoading, hasSessionToken } = useCurrentUser();
+  const { user, isAuthPending } = useCurrentUser();
 
-  if (hasSessionToken && isLoading) {
+  if (isAuthPending) {
     return fallback;
   }
 

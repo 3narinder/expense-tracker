@@ -31,9 +31,10 @@ export const getMe = async () => {
   } catch (error) {
     if (error.response?.status === 401) {
       clearAuthToken();
-      return null;
+      return { user: null };
     }
-    handleApiError(error, "getMe");
+    // Let React Query retry network / timeout errors (e.g. Render cold start).
+    throw error;
   }
 };
 

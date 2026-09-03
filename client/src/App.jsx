@@ -9,15 +9,17 @@ import {
 } from "./components/SuspenseFallbacks.jsx";
 import { Toaster } from "react-hot-toast";
 
+// Eager-load auth shell so mobile doesn't wait on extra lazy chunks before login/dashboard.
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import Layout from "./components/Layout.jsx";
+
 const Dashboard = lazy(() => import("./pages/Dashboard.jsx"));
-const Login = lazy(() => import("./pages/Login.jsx"));
-const Register = lazy(() => import("./pages/Register.jsx"));
 const Transactions = lazy(() => import("./pages/Transactions.jsx"));
 const Categories = lazy(() => import("./pages/Categories.jsx"));
 const Budgets = lazy(() => import("./pages/Budgets.jsx"));
 const Insight = lazy(() => import("./pages/Insight.jsx"));
 const Notifications = lazy(() => import("./pages/Notifications.jsx"));
-const Layout = lazy(() => import("./components/Layout.jsx"));
 const ReactQueryDevtools = import.meta.env.DEV
   ? lazy(() =>
       import("@tanstack/react-query-devtools").then((module) => ({
@@ -48,9 +50,7 @@ const App = () => {
           path="/login"
           element={
             <PublicRoute fallback={<AuthPageSkeleton />}>
-              <Suspense fallback={<AuthPageSkeleton />}>
-                <Login />
-              </Suspense>
+              <Login />
             </PublicRoute>
           }
         />
@@ -58,9 +58,7 @@ const App = () => {
           path="/register"
           element={
             <PublicRoute fallback={<AuthPageSkeleton />}>
-              <Suspense fallback={<AuthPageSkeleton />}>
-                <Register />
-              </Suspense>
+              <Register />
             </PublicRoute>
           }
         />
@@ -68,9 +66,7 @@ const App = () => {
         <Route
           element={
             <ProtectedRoute fallback={<DashboardShellSkeleton />}>
-              <Suspense fallback={<DashboardShellSkeleton />}>
-                <Layout />
-              </Suspense>
+              <Layout />
             </ProtectedRoute>
           }
         >

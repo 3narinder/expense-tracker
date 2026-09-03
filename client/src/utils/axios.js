@@ -11,7 +11,8 @@ const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://l
 const api = axios.create({
   baseURL: API_URL,
   withCredentials: true,
-  timeout: 10000,
+  // Render free tier can take 30s+ on cold start; 10s caused false logouts on mobile.
+  timeout: import.meta.env.DEV ? 10000 : 45000,
 });
 
 api.interceptors.request.use((config) => {
@@ -26,20 +27,7 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    const originalRequest = error.config;
-
-    if (
-      error.response?.status === 401 &&
-      typeof window !== "undefined" &&
-      window.location.pathname !== "/login" &&
-      !originalRequest?.url?.includes("/auth/me")
-    ) {
-      window.location.href = "/login";
-    }
-
-    return Promise.reject(error);
-  },
+  (error) => Promise.reject(error),
 );
 
 export default api;

@@ -1,18 +1,22 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getMe as getMeApi } from "../../services/apiAuth";
-import { getAuthToken } from "../../utils/authToken.js";
 import { setActiveProfileType } from "../../utils/profileScope.js";
 
 export const useCurrentUser = () => {
-  const hasSessionToken = Boolean(getAuthToken());
-  const { data, isLoading, error } = useQuery({
+  const { data, isPending, isFetching, error } = useQuery({
     queryKey: ["user"],
     queryFn: getMeApi,
-    retry: false,
+    retry: (failureCount, err) => {
+      // Don't retry confirmed auth failures; retry cold-start / network timeouts.
+      if (err?.response?.status === 401) return false;
+      return failureCount < 3;
+    },
+    retryDelay: (attempt) => Math.min(1500 * 2 ** attempt, 12000),
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
-    enabled: hasSessionToken,
+    // Always attempt session restore — cookie may be valid even if localStorage is empty.
+    enabled: true,
   });
 
   useEffect(() => {
@@ -21,11 +25,14 @@ export const useCurrentUser = () => {
     }
   }, [data?.user?.activeProfileType]);
 
+  // Hold routing until we have a resolved session (including retries on cold start).
+  const isAuthPending = data === undefined && (isPending || isFetching);
+
   return {
-    user: data?.user,
-    isLoading: hasSessionToken ? isLoading : false,
+    user: data?.user ?? null,
+    isAuthPending,
+    isLoading: isAuthPending,
     isAuthenticated: !!data?.user,
-    hasSessionToken,
     error,
   };
 };
